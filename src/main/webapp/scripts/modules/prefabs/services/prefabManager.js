@@ -105,26 +105,7 @@ WM.module('wm.prefabs')
              * @returns prefab list
              */
             function processPrefabsList() {
-                var projectPrefabs = Object.keys(appPrefabNamePropertiesMap),
-                    studioPrefabs  = Object.keys(studioPrefabNamePropertiesMap),
-                    prefabList     = _.union(projectPrefabs, studioPrefabs),
-                    mergedPrefabsConfig = {},
-                    config;
-                //this will merge the prefabs, first priority is given for the prefabs in project
-                _.forEach(prefabList, function (prefabName) {
-                    config = {};
-                    if (appPrefabNameConfigMap[prefabName]) {
-                        config = _.merge({'config': appPrefabNameConfigMap[prefabName]}, appPrefabNamePropertiesMap[prefabName]);
-                        config.loadPrefabResource = true;
-                    } else {
-                        config = _.merge({'config': studioPrefabNameConfigMap[prefabName]}, studioPrefabNamePropertiesMap[prefabName]);
-                    }
-                    if (appPrefabNameConfigMap[prefabName] && !studioPrefabNamePropertiesMap[prefabName]) { //if the prefab is not in studio and exists in the project then categorize it as project prefab
-                        config.isProjectPrefab = true;
-                    }
-                    mergedPrefabsConfig[prefabName] = config;
-                });
-                return mergedPrefabsConfig;
+                return appPrefabNamePropertiesMap;
             }
             /*
              * Get the config.json of application prefab in synchronous way and trigger the callback with the response.
@@ -313,7 +294,7 @@ WM.module('wm.prefabs')
             function prepareAppPrefabsNamePropertiesMap() {
                 appPrefabNamePropertiesMap = {};
                 _.forEach(appPrefabs, function (prefabObj) {
-                    appPrefabNamePropertiesMap[prefabObj.name] = prefabObj;
+                    appPrefabNamePropertiesMap[prefabObj.artifactVO.name] = prefabObj;
                 });
             }
             /**
@@ -321,7 +302,7 @@ WM.module('wm.prefabs')
              * @param prefabs prefabs config array
              */
             function setProjectPrefabs(prefabs) {
-                appPrefabs = prefabs;
+                appPrefabs = prefabs.content;
                 prepareAppPrefabsNamePropertiesMap();
             }
 
@@ -781,14 +762,60 @@ WM.module('wm.prefabs')
                 return $markup[0].outerHTML;
             }
 
-            function publishPrefabToWorkspace() {
-                projectDetails = ProjectService.getDetails();
-                var payload = {
+            function importPrefabToWorkSpace(artifactId, successfallBack) {
+                var params = {
+                    "artifactId" : artifactId
+                };
+                return PrefabService.import(params, function(response) {
+                    console.log("=== success response ===", response);
+                    successfallBack(response);
+                }, function(response) {
+                    console.log("=== fail response ===", response)
+
+                });
+            }
+
+            function publishPrefabToWorkspace(projectDetails, commitMsg) {
+                /*projectDetails = ProjectService.getDetails();*/
+                /*var payload = {
                     'projectID' : projectDetails.studioProjectId || projectDetails.id,
                     'data'      : {
                         'prefabName' : projectDetails.name,
                         'version'    : projectDetails.version
                     }
+                };*/
+
+                /*'projectDetails'        : {
+                    'displayName'       : projectDetails.displayName,
+                        'description'       : projectDetails.description || '',
+                        'version'           : projectDetails.version || '1.0',
+                        'defaultLanguage'   : projectProps.defaultLanguage,
+                        'supportedLanguages': supportedLocale.join(','),
+                        'homePage'          : projectProps.homePage,
+                        'dateFormat'        : projectProps.dateFormat,
+                        'timeFormat'        : projectProps.timeFormat,
+                        'icon'              : projectDetails.icon,
+                        'packagePrefix'     : projectProps.packagePrefix,
+                        'copyright'         : projectProps.copyrightMsg
+                }*/
+
+                var payload = {
+                    "sourceProjectId": projectDetails.projectId || projectDetails.id,
+                    "name": projectDetails.name,
+                    "version": "1.0.0" || projectDetails.version,
+                    "artifactType": "PREFAB",
+                    "displayName": projectDetails.displayName,
+                    "category": "UI",
+                    "description": projectDetails.description,
+                    "icon": projectDetails.icon,
+
+                    "publisherComments": commitMsg,
+                    "tags": [
+                        "wavemaker",
+                        "tom",
+                        "animation"
+                    ],
+                    "customProps": {"city": "NY", "work": "test", "name": "Mars"}
                 };
                 return PrefabService.publishPrefabToWorkSpace(payload);
             }
@@ -812,6 +839,15 @@ WM.module('wm.prefabs')
                     'prefabId': prefabId
                 }, successHandler, errorHandler);
             }
+
+            /**
+             *
+             * imports the prefab to the workspace
+             * @type {importPrefabToWorkSpace}
+             *
+             * @param {version} version
+             */
+            this.importPrefabToWorkSpace = importPrefabToWorkSpace;
 
             /**
              *
