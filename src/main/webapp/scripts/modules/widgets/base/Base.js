@@ -376,7 +376,6 @@ WM.module('wm.widgets.base', [])
                         "hint":  {"show": false},
                         "maxvalue": {"type": "number", "value": 5, "pattern": maxRatingRegex, "bindable": "in-bound"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "datavalue": {"type": "number", "value": "", "bindable": "in-out-bound"},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "show": false},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
@@ -435,7 +434,6 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "datavalue": {"type": "string, object", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
-                        "scopedatavalue": {"type": "string"},
                         "dataset": {"type": "array, string", "bindable": "in-bound", "widget": "string", "value": "yes, no, maybe", "showPrettyExprInDesigner": true, "defaultvalue": "yes, no, maybe"},
                         "scopedataset": {"type": "string"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
@@ -508,7 +506,6 @@ WM.module('wm.widgets.base', [])
                         "type": {"type": "list", "options": ["color", "date", "datetime-local", "email", "month", "number", "password", "search", "tel", "text", "time", "url", "week"], "value": "text"},
                         "accept": {"type": "data-list", "options": ["image/*", "audio/*", "video/*"], "show": false},
                         "datavalue": {"type": "string", value: "", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('datavalue')"},
-                        "scopedatavalue": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
                         "backgroundcolor": {"type": "string", "widget": "color"},
 
@@ -534,7 +531,6 @@ WM.module('wm.widgets.base', [])
 
                     "wm.currency": {
                         "datavalue": {"type": "number", "bindable": "in-out-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "minvalue": {"type": "number", "bindable": "in-bound"},
                         "maxvalue": {"type": "number", "bindable": "in-bound"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
@@ -550,7 +546,6 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.base.datetime": {
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "tabindex": {"type": "number", "value": "0"},
                         "showdropdownon": {"type": "select-by-object", "options": [{"label": "Default(Input & Button)", "value":"default"}, {"label": "Button Only", "value":"button"}], "value": "default"},
                         /* ---- styles ----*/
@@ -703,7 +698,6 @@ WM.module('wm.widgets.base', [])
                         //"readonly": {"type": "boolean", "value": false}, //commenting this property temporarily as it is not working
                         "autofocus": {"type": "boolean"},
                         "disabled": {"value": false, "bindable": "in-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "checkedvalue": {"type": "string"},
                         "radiogroup": {"type": "string"},
@@ -734,7 +728,6 @@ WM.module('wm.widgets.base', [])
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         "datavalue": {"type": "string", "bindable": "in-out-bound", "show": false, "getTypeFrom": "dataset"},
-                        "scopedatavalue": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3", "showPrettyExprInDesigner": true, "defaultvalue": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
                         "required": {"type": "boolean", "bindable": "in-bound", "value": false},
@@ -747,7 +740,6 @@ WM.module('wm.widgets.base', [])
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "required": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "placeholder": {"type": "string", "value": "Select Color", "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "shortcutkey": {"type": "string"},
@@ -772,7 +764,6 @@ WM.module('wm.widgets.base', [])
                         "maxvalue": {"type": "number", "bindable": "in-out-bound"},
                         "step": {"type": "number"},
                         "datavalue": {"type": "string, number", "widget": "string", "bindable": "in-out-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "tabindex": {"type": "number", "value": "0"},
                         "shortcutkey": {"type": "string"},
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -789,7 +780,6 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "boolean, string", "bindable": "in-out-bound", "widget": "string"},
                         "checkedvalue": {"type": "string"},
                         "uncheckedvalue": {"type": "string"},
-                        "scopedatavalue": {"type": "string"},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
                         "shortcutkey": {"type": "string"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"}
@@ -820,7 +810,6 @@ WM.module('wm.widgets.base', [])
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         "datavalue": {"type": "string, array", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
-                        "scopedatavalue": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3", "showPrettyExprInDesigner": true, "defaultvalue": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
                         "selectedvalues": {"type": "string, object", "isList": true, "bindable": "in-bound", "widget": "string", "getTypeFrom": "dataset"},
@@ -837,7 +826,6 @@ WM.module('wm.widgets.base', [])
                         "inputwidth": {"type": "list", "options": ["default", "full"], "value": "default"},
                         "tabindex": {"type": "number", "value": "0"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "minchars": {"type": "number", "value": "1"},
                         "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "custom"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
@@ -871,7 +859,6 @@ WM.module('wm.widgets.base', [])
                     "wm.select": {
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "datavalue": {"type": "string, number, boolean, date, time, object", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset", "getIsListFrom": "expr:multiple"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -945,7 +932,6 @@ WM.module('wm.widgets.base', [])
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "placeholder": {"type": "string", "value": "Place your text", "bindable": "in-bound"},
                         "maxchars": {"type": "number",  "bindable": "in-bound"},
                         "updateon": {"type": "list", "value": "blur", "widget": "update-on"},
@@ -1208,7 +1194,6 @@ WM.module('wm.widgets.base', [])
                         "onSearch": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBackbtnclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "imgsrc": {"type": "string", "bindable": "in-bound"},
-                        "scopedatavalue": {"type": "string"},
                         "datavalue": {"type": "string, object", "widget": "string", "bindable": "in-out-bound", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1755,7 +1740,6 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "bindable": "in-bound"},
                         "htmlcontent": {"type": "string", "bindable": "out-bound"},
                         "tabindex": {"type": "number", "value": "0"},
-                        "scopedatavalue": {"type": "string"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex}
@@ -1938,7 +1922,6 @@ WM.module('wm.widgets.base', [])
                         "captionwidth": {"type": "string", "widget": "device-config", "value": "xs-4 sm-4 md-4 lg-4", "showindesigner": true, "widthHeader": "Column Width", "deviceHeader": "Device", "deviceSizes": columnWidths}
                     },
                     "wm.search": {
-                        "scopedatavalue": {"type": "string"},
                         "datavalue": {"type": "string, object", "widget": "string", "bindable": "in-out-bound", "getTypeFrom": "dataset"},
                         "result": {"type": "array", "value": [], "bindable": "out-bound", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
@@ -2162,7 +2145,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "partialparams", "properties": [], "parent": "properties"},
                 {"name": "display", "properties": ["modal", "vertical", "avatar"], "parent": "properties"},
                 {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "metadata", "searchkey", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderby", "compareby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "nodeid", "nodeaction", "nodeclick", "thumbnailurl", "mediaurl"], "parent": "properties"},
-                {"name": "values", "properties": [ "scopedatavalue", "datavalue", "defaultvalue", "maxdefaultvalue", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
+                {"name": "values", "properties": ["datavalue", "defaultvalue", "maxdefaultvalue", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "eventsdata", "properties": ["eventtitle", "eventstart", "eventend", "eventallday", "eventclass"], "parent": "properties"},
