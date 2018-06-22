@@ -77,6 +77,7 @@ WM.module('wm.widgets.dialog')
                         }
 
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                        $el.removeClass($is.class);
                     }
                 }
             };

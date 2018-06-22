@@ -136,6 +136,7 @@ WM.module('wm.widgets.dialog')
                     }
 
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    element.removeClass(scope.class);
                 }
             }
         };

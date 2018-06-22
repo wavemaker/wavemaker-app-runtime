@@ -78,6 +78,7 @@ WM.module('wm.widgets.dialog')
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
                     }
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    element.removeClass(scope.class);
                 }
             }
         };
