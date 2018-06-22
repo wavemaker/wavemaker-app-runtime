@@ -2713,7 +2713,7 @@ WM.module('wm.widgets.base', [])
                     studioModeHiddenWidgets,
                     $targetEl,
                     $headerEl,
-                    dialogTypes = ['wm-alertdialog', 'wm-confirmdialog', 'wm-iframedialog', 'wm-pagedialog', 'wm-logindialog'];
+                    dialogTypes = ['wm-alertdialog', 'wm-confirmdialog', 'wm-iframedialog', 'wm-pagedialog', 'wm-logindialog', 'wm-dialog'];
 
                 if (key === 'placeholder' || key === 'type') {
                     if ($el.is('input') || $el.is('textarea')) {

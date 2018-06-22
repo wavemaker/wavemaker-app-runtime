@@ -3,30 +3,41 @@
 WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
+        var dialogContentTemplate = '<div class="modal-content">' +
+                                        '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
+                                            '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="Close">' +
+                                                '<span aria-hidden="true">&times;</span>' +
+                                            '</button>' +
+                                            '<h4 class="app-dialog-title modal-title">' +
+                                                '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
+                                                '<span class="dialog-heading" name="wm-{{dialogid}}-title" title="{{title}}">{{title}}</span>' +
+                                                '<span class="dialog-sub-heading" name="wm-{{dialogid}}-sub-heading" ng-if="subheading" title="{{subheading}}">{{subheading}}</span>' +
+                                            '</h4>' +
+                                            '<div class="wm-dialog-header-action" ng-if="actiontitle || actionlink">' +
+                                                '<i title="{{actiontitle}}" class="wm-icon wms wms-help"></i>' +
+                                                '<a ng-href="{{actionlink}}" target="_blank">Help</a>' +
+                                            '</div>' +
+                                        '</div>' +
+                                        '<div class="app-dialog-body modal-body {{contentclass}}" wmtransclude apply-styles="scrollable-container" name="wm-{{dialogid}}-content">' +
+                                        '</div>' +
+                                        '<div ng-transclude="footer"></div>' +
+                                    '</div>' ;
+
         $templateCache.put("template/widget/dialog/dialog-template.html",
             '<div tabindex="-1" role="dialog" class="modal default" ng-style="{display: \'block\'}" ng-click="close($event)" uib-modal-transclude></div>'
             );
+
+        $templateCache.put("template/widget/dialog/runtime-dialog-template.html",
+            '<div init-widget class="app-view dialog-view clearfix" wm-navigable-element="true">' +
+                '<div class="modal-dialog app-dialog" ng-style="{width: dialogWidth}" >' +
+                    dialogContentTemplate +
+                '</div>' +
+            '</div>'
+            );
+
         $templateCache.put("template/widget/dialog/dialog.html",
             '<div init-widget class="app-dialog modal-dialog clearfix" wm-navigable-element="true" ng-style="{width: dialogWidth}">' +
-                    '<div class="modal-content">' +
-                        '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
-                            '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="Close">' +
-                                '<span aria-hidden="true">&times;</span>' +
-                            '</button>' +
-                            '<h4 class="app-dialog-title modal-title">' +
-                                '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
-                                '<span class="dialog-heading" name="wm-{{dialogid}}-title" title="{{title}}">{{title}}</span>' +
-                                '<span class="dialog-sub-heading" name="wm-{{dialogid}}-sub-heading" ng-if="subheading" title="{{subheading}}">{{subheading}}</span>' +
-                            '</h4>' +
-                            '<div class="wm-dialog-header-action" ng-if="actiontitle || actionlink">' +
-                                '<i title="{{actiontitle}}" class="wm-icon wms wms-help"></i>' +
-                                '<a ng-href="{{actionlink}}" target="_blank">Help</a>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="app-dialog-body modal-body {{contentclass}}" wmtransclude apply-styles="scrollable-container" name="wm-{{dialogid}}-content">' +
-                        '</div>' +
-                        '<div ng-transclude="footer"></div>' +
-                '</div>' +
+                dialogContentTemplate +
             '</div>'
             );
         $templateCache.put("template/widget/dialog/dialog-header.html",
@@ -119,7 +130,11 @@ WM.module('wm.widgets.dialog')
                     id = attrs.name;
                     return '<script type="text/ng-template" id="' + id + '">' + transcludedContent + "</script>";
                 }
-                return $templateCache.get("template/widget/dialog/dialog.html");
+                if(template.attr('widgetid')){
+                    return $templateCache.get("template/widget/dialog/runtime-dialog-template.html");
+                } else {
+                    return $templateCache.get("template/widget/dialog/dialog.html");
+                }
             },
             "replace": true,
             "compile": function () {
@@ -149,6 +164,7 @@ WM.module('wm.widgets.dialog')
                         }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        element.removeClass(scope.class);
                     }
                 };
             }
