@@ -3071,6 +3071,7 @@ If the height and width are not specified the video takes the height of the post
 *********************************************************************************/
 @app-tabs-border-color: rgba(0,0,0,0.1);
 @app-tabs-bg-color: #FFFFFF;
+@app-tabs-border-colored: #c7c7c7;
 
 .app-tabs {
   &:focus {
@@ -3115,40 +3116,71 @@ If the height and width are not specified the video takes the height of the post
         * {
           vertical-align: middle;
         }
-        span.label {
+        span {
           margin-left: 1em;
           display:inline-block;
         }
       }
     }
+    &.nav-stacked {
+        > li.active a {
+           //margin-right: -2px;
+        }
+        > li {
+           border-left: 1px solid @app-tabs-border-colored;
+           > a, a:hover, a:focus, a:active {
+             border-right: 0;
+             border-bottom-color: @app-tabs-border-colored
+           }
+           &.last-of-type a {
+             border-bottom-color: @app-tabs-border-colored;
+           }
+        }
+    }
   }
 
   &.inverted {
     > ul.nav:not(.nav-stacked) {
-      border-bottom: none;
+      border-bottom-color: @app-tabs-border-colored;
       margin-top: -1px;
       > li {
         margin-bottom: 0;
-        > a {
-          border-radius: 0 0 3px 3px;
+        &.active {
+           > a {
+             border-bottom-color: @app-tabs-border-colored;
+           }
+        }
+        > a, a:hover, a:focus, a:active {
+          border-radius: 0;
           border-top-color: transparent;
           border-bottom-color: @app-tabs-border-color;
         }
       }
     }
-    > ul.nav-stacked {
+    > .nav.nav-tabs.nav-stacked {
+      > li {
+         border-right: 1px solid @app-tabs-border-colored;
+         border-left: 0;
+         > a {
+            border-right: 1px solid @app-tabs-border-colored;
+         }
+      }
       > li.active {
-        margin-left: -1px;
-        > a {
+        > a, a:hover, a:focus, a:active {
+          //margin-left: -2px;
           border-left-color: transparent;
         }
+      }
+
+      &:last-of-type a {
+        border-left: 0;
       }
     }
   }
   .tab-content {
     height: 90%;
     max-width: 100%;
-    .calc('height', ~"calc(100% - 2.5em)");
+    .calc('height', ~"calc(100% - 4em)");
     background-color: @app-tabs-bg-color;
     overflow: auto;
     position: relative;
@@ -3196,13 +3228,18 @@ If the height and width are not specified the video takes the height of the post
       }
     }
   }
-  .tab-stacked {
+  .tab-stacked{
     float: left;
     width: 80%;
     height: 100%;
     overflow: auto;
     > .tab-pane > .tab-body{
-      border-top-width: 1px;
+      border-top: 1px solid @app-tabs-border-colored;
+    }
+  }
+  .tab-content {
+    > .tab-pane > .tab-body{
+      border-top: 1px solid @app-tabs-border-colored;
     }
   }
 }
@@ -3742,6 +3779,12 @@ If the height and width are not specified the video takes the height of the post
 //carousel styles
 .app-carousel .carousel.slide{
   height: inherit;
+  .carousel-control {
+    .icon-prev, .icon-next {
+       margin-top: -30%;
+       font-size: 70px;
+    }
+  }
 }
 
 //Focus styles for Menu in navbar
