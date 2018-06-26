@@ -1646,7 +1646,6 @@ WM.module('wm.widgets.base', [])
                         "contenttype": {"type": "list", "bindable": "in-out-bound", "widget" : "list-picker", "options": ["image/*", "audio/*", "video/*", ".txt", ".zip", ".rar", ".js", ".json", ".xls", ".xlsx", ".pdf", ".csv", ".xml", ".doc", ".docx", ".log", ".rtf", ".bmp", ".gif", ".jpe", ".jpg", ".jpeg", ".tif", ".tiff", ".pbm", ".png", ".ico", "mp3", ".ogg", ".webm", ".wma", ".3gp", ".wav", "mp4", ".ogg", ".webm", ".wmv", ".mpeg", ".mpg", ".avi"]},
                         "fileuploadmessage": {"type": "string", "bindable": "in-out-bound", "value": "You can also browse for files"},
                         "tabindex": {"type": "number", "value": "0"},
-                        "uploadedFiles": {"type": "array", "isList": true, "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('uploadedFiles')"},
                         "selectedFiles": {"type": "array, file", "isList": true, "bindable": "in-out-bound", "show" : "false", "getTypeFrom": "expr:getPropertyType('selectedFiles')"},
                         "maxfilesize": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound", "value": "",  "info": "size in MB"},
                         "caption": {"type": "string", "value": "Upload", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
