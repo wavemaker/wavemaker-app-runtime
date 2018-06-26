@@ -280,7 +280,7 @@ WM.module('wm.layouts.page')
                             count = 0,
                             hasLazyWidgets;
 
-                        pageName      = $s.partialname;
+                        pageName      = $s.partialname || $rs._toBeActivatedPage ;
                         variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
 
                         if (CONSTANTS.isRunMode) {
