@@ -580,7 +580,7 @@ WM.module('wm.widgets.live')
                         dataNavigator = $dataNavigator.isolateScope();
                         $is.dataNavigator = dataNavigator;
                         dataNavigator.pagingOptions = {
-                            maxResults: $is.pagesize || 20
+                            maxResults: $is.pagesize
                         };
 
                         // remove the existing watchers
