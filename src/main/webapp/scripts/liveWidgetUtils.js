@@ -1607,7 +1607,7 @@ WM.module('wm.widgets.live')
             function setDefaultWidgetConfig(column) {
                 var widgetType = column.widgetType,
                     field = column.field,
-                    val = column.widgetType === 'button' ? "bind:row.getProperty('" + field + "') || 'Button'" : "bind:row.getProperty('" + field + "')",
+                    val = column.widgetType === 'button' ? "bind:rowData.getProperty('" + field + "') || 'Button'" : "bind:rowData.getProperty('" + field + "')",
                     widgetNgClasses = [Utils.getClonedObject(defaultNgClassesConfig)];
                 /* Not storing widget config, it is only on for UI display. Only customExpression will be saved. */
                 column.widgetConfig = {};

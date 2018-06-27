@@ -1279,11 +1279,11 @@ WM.module('wm.widgets.table')
                     el = WM.element(htm),
                     ngSrc,
                     imageEl;
-                rowScope.selectedItemData = rowScope.rowData = Utils.getClonedObject(row);
-                rowScope.row = row;
+                rowScope.row = Utils.getClonedObject(row);;
                 rowScope.row.getProperty = function (field) {
                     return _.get(row, field);
                 };
+                rowScope.rowData = rowScope.row;
                 //return the compiled template if the template is row i.e when colDef doesn't exist.
                 if (!colDef) {
                     return $compile(el)(rowScope);
