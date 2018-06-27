@@ -781,62 +781,52 @@ WM.module('wm.prefabs')
                 return $markup[0].outerHTML;
             }
 
-            function importPrefabToWorkSpace(artifactId, successfallBack) {
-                var params = {
-                    "artifactId" : artifactId
-                };
-                return PrefabService.import(params, function(response) {
-                    console.log("=== success response ===", response);
-                    successfallBack(response);
-                }, function(response) {
-                    console.log("=== fail response ===", response)
-
-                });
+            function getArtifact(ednProjectId, successCallback, failureCallback) {
+                return PrefabService.getArtifact(ednProjectId, successCallback, failureCallback);
             }
 
-            function publishPrefabToWorkspace(projectDetails, commitMsg) {
-                /*projectDetails = ProjectService.getDetails();*/
-                /*var payload = {
+            function getPrefabCategories(successCallback, failureCallback) {
+                return PrefabService.categories(successCallback, failureCallback);
+            }
+
+            function publishPrefabToWorkspace() {
+                projectDetails = ProjectService.getDetails();
+                var payload = {
                     'projectID' : projectDetails.studioProjectId || projectDetails.id,
                     'data'      : {
                         'prefabName' : projectDetails.name,
                         'version'    : projectDetails.version
                     }
-                };*/
+                };
+                return PrefabService.publishPrefabToWorkSpace(payload);
+            }
 
-                /*'projectDetails'        : {
-                    'displayName'       : projectDetails.displayName,
-                        'description'       : projectDetails.description || '',
-                        'version'           : projectDetails.version || '1.0',
-                        'defaultLanguage'   : projectProps.defaultLanguage,
-                        'supportedLanguages': supportedLocale.join(','),
-                        'homePage'          : projectProps.homePage,
-                        'dateFormat'        : projectProps.dateFormat,
-                        'timeFormat'        : projectProps.timeFormat,
-                        'icon'              : projectDetails.icon,
-                        'packagePrefix'     : projectProps.packagePrefix,
-                        'copyright'         : projectProps.copyrightMsg
-                }*/
+            function importPrefabToWorkSpace(artifactId, success, error) {
+                var params = {
+                    "artifactId" : artifactId
+                };
+                return PrefabService.import(params, function(response) {
+                    Utils.triggerFn(success, response);
+                }, function(response) {
+                    Utils.triggerFn(error, response);
+                });
+            }
 
+            function publishPrefabToEDN(projectDetails, publishObj) {
                 var payload = {
                     "sourceProjectId": projectDetails.projectId || projectDetails.id,
                     "name": projectDetails.name,
-                    "version": "1.0.0" || projectDetails.version,
+                    "version": projectDetails.version,
                     "artifactType": "PREFAB",
                     "displayName": projectDetails.displayName,
-                    "category": "UI",
+                    "category": publishObj.category,
                     "description": projectDetails.description,
                     "icon": projectDetails.icon,
-
-                    "publisherComments": commitMsg,
-                    "tags": [
-                        "wavemaker",
-                        "tom",
-                        "animation"
-                    ],
-                    "customProps": {"city": "NY", "work": "test", "name": "Mars"}
+                    "publisherComments": publishObj.commitMsg,
+                    "tags": publishObj.tags,
+                    "customProps": {}
                 };
-                return PrefabService.publishPrefabToWorkSpace(payload);
+                return PrefabService.publishPrefabToEDN(payload);
             }
 
             function publishPrefabToProject(targetProjectId) {
@@ -867,6 +857,33 @@ WM.module('wm.prefabs')
              * @param {version} version
              */
             this.importPrefabToWorkSpace = importPrefabToWorkSpace;
+
+            /**
+             *
+             * get prefab details from  EDN
+             * @type {getPrefab}
+             *
+             * @param {version} version
+             */
+            this.getArtifact = getArtifact;
+
+            /**
+             *
+             * get prefab categories from  EDN
+             * @type {getPrefab}
+             *
+             * @param {version} version
+             */
+            this.getPrefabCategories = getPrefabCategories;
+
+            /**
+             *
+             * publishes the prefab to the EDN
+             * @type {publishPrefabToEDN}
+             *
+             * @param {version} version
+             */
+            this.publishPrefabToEDN = publishPrefabToEDN;
 
             /**
              *
@@ -933,6 +950,15 @@ WM.module('wm.prefabs')
              * this function will load the list of prefabs in studio
              */
             this.listStudioPrefabs = listStudioPrefabs;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getArtifact
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load the list of prefabs in studio
+             */
+            this.getArtifact = getArtifact;
 
             /**
              * @ngdoc function
