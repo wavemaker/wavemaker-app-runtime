@@ -3686,6 +3686,25 @@ If the height and width are not specified the video takes the height of the post
      }
    }
 }
+.wm-app .panel, .wm-app .card {
+  .panel-heading {
+     .panel-actions {
+        .app-badge {
+           position: relative;
+           top: -.4em;
+        }
+        .panel-action {
+           &.dropdown {
+              padding: 2px 5px;
+              > .app-anchor {
+                  top: .4em;
+              }
+           }
+        }
+     }
+  }
+}
+
 
 .app-progress {
   .progress-bar {
