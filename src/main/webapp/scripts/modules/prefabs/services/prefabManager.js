@@ -69,6 +69,14 @@ WM.module('wm.prefabs')
             }
 
             /*
+             * Get the list of prefabs from EDN.
+             * returns promise.
+             */
+            function listPrefabs() {
+                return PrefabService.list();
+            }
+
+            /*
              * update the app-prefab properties in appPrefabNamePropertiesMap
              */
             function onAppPrefabsLoad(prefabs) {
@@ -105,26 +113,26 @@ WM.module('wm.prefabs')
              * @returns prefab list
              */
             function processPrefabsList() {
-				var projectPrefabs = Object.keys(appPrefabNamePropertiesMap),
-					studioPrefabs  = Object.keys(studioPrefabNamePropertiesMap),
-					prefabList     = _.union(projectPrefabs, studioPrefabs),
-					mergedPrefabsConfig = {},
-					config;
-				//this will merge the prefabs, first priority is given for the prefabs in project
-				_.forEach(prefabList, function (prefabName) {
-					config = {};
-					if (appPrefabNameConfigMap[prefabName]) {
-						config = _.merge({'config': appPrefabNameConfigMap[prefabName]}, appPrefabNamePropertiesMap[prefabName]);
-						config.loadPrefabResource = true;
-					} else {
-						config = _.merge({'config': studioPrefabNameConfigMap[prefabName]}, studioPrefabNamePropertiesMap[prefabName]);
-					}
-					if (appPrefabNameConfigMap[prefabName] && !studioPrefabNamePropertiesMap[prefabName]) { //if the prefab is not in studio and exists in the project then categorize it as project prefab
-						config.isProjectPrefab = true;
-					}
-					mergedPrefabsConfig[prefabName] = config;
-				});
-				return mergedPrefabsConfig;
+                var projectPrefabs = Object.keys(appPrefabNamePropertiesMap),
+                    studioPrefabs  = Object.keys(studioPrefabNamePropertiesMap),
+                    prefabList     = _.union(projectPrefabs, studioPrefabs),
+                    mergedPrefabsConfig = {},
+                    config;
+                //this will merge the prefabs, first priority is given for the prefabs in project
+                _.forEach(prefabList, function (prefabName) {
+                    config = {};
+                    if (appPrefabNameConfigMap[prefabName]) {
+                        config = _.merge({'config': appPrefabNameConfigMap[prefabName]}, appPrefabNamePropertiesMap[prefabName]);
+                        config.loadPrefabResource = true;
+                    } else {
+                        config = _.merge({'config': studioPrefabNameConfigMap[prefabName]}, studioPrefabNamePropertiesMap[prefabName]);
+                    }
+                    if (appPrefabNameConfigMap[prefabName] && !studioPrefabNamePropertiesMap[prefabName]) { //if the prefab is not in studio and exists in the project then categorize it as project prefab
+                        config.isProjectPrefab = true;
+                    }
+                    mergedPrefabsConfig[prefabName] = config;
+                });
+                return mergedPrefabsConfig;
             }
             /*
              * Get the config.json of application prefab in synchronous way and trigger the callback with the response.
@@ -313,7 +321,7 @@ WM.module('wm.prefabs')
             function prepareAppPrefabsNamePropertiesMap() {
                 appPrefabNamePropertiesMap = {};
                 _.forEach(appPrefabs, function (prefabObj) {
-                    appPrefabNamePropertiesMap[prefabObj.artifactVO.name] = prefabObj;
+                    appPrefabNamePropertiesMap[prefabObj.name] = prefabObj;
                 });
             }
             /**
@@ -321,7 +329,7 @@ WM.module('wm.prefabs')
              * @param prefabs prefabs config array
              */
             function setProjectPrefabs(prefabs) {
-                appPrefabs = prefabs.content;
+                appPrefabs = prefabs;
                 prepareAppPrefabsNamePropertiesMap();
             }
 
@@ -781,12 +789,16 @@ WM.module('wm.prefabs')
                 return $markup[0].outerHTML;
             }
 
+            function getArtifactChangeLog(artifactId, successCallback, failureCallback) {
+                return PrefabService.getArtifactChangeLog(artifactId, successCallback, failureCallback);
+            }
+
             function getArtifact(ednProjectId, successCallback, failureCallback) {
                 return PrefabService.getArtifact(ednProjectId, successCallback, failureCallback);
             }
 
-            function getPrefabCategories(successCallback, failureCallback) {
-                return PrefabService.categories(successCallback, failureCallback);
+            function getArtifactCategories(successCallback, failureCallback) {
+                return PrefabService.getArtifactCategories(successCallback, failureCallback);
             }
 
             function publishPrefabToWorkspace() {
@@ -801,7 +813,7 @@ WM.module('wm.prefabs')
                 return PrefabService.publishPrefabToWorkSpace(payload);
             }
 
-            function importPrefabToWorkSpace(artifactId, success, error) {
+            function importArtifactToWorkSpace(artifactId, success, error) {
                 var params = {
                     "artifactId" : artifactId
                 };
@@ -812,21 +824,8 @@ WM.module('wm.prefabs')
                 });
             }
 
-            function publishPrefabToEDN(projectDetails, publishObj) {
-                var payload = {
-                    "sourceProjectId": projectDetails.projectId || projectDetails.id,
-                    "name": projectDetails.name,
-                    "version": projectDetails.version,
-                    "artifactType": "PREFAB",
-                    "displayName": projectDetails.displayName,
-                    "category": publishObj.category,
-                    "description": projectDetails.description,
-                    "icon": projectDetails.icon,
-                    "publisherComments": publishObj.commitMsg,
-                    "tags": publishObj.tags,
-                    "customProps": {}
-                };
-                return PrefabService.publishPrefabToEDN(payload);
+            function publishArtifactToEDN(payload) {
+                return PrefabService.publishArtifactToEDN(payload);
             }
 
             function publishPrefabToProject(targetProjectId) {
@@ -852,16 +851,16 @@ WM.module('wm.prefabs')
             /**
              *
              * imports the prefab to the workspace
-             * @type {importPrefabToWorkSpace}
+             * @type {importArtifactToWorkSpace}
              *
              * @param {version} version
              */
-            this.importPrefabToWorkSpace = importPrefabToWorkSpace;
+            this.importArtifactToWorkSpace = importArtifactToWorkSpace;
 
             /**
              *
-             * get prefab details from  EDN
-             * @type {getPrefab}
+             * get artifact details from  EDN
+             * @type {getArtifact}
              *
              * @param {version} version
              */
@@ -869,21 +868,21 @@ WM.module('wm.prefabs')
 
             /**
              *
-             * get prefab categories from  EDN
-             * @type {getPrefab}
+             * get artifact categories from  EDN
+             * @type {getArtifactCategories}
              *
              * @param {version} version
              */
-            this.getPrefabCategories = getPrefabCategories;
+            this.getArtifactCategories = getArtifactCategories;
 
             /**
              *
-             * publishes the prefab to the EDN
-             * @type {publishPrefabToEDN}
+             * publishes the artifact to the EDN
+             * @type {publishArtifactToEDN}
              *
              * @param {version} version
              */
-            this.publishPrefabToEDN = publishPrefabToEDN;
+            this.publishArtifactToEDN = publishArtifactToEDN;
 
             /**
              *
@@ -953,12 +952,21 @@ WM.module('wm.prefabs')
 
             /**
              * @ngdoc function
-             * @name PrefabManager#getArtifact
+             * @name PrefabManager#listPrefabs
              * @methodOf wm.prefab.$PrefabManager
              * @description
-             * this function will load the list of prefabs in studio
+             * this function will load the list of prefabs from EDN
              */
-            this.getArtifact = getArtifact;
+            this.listPrefabs = listPrefabs;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getArtifactChangeLog
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load the changelog for a given prefab from EDN
+             */
+            this.getArtifactChangeLog = getArtifactChangeLog;
 
             /**
              * @ngdoc function
