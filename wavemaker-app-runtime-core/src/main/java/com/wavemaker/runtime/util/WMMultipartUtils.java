@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -192,6 +193,17 @@ public class WMMultipartUtils {
         }
     }
 
+    public static String guessContentType(File file) {
+        String mimeType = null;
+        try {
+            mimeType = getMagicMatch(file).getMimeType();
+        } catch (MagicException e) {
+
+        }
+        return mimeType;
+    }
+
+
     /**
      * get a match from a stream of data
      *
@@ -217,9 +229,9 @@ public class WMMultipartUtils {
     /**
      * Generate Http response for a field in any Instance
      *
-     * @param instance any Instance
-     * @param fieldName name of the field
-     * @param httpServletRequest to prepare content type
+     * @param instance            any Instance
+     * @param fieldName           name of the field
+     * @param httpServletRequest  to prepare content type
      * @param httpServletResponse to generate response for the given field
      */
     public static <T> void buildHttpResponseForBlob(
@@ -319,7 +331,7 @@ public class WMMultipartUtils {
      * Guess Content type for the given bytes using Magic apis.
      * If any exception using magic api, then getting content type from request.
      *
-     * @param bytes stream of bytes
+     * @param bytes              stream of bytes
      * @param httpServletRequest
      * @return content type for given bytes
      */
@@ -359,4 +371,13 @@ public class WMMultipartUtils {
             throw new MagicException("Failed to guess magic match for the given bytes", e);
         }
     }
+
+    private static MagicMatch getMagicMatch(File file) throws MagicException {
+        try {
+            return Magic.getMagicMatch(file, false);
+        } catch (MagicParseException | MagicMatchNotFoundException | MagicException e) {
+            throw new MagicException("Failed to guess magic match for the given bytes", e);
+        }
+    }
+
 }

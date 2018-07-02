@@ -102,7 +102,7 @@ public class HttpRequestDetailsBuilder {
         return this;
     }
 
-    public HttpRequestDetails build() {
+    public HttpRequestDetails  build() {
         if (requestBody != null) {
             InputStream inputStream;
             if (requestBody instanceof byte[]) {
@@ -120,6 +120,7 @@ public class HttpRequestDetailsBuilder {
                     throw new IllegalStateException();
                 }
                 inputStream = message.getInputStream();
+                setHeaders(message.getHttpHeaders());
             } else {
                 Message message = HttpRequestUtils.getJsonMessage(requestBody);
                 inputStream = message.getInputStream();
