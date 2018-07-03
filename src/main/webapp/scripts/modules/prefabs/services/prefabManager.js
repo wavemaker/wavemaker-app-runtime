@@ -72,8 +72,8 @@ WM.module('wm.prefabs')
              * Get the list of prefabs from EDN.
              * returns promise.
              */
-            function listPrefabs() {
-                return PrefabService.list();
+            function getArtifactsList(pageNumber) {
+                return PrefabService.getArtifactsList(pageNumber);
             }
 
             /*
@@ -789,8 +789,8 @@ WM.module('wm.prefabs')
                 return $markup[0].outerHTML;
             }
 
-            function getArtifactChangeLog(artifactId, successCallback, failureCallback) {
-                return PrefabService.getArtifactChangeLog(artifactId, successCallback, failureCallback);
+            function getArtifactChangeLog(artifactId, pageNumber, successCallback, failureCallback) {
+                return PrefabService.getArtifactChangeLog(artifactId, pageNumber, successCallback, failureCallback);
             }
 
             function getArtifact(ednProjectId, successCallback, failureCallback) {
@@ -952,12 +952,12 @@ WM.module('wm.prefabs')
 
             /**
              * @ngdoc function
-             * @name PrefabManager#listPrefabs
+             * @name PrefabManager#getArtifactsList
              * @methodOf wm.prefab.$PrefabManager
              * @description
              * this function will load the list of prefabs from EDN
              */
-            this.listPrefabs = listPrefabs;
+            this.getArtifactsList = getArtifactsList;
 
             /**
              * @ngdoc function
