@@ -72,8 +72,19 @@ WM.module('wm.prefabs')
              * Get the list of prefabs from EDN.
              * returns promise.
              */
-            function getArtifactsList(pageNumber) {
+            function getArtifactsList(pageNumber, searchKey) {
+                if(searchKey) {
+                    return getArtifactsSearchList(searchKey, pageNumber);
+                }
                 return PrefabService.getArtifactsList(pageNumber);
+            }
+
+            /*
+             * Get the matched list of prefabs from EDN.
+             * returns promise.
+             */
+            function getArtifactsSearchList(searchKey, pageNumber) {
+                return PrefabService.getArtifactsSearchList(searchKey, pageNumber);
             }
 
             /*
