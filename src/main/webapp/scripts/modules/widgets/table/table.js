@@ -2012,7 +2012,7 @@ WM.module('wm.widgets.table')
                             if (columnDef.widgetType === 'image') {
                                 columnDef.customExpression = '<wm-picture ng-if="columnValue != null" width="48px" picturesource="{{columnValue}}" class="" data-ng-class=""></wm-picture>';
                             } else {
-                                columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{columnValue}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
+                                columnDef.customExpression = '<wm-anchor caption="" hyperlink="bind:columnValue" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" ng-if="columnValue != null"></wm-anchor>';
                             }
                         }
                     }
@@ -2952,7 +2952,7 @@ WM.module('wm.widgets.table')
 
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType !== 'image') {
-                                columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{columnValue}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
+                                columnDef.customExpression = '<wm-anchor caption="" hyperlink="bind:columnValue" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" ng-if="columnValue != null"></wm-anchor>';
                             }
                         }
                         /* push the fieldDef in the object meant to have all fields */

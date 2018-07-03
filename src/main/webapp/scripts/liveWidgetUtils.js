@@ -1586,8 +1586,12 @@ WM.module('wm.widgets.live')
                         'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-checkbox>';
                     break;
                 case 'anchor':
-                    column.customExpression = '<wm-anchor caption="' + column.widgetConfig.title + '" hyperlink="' + column.widgetConfig.hyperlink + '" ' +
-                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-anchor>';
+                    if (column.type === 'blob') {
+                        column.customExpression = '<wm-anchor caption="" hyperlink="bind:columnValue" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" ng-if="columnValue != null"></wm-anchor>';
+                    } else {
+                        column.customExpression = '<wm-anchor caption="' + column.widgetConfig.title + '" hyperlink="' + column.widgetConfig.hyperlink + '" ' +
+                            'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-anchor>';
+                    }
                     break;
                 case 'label':
                     column.customExpression = '<wm-label caption="' + column.widgetConfig.title + '" ' +
