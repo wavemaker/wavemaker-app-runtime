@@ -828,7 +828,7 @@ WM.module('wm.prefabs')
                 var params = {
                     "artifactId" : artifactId
                 };
-                return PrefabService.import(params, function(response) {
+                return PrefabService.importArtifact(params, function(response) {
                     Utils.triggerFn(success, response);
                 }, function(response) {
                     Utils.triggerFn(error, response);
