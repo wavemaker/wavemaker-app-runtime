@@ -800,8 +800,8 @@ WM.module('wm.prefabs')
                 return $markup[0].outerHTML;
             }
 
-            function getArtifactChangeLog(artifactId, pageNumber, successCallback, failureCallback) {
-                return PrefabService.getArtifactChangeLog(artifactId, pageNumber, successCallback, failureCallback);
+            function getArtifactChangeLog(artifactId, successCallback, failureCallback) {
+                return PrefabService.getArtifactChangeLog(artifactId, successCallback, failureCallback);
             }
 
             function getArtifact(ednProjectId, successCallback, failureCallback) {
