@@ -1571,7 +1571,7 @@ WM.module('wm.widgets.live')
                 switch (column.widgetType) {
                 case 'image':
                     if (column.type === 'blob') {
-                        column.customExpression = '<wm-picture ng-if="columnValue != null" width="48px" picturesource="bind:columnValue" class="" conditionalclass=""></wm-picture>';
+                        column.customExpression = '<wm-picture show="' + column.widgetConfig.src + '!= null" width="48px" picturesource="' + column.widgetConfig.src + '" class="" conditionalclass=""></wm-picture>';
                     } else {
                         column.customExpression = '<wm-picture picturesource="' + column.widgetConfig.src + '" hint="' + column.widgetConfig.src + '"' +
                             ' class="' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-picture>';
@@ -1587,7 +1587,7 @@ WM.module('wm.widgets.live')
                     break;
                 case 'anchor':
                     if (column.type === 'blob') {
-                        column.customExpression = '<wm-anchor caption="" hyperlink="bind:columnValue" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" ng-if="columnValue != null"></wm-anchor>';
+                        column.customExpression = '<wm-anchor caption="" hyperlink="' + column.widgetConfig.hyperlink + '" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" show="' + column.widgetConfig.hyperlink + '!= null"></wm-anchor>';
                     } else {
                         column.customExpression = '<wm-anchor caption="' + column.widgetConfig.title + '" hyperlink="' + column.widgetConfig.hyperlink + '" ' +
                             'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-anchor>';
@@ -1603,7 +1603,7 @@ WM.module('wm.widgets.live')
                     break;
                 default:
                     if (column.type === 'blob') {
-                        column.customExpression = '<wm-anchor caption="" hyperlink="bind:columnValue" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" ng-if="columnValue != null"></wm-anchor>';
+                        column.customExpression = '<wm-anchor caption="" hyperlink="' + column.widgetConfig.src + '" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" show="' + column.widgetConfig.src +  '!= null"></wm-anchor>';
                     }
                 }
             }
@@ -1643,7 +1643,7 @@ WM.module('wm.widgets.live')
                 case 'anchor':
                     column.widgetConfig = {
                         'title'    : val,
-                        'hyperlink': '',
+                        'hyperlink': val,
                         'class'    : '',
                         'ngClasses': widgetNgClasses
                     };

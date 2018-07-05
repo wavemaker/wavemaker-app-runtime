@@ -1966,7 +1966,8 @@ WM.module('wm.widgets.table')
 
                 /*append additional properties*/
                 WM.forEach(defaultFieldDefs, function (columnDef) {
-                    var newColumn;
+                    var newColumn,
+                        columnValue;
                     columnDef.pcDisplay     = true;
                     columnDef.mobileDisplay = true;
                     columnDef.searchable    = true;
@@ -2009,10 +2010,11 @@ WM.module('wm.widgets.table')
                             }
                         }
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
+                            columnValue = 'bind:row.getProperty(\'' + columnDef.field + '\')';
                             if (columnDef.widgetType === 'image') {
-                                columnDef.customExpression = '<wm-picture ng-if="columnValue != null" width="48px" picturesource="{{columnValue}}" class="" data-ng-class=""></wm-picture>';
+                                columnDef.customExpression = '<wm-picture show="' + columnValue + '!= null" width="48px" picturesource="' + columnValue + '" class="" conditionalclass=""></wm-picture>';
                             } else {
-                                columnDef.customExpression = '<wm-anchor caption="" hyperlink="bind:columnValue" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" ng-if="columnValue != null"></wm-anchor>';
+                                columnDef.customExpression = '<wm-anchor caption="" hyperlink="' + columnValue + '" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" show="' + columnValue + ' != null"></wm-anchor>';
                             }
                         }
                     }
@@ -2872,6 +2874,7 @@ WM.module('wm.widgets.table')
                         var index,
                             exprWatchHandlers = [],
                             config,
+                            columnValue,
                             textAlignment = attrs.textalignment || 'left',
                             backgroundColor = attrs.backgroundcolor,
                             textColor = attrs.textcolor,
@@ -2952,7 +2955,8 @@ WM.module('wm.widgets.table')
 
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType !== 'image') {
-                                columnDef.customExpression = '<wm-anchor caption="" hyperlink="bind:columnValue" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" ng-if="columnValue != null"></wm-anchor>';
+                                columnValue = 'row.getProperty(\'' + columnDef.field + '\')';
+                                columnDef.customExpression = '<wm-anchor caption="" hyperlink="bind:' + columnValue + '" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" show="bind:' + columnValue + '!= null"></wm-anchor>';
                             }
                         }
                         /* push the fieldDef in the object meant to have all fields */
