@@ -281,7 +281,7 @@ WM.module('wm.layouts.page')
                             hasLazyWidgets;
 
                         pageName      = $s.partialname || $rs._toBeActivatedPage ;
-                        variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
+                        variableScope = (CONSTANTS.isStudioMode && !$s.prefabname && !$s.partialname) ? $rs.domScope : $s;
 
                         if (CONSTANTS.isRunMode) {
                             $s.Widgets   = {};
