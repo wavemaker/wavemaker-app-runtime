@@ -3118,22 +3118,14 @@ If the height and width are not specified the video takes the height of the post
           vertical-align: middle;
         }
         i {
-          margin-left: .5em;
+          margin-right: .5em;
         }
       }
     }
     &.nav-stacked {
-        > li.active a {
-           //margin-right: -2px;
-        }
         > li {
-           border-left: 1px solid @app-tabs-border-colored;
            > a, a:hover, a:focus, a:active {
              border-right: 0;
-             border-bottom-color: @app-tabs-border-colored
-           }
-           &.last-of-type a {
-             border-bottom-color: @app-tabs-border-colored;
            }
         }
     }
@@ -3153,21 +3145,15 @@ If the height and width are not specified the video takes the height of the post
         > a, a:hover, a:focus, a:active {
           border-radius: 0;
           border-top-color: transparent;
-          border-bottom-color: @app-tabs-border-color;
         }
       }
     }
     > .nav.nav-tabs.nav-stacked {
       > li {
-         border-right: 1px solid @app-tabs-border-colored;
          border-left: 0;
-         > a {
-            border-right: 1px solid @app-tabs-border-colored;
-         }
       }
       > li.active {
         > a, a:hover, a:focus, a:active {
-          //margin-left: -2px;
           border-left-color: transparent;
         }
       }
@@ -3233,14 +3219,6 @@ If the height and width are not specified the video takes the height of the post
     width: 80%;
     height: 100%;
     overflow: auto;
-    > .tab-pane > .tab-body{
-      border-top: 1px solid @app-tabs-border-colored;
-    }
-  }
-  .tab-content {
-    > .tab-pane > .tab-body{
-      border-top: 1px solid @app-tabs-border-colored;
-    }
   }
 }
 
@@ -3402,6 +3380,9 @@ If the height and width are not specified the video takes the height of the post
     }
     table {
       background-color: transparent;
+      .fc-widget-content .fc-day-grid-container {
+        overflow: hidden !important;
+      }
     }
     th {
       text-align: center;
