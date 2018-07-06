@@ -374,7 +374,8 @@ WM.module('wm.widgets.base')
             restrict: 'E',
             replace: true,
             link: function (iScope, element, attrs) {
-                var containerScope = element.closest('[page-container]').isolateScope();
+                var container = element.closest('[page-container]');
+                var containerScope = container.isolateScope() || container.scope();
                 containerScope.partialParams.push({
                     name: attrs.name,
                     value: attrs.value,
