@@ -732,6 +732,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3", "showPrettyExprInDesigner": true, "defaultvalue": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
                         "required": {"type": "boolean", "bindable": "in-bound", "value": false},
+                        "selectedvalue": {"type": "string, number, boolean, date, time, object", "widget": "string", "bindable": "in-bound", "getTypeFrom": "dataset", "show": false},
                         "displayValue": {"type": "string", "show": false, "bindable": "out-bound"},
                         "compareby": {"type": "list", "widget": "select-all", "datasetfilter": "terminals", "show": false}
                     },
@@ -812,6 +813,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string, array", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3", "showPrettyExprInDesigner": true, "defaultvalue": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
+                        "selectedvalues": {"type": "string, object", "isList": true, "bindable": "in-bound", "widget": "string", "getTypeFrom": "dataset", "show": false},
                         "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "displayValue": {"type": "string, array", "isList": true, "show": false, "bindable": "out-bound"},
                         "compareby": {"type": "list", "widget": "select-all", "datasetfilter": "terminals", "show": false}
