@@ -16,7 +16,7 @@ wm.plugins.modeldesigner.service(wm.plugins.modeldesigner.services);
 wm.plugins.modeldesigner.factory(wm.plugins.modeldesigner.factories);
 
 /*defining urls as constants in the database services module*/
-wm.plugins.modeldesigner.constant('DB_SERVICE_URLS', {
+wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
     Database: {
         testConnection: {
             url: "services/projects/:projectID/database/testConnection",
@@ -451,7 +451,7 @@ wm.plugins.modeldesigner.constant('DB_SERVICE_URLS', {
 });
 
 /*Defining the constants for the database service module*/
-wm.plugins.modeldesigner.constant('DB_CONSTANTS', {
+wm.plugins.modeldesigner.constant('MODEL_CONSTANTS', {
     "DATABASE_WORKSPACE_TYPE": "db",
     "WAVEMAKER_SAMPLE_DATABASES": ["hrdb", "salesdb"],
     "DEFAULT_DB_NAME": "MyTestDatabase",
@@ -823,8 +823,8 @@ wm.plugins.modeldesigner.constant('DB_CONSTANTS', {
 });
 
 /*Defining the config for the database plugins*/
-wm.plugins.modeldesigner.config(function (BaseServiceManagerProvider, DB_SERVICE_URLS) {
+wm.plugins.modeldesigner.config(function (BaseServiceManagerProvider, MODEL_SERVICE_URLS) {
     'use strict';
 
-    BaseServiceManagerProvider.register(DB_SERVICE_URLS);
+    BaseServiceManagerProvider.register(MODEL_SERVICE_URLS);
 });
