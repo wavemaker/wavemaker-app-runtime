@@ -637,7 +637,7 @@ WM.module('wm.prefabs')
                     var pageDom = WM.element("<div>" + prefabContent + "</div>"),
                         htmlMarkup = pageDom.find('script[id="Main.html"]').html() || '';
                     /*load the styles & scripts*/
-                    WM.element('head').append(pageDom.find('style, script'));
+                    WM.element('head').append(pageDom.find('style'));
                     /* append the isPrefab flag to each variable */
                     WM.forEach(window["_MainPage_Variables_"], function (variable) {
                         variable._prefabName = prefabName;
