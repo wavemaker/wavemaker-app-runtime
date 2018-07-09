@@ -30,6 +30,7 @@ var Application =
             'wm.common',
             'wm.variables',
             'wm.plugins.database',
+            'wm.plugins.modeldesigner',
             'wm.plugins.webServices',
             'wm.plugins.security',
             'wm.plugins.oauth',

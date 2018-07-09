@@ -53,6 +53,7 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     SERVICE_TYPE_SOAP: "SoapService",
     SERVICE_TYPE_FEED: "FeedService",
     SERVICE_TYPE_DATA: "DataService",
+    SERVICE_TYPE_MODEL: "ModelService",
     SERVICE_TYPE_SECURITY: "SecurityServiceType",
     SERVICE_NAME_FEED: "FeedService",
     SERVICE_TYPE_WEBSOCKET: "WebSocketService",
