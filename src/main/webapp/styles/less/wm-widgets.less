@@ -105,6 +105,25 @@ This mixin removes background from IE & all other browsers so that they are cons
 html, body {
   .width-height();
 }
+/*Default styles on wrappers*/
+.wm-app > app-root {
+  display: block;
+  height: 100%;
+  > app-page-outlet {
+    display: block;
+    height: 100%;
+    > *:first-child {
+      display: block;
+      height: 100%;
+      .app-header-container, .app-top-nav, .app-left-panel, .app-right-panel, .app-footer {
+        > *:first-child {
+          display: block;
+          height: 100%;
+        }
+      }
+    }
+  }
+}
 /*Define required classes for showing icons*/
 .app-icon {
   display: inline-block;
