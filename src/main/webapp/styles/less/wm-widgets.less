@@ -822,7 +822,7 @@ html, body {
 }
 /*select wrapper*/
 .app-select-wrapper {
-  display: inline-block;
+  display: inherit;
 }
 
 .app-select option[disabled]:first-child {
@@ -2650,13 +2650,15 @@ If the height and width are not specified the video takes the height of the post
   }
 }
 
+/*live forms spacing */
 .wm-app {
-  .app-form, .app-liveform {
-     .panel-body .app-grid-layout {
+  .app-form, .app-liveform, .app-livefilter {
+     .panel-body {
         padding: 12px;
      }
   }
 }
+
 
 // Fix for height of input box in pagination.
 .app-datagrid-paginator  {
