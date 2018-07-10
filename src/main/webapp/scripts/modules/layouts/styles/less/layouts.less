@@ -518,7 +518,7 @@ body {
       }
       &.load {
         overflow: hidden;
-        > .app-ng-transclude {
+        > :not(.app-page-content-loader) {
           opacity: 0;
         }
       }

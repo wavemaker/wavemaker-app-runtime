@@ -325,7 +325,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.jsLoader.js',
                         //ocLazyLoad -- end
                         '<%= config.components %>/hammerjs/hammer.js',
-                        '<%= config.scripts %>/modules/swipee/swipee.jquery.plugin.js',
+                        '<%= config.scripts %>/modules/swipey/swipey.jquery.plugin.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
                         '<%= config.scripts %>/modules/base64/base64.js',
                         '<%= config.scripts %>/modules/xmlToJson/xmlToJson.js'
@@ -356,7 +356,7 @@ module.exports = function (grunt) {
                         //ocLazyLoad -- end
                         '<%= config.components %>/hammerjs/hammer.js',
                         '<%= config.components %>/iscroll/build/iscroll.js',
-                        '<%= config.scripts %>/modules/swipee/swipee.jquery.plugin.js',
+                        '<%= config.scripts %>/modules/swipey/swipey.jquery.plugin.js',
                         '<%= config.components %>/ngCordova/ng-cordova.js',
                         '<%= config.components %>/ng-cordova-oauth/ng-cordova-oauth.min.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
