@@ -38,6 +38,7 @@ WM.module('wm.prefabs')
                 },
                 projectDetails,
                 versionMismatchMessages = {},
+                prefabScriptCache = {},
                 appPrefabs,
                 workspacePrefabs;
 
@@ -606,6 +607,7 @@ WM.module('wm.prefabs')
             function loadModules(modules) {
                 var deferred = $q.defer(), resolveFn;
 
+                /* Modules are not yet supported in 10.x
                 if (!modules || !modules.length) {
                     deferred.resolve();
                 } else {
@@ -619,8 +621,20 @@ WM.module('wm.prefabs')
                         }, {});
                     });
                 }
+                */
 
+                deferred.resolve();
                 return deferred.promise;
+            }
+
+            function cachePrefabScript(prefabName, pageDom) {
+                var script = pageDom.find('script[id="Main.js"]').html() || '';
+
+                prefabScriptCache[prefabName] = script;
+            }
+
+            function getScriptOf(prefabName) {
+                return prefabScriptCache[prefabName] || '';
             }
 
             /* loads the script, styles, variables, template of the prefab */
@@ -637,6 +651,9 @@ WM.module('wm.prefabs')
                     var pageDom = WM.element("<div>" + prefabContent + "</div>"),
                         htmlMarkup = pageDom.find('script[id="Main.html"]').html() || '';
                     /*load the styles & scripts*/
+
+                    cachePrefabScript(prefabName, pageDom);
+
                     WM.element('head').append(pageDom.find('style'));
                     /* append the isPrefab flag to each variable */
                     WM.forEach(window["_MainPage_Variables_"], function (variable) {
@@ -1137,5 +1154,15 @@ WM.module('wm.prefabs')
              * @param {error} error callback
              */
             this.register = register;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getScriptOf
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * returns the script of given prefab
+             * @param {prefabName} name of the prefab
+             */
+            this.getScriptOf = getScriptOf;
         }
     ]);

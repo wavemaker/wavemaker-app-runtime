@@ -76,7 +76,7 @@ WM.module('wm.widgets.base')
             }
 
             function handleAppCustomEvent($s, isAnchor, $evt, customEvtName, iScope) {
-                //If dialog is in commonPage then evaluating expression on commmonPage's scope 
+                //If dialog is in commonPage then evaluating expression on commmonPage's scope
                 var widgetId   = customEvtName.split('.')[1],
                     $dialogEl  = WM.element('[id="wm-common-content"]').find('script[id="' + widgetId + '"]'),
                     $currentEl,
@@ -853,8 +853,8 @@ WM.module('wm.widgets.base')
 
                             if (CONSTANTS.isRunMode) {
                                 overrideEventHandlers($is, $s, $el, attrs);
-                                $is.$element = $el; // expose the element ref on the isolateScope
                             }
+                            $is.$element = $el; // expose the element ref on the isolateScope
                         },
                         post: function ($is, $el, attrs, $ctrls) {
                             //When widgets inside live form, live filter and form are compiled, add widget scopes to parent widget formWidgets property

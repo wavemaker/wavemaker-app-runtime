@@ -26,8 +26,9 @@ WM.module('wm.prefabs')
         '$rootScope',
         'DialogService',
         'PrefabService',
+        '$http',
 
-        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService) {
+        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService, $http) {
             'use strict';
 
             var prefabDefaultProps   = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
@@ -35,19 +36,28 @@ WM.module('wm.prefabs')
                 prefabWidgetPropsMap = {},
                 prefabMethodsMap     = {},
                 propsSkipList        = ['width', 'height', 'show', 'animation'],
-                notifyFor            = {
-                  'height': true
-                },
                 propertyGroups,
                 propertiesGroup,
                 eventsGroup;
 
+            function getAppContext() {
+                var obj = Object.create($rs);
+
+                obj.DialogService = DialogService;
+                obj.HttpService = $http;
+                return obj;
+            }
+
             // Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler(scope, key, newVal) {
+            function propertyChangeHandler(scope, key, newVal, oldVal) {
                 switch (key) {
                 case 'height':
                     scope.overflow = newVal ? 'auto' : '';
                     break;
+                }
+
+                if (_.isFunction(scope.pfScope.onPropertyChange)) {
+                    scope.pfScope.onPropertyChange(key, newVal, oldVal);
                 }
             }
 
@@ -290,11 +300,13 @@ WM.module('wm.prefabs')
 
                         /* called on load of the prefab template*/
                         function onTemplateLoad() {
-                            var pfScope = $el.find('[data-ng-controller], [ng-controller]').scope();
+                            var script = PrefabManager.getScriptOf(prefabName);
 
-                            if (!pfScope || pfScope.$$destroyed) {
-                                return;
-                            }
+                            var fn = new Function('Prefab', 'App', 'Utils', script);
+
+                            $is.pfScope.isStudioMode = true;
+
+                            fn($is.pfScope, getAppContext(), Utils, true);
 
                             /* scope of the controller */
 
@@ -307,16 +319,18 @@ WM.module('wm.prefabs')
                                     });
                                 }
                             });
+
+                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is);
                             WidgetUtilService.postWidgetCreate($is, $el, attrs);
 
-                            Utils.triggerFn(pfScope.onInitPrefab);
+                            Utils.triggerFn($is.pfScope.onReady);
                             if (CONSTANTS.isRunMode) {
                                 Utils.triggerFn($is.onLoad);
 
                                 $is.$on('$destroy', $is.onDestroy);
                             }
 
-                            $is.ctrlScope = pfScope;
+                            $is.ctrlScope = $is.pfScope;
                             //once the template is loaded, expose methods on the prefab widget
                             exposeMethodsOnWidget($is);
                         }
@@ -327,9 +341,16 @@ WM.module('wm.prefabs')
                                 prefabEle     = ($is.widgetid ? versionMsgEle : '') + '<div class="full-width full-height">' + prefabContent + '</div>',
                                 $prefabEle    = WM.element(prefabEle);
 
+                            var pfScope = $is.$new();
+
+                            pfScope.Widgets = {};
+
+                            $is.pfScope = pfScope;
+
+
                             $is.showVersionMismatch = versionMsg ? true : false;
                             $el.append($prefabEle);
-                            $compile($el.children())($is);
+                            $compile($el.children())($is.pfScope);
                             $timeout(onTemplateLoad);
                         }
 
@@ -341,7 +362,6 @@ WM.module('wm.prefabs')
                                         'templateContent': _content
                                     };
                                     compileTemplate(_content);
-                                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
                                 }, function() {
                                     $is._methodsMap = {}; //needed as this will be used while generating prefab event options when config load fails
                                 });
