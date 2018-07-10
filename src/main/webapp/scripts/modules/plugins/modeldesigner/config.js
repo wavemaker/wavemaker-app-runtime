@@ -180,6 +180,10 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             url: "services/projects/:projectID/models/lookupTypes",
             method: "GET"
         },
+        getCustomProperties: {
+            url: "services/projects/:projectID/models/attribute/configurations",
+            method: "GET"
+        },
 
         /*Entity Columns related services*/
         addUniqueKey: {

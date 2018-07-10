@@ -57,7 +57,8 @@
  * - {@link wm.modeldesigner.$ModelService#methods_listScopeTypes listScopeTypes}
  * - {@link wm.modeldesigner.$ModelService#methods_createDataModel createDataModel}
  * - {@link wm.modeldesigner.$ModelService#methods_getAllSchemas getAllSchemas}
- * - {@link wm.modeldesigner.$ModelService#methods_getServiceID getServiceID}
+ * - {@link wm.modeldesigner.$ModelService#methods_getServiceID getServiceID},
+ * * - {@link wm.modeldesigner.$ModelService#methods_getAttributeCustomProperties getAttributeCustomProperties}
  */
 
 wm.plugins.modeldesigner.services.ModelService = [
@@ -2866,6 +2867,34 @@ wm.plugins.modeldesigner.services.ModelService = [
                 BaseService.execute({
                     target: "Database",
                     action: "getPrimitiveTypes",
+                    urlParams: {
+                        "projectID": params.projectID
+                    }
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.modeldesigner.$ModelService#getAttributeCustomProperties
+             * @methodOf wm.modeldesigner.$ModelService
+             * @function
+             *
+             * @description
+             * Method to get the list of models.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the Model.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            getAttributeCustomProperties: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "getCustomProperties",
                     urlParams: {
                         "projectID": params.projectID
                     }
