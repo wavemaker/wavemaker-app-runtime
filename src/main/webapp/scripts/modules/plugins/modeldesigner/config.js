@@ -184,6 +184,10 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             url: "services/projects/:projectID/models/attribute/configurations",
             method: "GET"
         },
+        getModelProperties: {
+            url: "services/projects/:projectID/models/:serviceId/properties",
+            method: "GET"
+        },
 
         /*Entity Columns related services*/
         addUniqueKey: {

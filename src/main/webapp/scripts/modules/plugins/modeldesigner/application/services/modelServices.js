@@ -2983,6 +2983,34 @@ wm.plugins.modeldesigner.services.ModelService = [
                         serviceId: params.dataModelName
                     }
                 }, successCallback, failureCallback);
+            },
+            /**
+             * Internal function
+             * @name wm.modeldesigner.$ModelService#getModelProperties
+             * @methodOf wm.modeldesigner.$ModelService
+             * @function
+             *
+             * @description
+             * Method to retrieve the connection properties for the specified database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & name of the database.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            getModelProperties: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "getModelProperties",
+                    urlParams: {
+                        projectID: params.projectID,
+                        serviceId: params.serviceId
+                    }
+                }, successCallback, failureCallback);
             }
         };
     }
