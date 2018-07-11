@@ -43,8 +43,16 @@ WM.module('wm.prefabs')
             function getAppContext() {
                 var obj = Object.create($rs);
 
-                obj.DialogService = DialogService;
-                obj.HttpService = $http;
+                obj.getDependency = function (key) {
+                    if (key === 'DialogService') {
+                        return DialogService
+                    }
+
+                    if (key === 'HttpService') {
+                        return $http;
+                    }
+                };
+
                 return obj;
             }
 
@@ -313,7 +321,7 @@ WM.module('wm.prefabs')
                             _.forEach($is.widgetProps, function (propDetails, propName) {
                                 if (propDetails.__value && !attrs.hasOwnProperty(propName)) {
                                     var key = propDetails.__value.replace('bind:', '');
-                                    $is._watchers[propName] = pfScope.$watch(key, function (nv) {
+                                    $is._watchers[propName] = $is.pfScope.$watch(key, function (nv) {
                                         $is[propName + '__updateFromWatcher'] = true;
                                         $is[propName] = nv;
                                     });
