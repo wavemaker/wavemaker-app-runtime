@@ -761,9 +761,9 @@ wm.plugins.modeldesigner.constant('MODEL_CONSTANTS', {
     },
     "OBJECTS": {
         "DATABASE": "wm-model",
-        "TABLE": "wm-db-entity",
-        "COLUMN": "wm-db-entity-attribute",
-        "RELATION": "wm-db-entity-relation"
+        "ENTITY": "wm-db-entity",
+        "ATTRIBUTE": "wm-db-entity-attribute",
+        "REFERENCE": "wm-db-entity-relation"
     },
     "DML_QUERY_INDICATORS": {
         "SELECT": "SELECT",
