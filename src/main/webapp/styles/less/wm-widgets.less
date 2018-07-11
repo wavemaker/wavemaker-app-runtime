@@ -128,6 +128,7 @@ html, body {
 .app-icon {
   display: inline-block;
   position: relative;
+  padding-right: .2em;
 }
 
 /*glyphicons*/
@@ -822,8 +823,14 @@ html, body {
   width: auto;
 }
 /*select wrapper*/
-.app-select-wrapper {
+.app-select-wrapper, .app-input-wrapper {
   display: inherit;
+}
+//Overriding input group styles for new structure on form-controls
+.wm-app .input-group  {
+  .app-select-wrapper, .app-input-wrapper {
+    display: table-cell;
+  }
 }
 
 .app-select option[disabled]:first-child {
