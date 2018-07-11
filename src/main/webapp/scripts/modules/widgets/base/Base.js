@@ -1260,7 +1260,6 @@ WM.module('wm.widgets.base', [])
                         "badgetype": {"type": "string", "widget": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "margin": {"type": "string", "widget": "box-model"},
                         /*Events*/
-                        "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1289,7 +1288,6 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "actions": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         /*Events*/
-                        "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1320,7 +1318,6 @@ WM.module('wm.widgets.base', [])
                         "display": {"type": "list", "options": displayOptions},
                         "conditionalclass": {"bindable": "in-bound"},
                         /*Events*/
-                        "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1337,7 +1334,6 @@ WM.module('wm.widgets.base', [])
                         "margin": {"type": "string", "widget": "box-model"},
                         "conditionalclass": {"bindable": "in-bound"},
                         /*Events*/
-                        "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1601,7 +1597,6 @@ WM.module('wm.widgets.base', [])
                         "onRowdblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onColumnselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onColumndeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforedatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1836,7 +1831,6 @@ WM.module('wm.widgets.base', [])
                         "selectionlimit": {"type": "number", "bindable": "in-bound"},
                         "itemsperrow": {"type": "string", "widget": "device-config", "widthHeader": "Items per row", "deviceHeader": "Device", "deviceSizes": ['1', '2', '3', '4', '6', '12'], "tableClass": "wm-table-dark"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset", "getIsListFrom": "expr:multiselect"},
-                        "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforedatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onPaginationchange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -2164,7 +2158,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "event", "properties": ["onChange",  "onFocus", "onBlur"], "parent": "events"},
                 {"name": "mouseevents", "properties": ["onClick", "onChipclick", "onDblclick", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events", "platforms": [PLATFORM_TYPE.WEB, PLATFORM_TYPE.DEFAULT]},
                 {"name": "touchevents", "properties": ["onTap", "onDoubletap", "onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
-                {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
+                {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onAdd", "onBeforeremove", "onRemove", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onBeforeselect", "onSelect", "onChipselect", "onDeselect", "onViewrender", "onBeforerender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onBeforeformrender", "onFormrender", "onBeforerowdelete", "onRowdelete", "onBeforerowinsert", "onRowinsert", "onBeforerowupdate", "onRowupdate", "onResult",  "onSuccess", "onError", "onBeforeservicecall", "onActionsclick",
                     "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onBeforereorder", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onSetrecord", "onBeforenavigate","onBeforeexport"], "parent": "events"},
