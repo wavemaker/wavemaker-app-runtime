@@ -111,11 +111,11 @@ wm.plugins.database.services.DatabaseService = [
                 headers = headers || {};
                 headers.skipSecurity = 'true';
                 headers['Content-Type'] = headers['Content-Type'] || 'application/json';
-                /*(!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy is added in endpointAddress to differentiate desktop from saas*/
+                /*(!$rootScope.preferences['workspace.loadXDomainAppDataUsingProxy'] is added in endpointAddress to differentiate desktop from saas*/
                 if (action === 'testRunQuery') {
                     headers['Content-Type'] = undefined;
                     httpDetails = {
-                        'endpointAddress'   : $window.location.protocol + (!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy ? ('//' + $window.location.host) : '') + params.url + config.url,
+                        'endpointAddress'   : $window.location.protocol + (!$rootScope.preferences['workspace.loadXDomainAppDataUsingProxy'] ? ('//' + $window.location.host) : '') + params.url + config.url,
                         'method'            : config.method,
                         'content-Type'      : 'multipart/form-data',
                         'headers'           : headers
@@ -133,7 +133,7 @@ wm.plugins.database.services.DatabaseService = [
                 } else {
                     connectionParams = {
                         'data': {
-                            'endpointAddress'   : $window.location.protocol + (!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy ? ('//' + $window.location.host) : '') + params.url + config.url,
+                            'endpointAddress'   : $window.location.protocol + (!$rootScope.preferences['workspace.loadXDomainAppDataUsingProxy'] ? ('//' + $window.location.host) : '') + params.url + config.url,
                             'method'            : config.method,
                             'requestBody'       : JSON.stringify(requestData),
                             'headers'           : headers

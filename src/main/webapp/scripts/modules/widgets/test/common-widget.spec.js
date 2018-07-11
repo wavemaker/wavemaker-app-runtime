@@ -990,8 +990,6 @@ function verifyCommonDialogPropertiesAndEvents(widget) {
 
                 $rootScope.preferences = {};
                 $rootScope.$digest();
-                /*Mocking the preferences object and setting blockNonSecureContent to true since it is unavailable*/
-                $rootScope.preferences.workspace.nonSecureContent.allow = true;
 
                 iScope = $element.isolateScope();
                 iScope.$apply();
