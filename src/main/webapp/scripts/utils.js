@@ -3077,7 +3077,7 @@ WM.module('wm.utils', [])
 
         function prepareDocLinks(docLinks, studioVersion) {
             var origin = $window.location.origin,
-                isWMO = $window.location.origin.includes('//www.wavemakeronline.com'),
+                isWMO = _.includes(origin, '//www.wavemakeronline.com'),
                 baseUrl;
 
             if (isWMO) {
