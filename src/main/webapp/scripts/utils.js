@@ -3075,6 +3075,24 @@ WM.module('wm.utils', [])
             return fieldDefs;
         }
 
+        function prepareDocLinks(docLinks, studioVersion) {
+            var origin = $window.location.origin,
+                isWMO = $window.location.origin.includes('//www.wavemakeronline.com'),
+                baseUrl;
+
+            if (isWMO) {
+                baseUrl = 'https://www.wavemaker.com/learn';
+                studioVersion = '/' + studioVersion;
+            } else {
+                baseUrl = origin + '/wavemaker-learn';
+                studioVersion = '';
+            }
+            _.forEach(docLinks,function(value, link){
+                docLinks[link] = baseUrl + replace(value, _.set({}, 'studio.version', studioVersion));
+            });
+            return docLinks;
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3235,4 +3253,5 @@ WM.module('wm.utils', [])
         this.isValidMobileAppId         = isValidMobileAppId;
         this.disableRightClick          = disableRightClick;
         this.formatExportExpression     = formatExportExpression;
+        this.prepareDocLinks            = prepareDocLinks;
     }]);
