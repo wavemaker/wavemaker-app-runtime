@@ -3011,6 +3011,34 @@ wm.plugins.modeldesigner.services.ModelService = [
                         serviceId: params.serviceId
                     }
                 }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.modeldesigner.$ModelService#deleteModel
+             * @methodOf wm.modeldesigner.$ModelService
+             * @function
+             *
+             * @description
+             * Method to delete the specified database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project and name of the database to be deleted.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            deleteModel: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "deleteModel",
+                    urlParams: {
+                        projectID: params.projectID,
+                        serviceId: params.dataModelName
+                    }
+                }, successCallback, failureCallback);
             }
         };
     }

@@ -148,6 +148,10 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             url: "services/projects/:projectID/models/:serviceId/revert",
             method: "POST"
         },
+        deleteModel: {
+            url: "services/projects/:projectID/models/:serviceId/delete",
+            method: "POST"
+        },
 
         /*Entities related services*/
 
