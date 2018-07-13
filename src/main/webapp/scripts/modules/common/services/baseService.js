@@ -18,7 +18,8 @@ wm.modules.wmCommon.services.BaseService = [
     "Utils",
     "CONSTANTS",
     "$q",
-    function ($http, $rootScope, $injector, BaseServiceManager, DialogService, Utils, CONSTANTS, $q) {
+    '$interval',
+    function ($http, $rootScope, $injector, BaseServiceManager, DialogService, Utils, CONSTANTS, $q, $interval) {
         "use strict";
 
         var wmLogger,
@@ -204,6 +205,27 @@ wm.modules.wmCommon.services.BaseService = [
                 return error.status === 401 && getLoginErrorMsg(error) === MSG_LOGIN_FAILURE;
             },
 
+            /**
+             * Login Using Google oAuth
+             */
+            handleSSOSessionTimeout = function () {
+                var win = window.open(location.origin+"/login?target_url="+location.origin+"/studio/login-success.html                                                              ", "_blank", "height=700,width=600");
+                win.addEventListener("message", function(e) {
+                    $rootScope.isStudioDisabled = false;
+                    if (e.data === "login_success") {
+                        executeErrorCallStack();
+                        DialogService.hideDialog('sessionTimeoutOAuthDialog');
+                        $interval.cancel(setInt);
+                    }
+                });
+                var setInt = $interval(function () {
+                    if (win.closed) {
+                        wmToaster.show('error', 'Error', 'Failed to Login');
+                        $interval.cancel(setInt);
+                    }
+                }, 3000);
+            },
+
             failureHandler = function (config, successCallback, failureCallback, error) {
                 var errTitle, errMsg, errorDetails = error, appManager,
                     HTTP_STATUS_MSG = {
@@ -226,7 +248,27 @@ wm.modules.wmCommon.services.BaseService = [
                         Utils.triggerFn(failureCallback);
                     } else {
                         pushToErrorCallStack(config, successCallback, failureCallback);
-                        handleSessionTimeOut();
+                        makeCall({url: '/login/rest/no-auth/is-form-login'}, function(response) {
+                            if(!_.get(response, "success.body.result")) {
+                                $rootScope.isStudioDisabled = false;
+                                $rootScope.isWSSwitchBlocked = false;
+                                DialogService.showDialog('sessionTimeoutOAuthDialog', {
+                                    'resolve': {
+                                    'dialogParams': function () {
+                                        return {
+                                            'onOk'    : handleSSOSessionTimeout
+                                        }
+                                    }
+                                }
+                            });
+                                // Login using google oAuth
+                            } else {
+                                pushToErrorCallStack(config, successCallback, failureCallback);
+                                handleSessionTimeOut();
+                            }
+                        }, function(errorMessage) {
+                            console.log(errorMessage);
+                        });
                     }
                     return;
                 }
