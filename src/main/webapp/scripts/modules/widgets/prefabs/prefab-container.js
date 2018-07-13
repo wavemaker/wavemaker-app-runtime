@@ -21,7 +21,7 @@ WM.module('wm.prefabs')
                     pre: function($s) {
                         // register the page variables for prefab (not putting studio mode check here as it is 10.x studio code only)
                         Variables.getPageVariables("Main", function (variables) {
-                            Variables.register("Main", variables, true, $s);
+                            Variables.register($s.name, variables, true, $s);
                         });
                     }
                 }
