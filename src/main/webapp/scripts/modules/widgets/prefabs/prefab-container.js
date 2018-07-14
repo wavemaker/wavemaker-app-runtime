@@ -8,8 +8,8 @@ WM.module('wm.prefabs')
  * @restrict E
  * @element ANY
  */
-    .directive('wmPrefabContainer', ['Variables',
-        function (Variables) {
+    .directive('wmPrefabContainer', ['$rootScope', 'Variables',
+        function ($rootScope, Variables) {
             'use strict';
 
             return {
@@ -21,7 +21,7 @@ WM.module('wm.prefabs')
                     pre: function($s) {
                         // register the page variables for prefab (not putting studio mode check here as it is 10.x studio code only)
                         Variables.getPageVariables("Main", function (variables) {
-                            Variables.register($s.name, variables, true, $s);
+                            Variables.register($rootScope.isPrefabTemplate ? "Main" : $s.name, variables, true, $s);
                         });
                     }
                 }
