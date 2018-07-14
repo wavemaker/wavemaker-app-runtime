@@ -1635,7 +1635,7 @@ WM.module('wm.widgets.live')
                 case 'checkbox':
                     column.widgetConfig = {
                         'model': val,
-                        'disabled': 'bind:colDef.readonly || !isGridEditMode',
+                        'disabled': 'bind:colDef.readonly',
                         'class': '',
                         'ngClasses': widgetNgClasses
                     };
