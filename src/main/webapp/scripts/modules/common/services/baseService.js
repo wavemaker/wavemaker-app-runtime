@@ -206,11 +206,11 @@ wm.modules.wmCommon.services.BaseService = [
             },
 
             /**
-             * Login Using Google oAuth
+             * Login Using SSO
              */
             handleSSOSessionTimeout = function () {
                 var win = window.open(location.origin+"/login?target_url="+location.origin+"/studio/login-success.html                                                              ", "_blank", "height=700,width=600");
-                win.addEventListener("message", function(e) {
+                window.addEventListener("message", function(e) {
                     $rootScope.isStudioDisabled = false;
                     if (e.data === "login_success") {
                         executeErrorCallStack();
