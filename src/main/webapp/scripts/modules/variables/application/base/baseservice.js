@@ -1458,6 +1458,18 @@ wm.variables.services.Variables = [
                     });
                 }
                 _.forEach(filteredVariables, function (variable) {
+                    //checking for RBAC permissions. show only those services which are allowed
+                    _.remove(variable.serviceTypes, function(serviceType) {
+                        if(serviceType === 'database' || serviceType === 'databaseapi' ) {
+                            return !$rootScope.preferences["project.database.create"];
+                        }
+                        if(serviceType === 'web') {
+                            return !$rootScope.preferences["project.rest.create"] || !$rootScope.preferences["project.soap.create"] || !$rootScope.preferences["project.websocket.create"];
+                        }
+                        if(serviceType === 'java') {
+                            return !$rootScope.preferences["project.javaservice.create"];
+                        }
+                    });
                     serviceTypes = _.union(serviceTypes, variable.serviceTypes);
                 });
                 return serviceTypes;
