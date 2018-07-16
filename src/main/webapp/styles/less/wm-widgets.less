@@ -2111,6 +2111,9 @@ body.modal-open {
 *********************************************************************************/
 .app-message {
   position: relative;
+  &.alert {
+    word-break: break-all;
+  }
   .icon {
     display: inline-block;
     font-size: 11px;
@@ -3686,9 +3689,6 @@ If the height and width are not specified the video takes the height of the post
       display: inline-block;
     }
   }
-}
-.alert {
-  word-break: break-all;
 }
 
 /************************************************************************************
