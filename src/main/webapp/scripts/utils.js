@@ -3093,6 +3093,46 @@ WM.module('wm.utils', [])
             return docLinks;
         }
 
+        $.cachedScript = function () {
+            var inProgress = {};
+            var resolved = [];
+
+            function onLoad(url) {
+                resolved.push(url);
+                inProgress[url].resolve();
+                inProgress[url] = undefined;
+            }
+
+            return function (url) {
+                // Check if promise is resolved
+                if (resolved.indexOf(url) !== -1) {
+                    var deferred = $q.defer();
+                    deferred.resolve();
+                    return deferred.promise;
+                }
+
+                // Check if promise is in progress
+                if (inProgress[url]) {
+                    return inProgress[url].promise;
+                }
+
+                // Create a new promise
+                inProgress[url] = $q.defer();
+
+                var options = {
+                    dataType: 'script',
+                    cache: true,
+                    url: url
+                };
+
+                jQuery.ajax(options).done(function () {
+                    return onLoad(url);
+                });
+
+                return inProgress[url].promise;
+            };
+        }();
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
