@@ -401,10 +401,14 @@ WM.module('wm.prefabs')
             }
             //constructs the prefab message for the prefabs
             function constructPrefabConflictMessage(prefab) {
-                var msg,
-                    actionsBtnMsg = 'Update';
+                var msg, actionsBtnMsg = 'Update', pubV, curV;
+                curV = prefab.version;
+                pubV = prefab.workspaceVersion;
                 if (Number(prefab.version) && Number(prefab.workspaceVersion)) {
-                    if (prefab.version < prefab.workspaceVersion) {
+                    var pubSplit = _.split(pubV, '.').map(Number);
+                    var curSplit = _.split(curV, '.').map(Number);
+
+                    if ((curSplit[0] < pubSplit[0]) || (curSplit[0] === pubSplit[0] && curSplit[1] < pubSplit[1])) {
                         msg = $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_OLDER', prefab.name, prefab.version, prefab.workspaceVersion, actionsBtnMsg);
                     } else {
                         actionsBtnMsg = 'Revert';
