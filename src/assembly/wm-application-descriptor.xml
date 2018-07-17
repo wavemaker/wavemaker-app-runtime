@@ -8,7 +8,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${basedir}/src/main/webapp/application</directory>
+            <directory>${basedir}/src/main/webapp/tmp/merged/application</directory>
             <outputDirectory>/</outputDirectory>
         </fileSet>
     </fileSets>

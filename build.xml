@@ -27,6 +27,8 @@
             <param name="cmd.executable.dir" value="src/main/webapp"/>
         </antcall>
 
+        <ant target="merge-ng-runtime-scripts"/>
+
     </target>
 
     <target name="run-js-commands-production">
@@ -48,6 +50,24 @@
             <param name="cmd.arg" value="build-prod --no-color"/>
             <param name="cmd.executable.dir" value="src/main/webapp"/>
         </antcall>
+        
+        <ant target="merge-ng-runtime-scripts"/>
 
+    </target>
+
+    <target name="merge-ng-runtime-scripts">
+        <copy todir="src/main/webapp/tmp/merged/application/scripts">
+            <fileset dir="../wavemaker-ng-runtime/dist/bundles/wmapp/scripts"/>
+        </copy>
+        <copy todir="src/main/webapp/tmp/merged/application/styles">
+            <fileset dir="src/main/webapp/application/styles"/>
+        </copy>
+
+        <copy todir="src/main/webapp/tmp/merged/mobile/scripts">
+            <fileset dir="../wavemaker-ng-runtime/dist/bundles/wmmobile/scripts"/>
+        </copy>
+        <copy todir="src/main/webapp/tmp/merged/mobile/styles">
+            <fileset dir="src/main/webapp/mobile/styles"/>
+        </copy>
     </target>
 </project>
