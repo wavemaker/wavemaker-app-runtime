@@ -17,6 +17,7 @@ package com.wavemaker.runtime.data.spring;
 
 import java.util.Properties;
 import java.util.UUID;
+
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -44,6 +45,10 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
     private Environment environment;
     private String beanName;
     private ServletContext servletContext;
+
+    public WMPropertyPlaceholderConfigurer() {
+        setSystemPropertiesMode(SYSTEM_PROPERTIES_MODE_OVERRIDE);
+    }
 
     @Override
     public void setEnvironment(final Environment environment) {
