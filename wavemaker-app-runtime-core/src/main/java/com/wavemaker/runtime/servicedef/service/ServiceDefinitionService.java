@@ -41,6 +41,7 @@ import org.springframework.security.web.access.intercept.FilterInvocationSecurit
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.stereotype.Service;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
 import com.wavemaker.runtime.WMAppContext;
@@ -99,7 +100,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         }
         Map<String, ServiceDefinition> serviceDefinitionMap = prefabServiceDefinitionsCache.get(prefabName);
         if (serviceDefinitionMap == null) {
-            throw new WMRuntimeException("Prefab with name " + prefabName + " does not exist in this project");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.prefab.name"), prefabName);
         }
         return serviceDefinitionMap;
     }
@@ -115,7 +116,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                             try {
                                 serviceDefinitionsCache.putAll(serviceDefinitionHelper.build(resource.getInputStream()));
                             } catch (IOException e) {
-                                throw new WMRuntimeException("Failed to generate service definition for file " + resource.getFilename(), e);
+                                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
                             }
                         }
                     } else {
@@ -201,7 +202,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                 try {
                     prefabServiceDefinitionsCache.get(prefab.getName()).putAll(serviceDefinitionHelper.build(resource.getInputStream()));
                 } catch (IOException e) {
-                    throw new WMRuntimeException("Failed to generate service definition for file " + resource.getFilename(), e);
+                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
                 }
             }
         } else {
@@ -232,7 +233,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
             //do nothing
             return new Resource[0];
         } catch (IOException e) {
-            throw new WMRuntimeException("Failed to find service definition files", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.files.not.found"), e);
         }
     }
 

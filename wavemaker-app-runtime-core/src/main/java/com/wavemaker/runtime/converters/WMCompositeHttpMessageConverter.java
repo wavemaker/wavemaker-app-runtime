@@ -24,6 +24,7 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -74,7 +75,7 @@ public class WMCompositeHttpMessageConverter<T> implements HttpMessageConverter<
                 return (T) httpMessageConverter.read(clazz, inputMessage);
             }
         }
-        throw new WMRuntimeException("Cannot read the object of type " + clazz.getName());
+        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unreadable.type"), clazz.getName());
     }
 
     @Override
@@ -86,7 +87,7 @@ public class WMCompositeHttpMessageConverter<T> implements HttpMessageConverter<
                 return;
             }
         }
-        throw new WMRuntimeException("Cannot write the object of type " + t.getClass().getName());
+        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unwritable.type"), t.getClass().getName());
     }
 }
 

@@ -45,6 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.commons.InvalidInputException;
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMAppContext;
@@ -94,7 +95,7 @@ public class WMMultipartUtils {
             setMultipartsToObject(multipartHttpServletRequest.getFileMap(), t, serviceId);
         } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException e) {
             LOGGER.error("Exception while creating a new Instance with information: {}", t);
-            throw new WMRuntimeException("Exception while preparing multipart request", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.multipart.request.exception"), e);
         }
         return t;
     }
@@ -136,7 +137,7 @@ public class WMMultipartUtils {
                     }
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                     LOGGER.error("Failed to update blob content", e);
-                    throw new WMRuntimeException("Failed to update blob content", e);
+                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.blobContent.updated.failed"), e);
                 }
             }
         }
@@ -179,8 +180,8 @@ public class WMMultipartUtils {
         } else {
             LOGGER.error("Casting multipart {} to {} is not supported", field.getName(),
                     field.getType().getSimpleName());
-            throw new WMRuntimeException("Casting multipart " + field.getName() + " to " + field.getType()
-                    .getSimpleName() + " is not supported");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.multipart.casting.exception"), field.getName(), field.getType()
+                    .getSimpleName());
         }
         return instance;
     }
@@ -189,7 +190,7 @@ public class WMMultipartUtils {
         try {
             return file == null ? null : file.getBytes();
         } catch (IOException e) {
-            throw new WMRuntimeException("Error while reading multi part file", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.file.reading.error"), e);
         }
     }
 
@@ -245,7 +246,7 @@ public class WMMultipartUtils {
             int contentLength = IOUtils.copy(new ByteArrayInputStream(bytes), httpServletResponse.getOutputStream());
             httpServletResponse.setContentLength(contentLength);
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException("Failed to prepare response for fieldName" + fieldName, e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.response.construction.failed"), e, fieldName);
         }
 
     }
@@ -264,7 +265,7 @@ public class WMMultipartUtils {
             downloadResponse.setFileName(filename);
             downloadResponse.setInline(!download);
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException("Failed to prepare response for fieldName" + fieldName, e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.response.construction.failed"), e, fieldName);
         }
         return downloadResponse;
     }
@@ -300,7 +301,7 @@ public class WMMultipartUtils {
             downloadResponse.setFileName(filename + extension);
 
         } catch (IOException | MagicException e) {
-            throw new WMRuntimeException("Failed to prepare response.", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.prepare.response"), e);
         }
         return downloadResponse;
     }
@@ -316,13 +317,13 @@ public class WMMultipartUtils {
             try {
                 bytes = (blob != null) ? IOUtils.toByteArray(blob.getBinaryStream()) : null;
             } catch (SQLException e) {
-                throw new WMRuntimeException("Failed to cast Blob content ", e);
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.blobContent.cast.failed"), e);
             }
         } else if (Objects.equals(BYTE_ARRAY, method.getReturnType().getSimpleName())) {
             bytes = (byte[]) method.invoke(instance);
         }
         if (bytes == null) {
-            throw new WMRuntimeException("Data is empty in column " + fieldName);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.no.data.in.column"), fieldName);
         }
         return bytes;
     }

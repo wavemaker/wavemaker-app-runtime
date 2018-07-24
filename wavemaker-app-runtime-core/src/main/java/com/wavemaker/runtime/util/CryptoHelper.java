@@ -33,6 +33,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -74,7 +75,7 @@ public class CryptoHelper {
 
             return cipher;
         } catch (InvalidKeySpecException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | NoSuchPaddingException | InvalidKeyException e) {
-            throw new WMRuntimeException("Error while creating cipher", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.cipher.creation.error"), e);
         }
     }
 
@@ -104,7 +105,7 @@ public class CryptoHelper {
             byte[] out = getEncryptor().doFinal(in);
             return new sun.misc.BASE64Encoder().encode(out);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
-            throw new WMRuntimeException("Error while encrypting value", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.encryption.error"), e);
         }
     }
 
@@ -118,7 +119,7 @@ public class CryptoHelper {
             byte[] utf8 = getDecrypter().doFinal(enc);
             return new String(utf8, StandardCharsets.UTF_8);
         } catch (BadPaddingException | IllegalBlockSizeException | IOException e) {
-            throw new WMRuntimeException("Error while decrypting value", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.decryption.error"), e);
         }
     }
 }

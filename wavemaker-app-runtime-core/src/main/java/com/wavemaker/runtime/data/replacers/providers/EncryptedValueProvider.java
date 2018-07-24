@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.replacers.ListenerContext;
 import com.wavemaker.runtime.data.replacers.Scope;
@@ -48,7 +49,7 @@ public class EncryptedValueProvider implements ValueProvider {
             return context.getPhase() == Scope.READ ? helper.decrypt(value) : helper.encrypt(value);
 
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException("Error while reading value", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.error.while.reading.value"), e);
         }
     }
 

@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 
 import org.springframework.web.context.ServletContextAware;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.ResourceNotFoundException;
 
 /**
@@ -33,7 +34,7 @@ public class AppFileSystem implements ServletContextAware {
     public InputStream getWebappResource(String resourcePath) {
         InputStream resourceStream = context.getResourceAsStream(resourcePath);
         if (resourceStream == null) {
-            throw new ResourceNotFoundException("Requested resource " + resourcePath + " not found");
+            throw new ResourceNotFoundException(MessageResource.create("com.wavemaker.runtime.requested.resource.not.found"), resourcePath);
         }
         return resourceStream;
     }

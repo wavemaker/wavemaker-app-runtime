@@ -135,7 +135,7 @@ public class JDBCUtils {
             if (javaType == JavaType.CURSOR) {
                 typeCode = OracleTypesHelper.INSTANCE.getOracleCursorTypeSqlType();
             } else {
-                throw new WMRuntimeException("Cannot find SQL Type code for java type:" + javaType);
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.sql.type.code.not.found"), javaType);
             }
         }
 

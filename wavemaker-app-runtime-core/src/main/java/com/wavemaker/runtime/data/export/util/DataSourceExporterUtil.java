@@ -22,6 +22,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.hibernate.ScrollableResults;
 import org.hibernate.internal.AbstractScrollableResults;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -39,7 +40,7 @@ public class DataSourceExporterUtil {
             resultSetMethod.setAccessible(true);
             return (ResultSet) resultSetMethod.invoke(scroll);
         } catch (Exception e) {
-            throw new WMRuntimeException("Failed to fetch ResultSet", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.fetch.resultset"), e);
         }
     }
 

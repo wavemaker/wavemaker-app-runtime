@@ -1,12 +1,5 @@
 {
   "COMMENT_SERVICE_ERROR_MESSAGES":"-----------Service-Fehlermeldung Ressourcen----------",
-  "com.wavemaker.runtime.$RestServiceInvokeFailed": "Fehler beim Aufrufen des Ruhedienstes, Überprüfen Sie die Protokolle für weitere Informationen",
-  "com.wavemaker.studio.json$AccessDenied":"Zugriff verweigert \"${0}\"",
-  "com.wavemaker.studio.json$InvalidFieldValue":"Ungültiger Feldwert für den Parameter \"${0}\", \"${1}\"",
-  "com.wavemaker.studio.json$InvalidJsonObject":"Falsches Json-Objekt \"${0}\"",
-  "com.wavemaker.studio.json$MessageNotReadable":"Nachricht nicht lesbar",
-  "com.wavemaker.studio.json$UnexpectedError":"Unerwarteter Fehler \"${0}\", überprüfen Sie bitte Server-Protokolle für weitere Informationen",
-  "com.wavemaker.studio.json$UnrecognizedField":"Unbekanntes Feld \"${0}\"",
   "LABEL_ACCESS_DENIED": "Zugriff abgelehnt",
   "LABEL_ACTIONS": "Aktionen",
   "LABEL_APPLICATION_NAME": "WaveMaker",

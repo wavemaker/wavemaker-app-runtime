@@ -117,7 +117,7 @@ public class LegacyNativeProcedureExecutor {
             }
 
         } catch (Exception e) {
-            throw new WMRuntimeException("Failed to execute procedure ", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.execute.procedure"), e);
         }
     }
 
@@ -168,7 +168,7 @@ public class LegacyNativeProcedureExecutor {
             }
         } catch (SQLException e) {
 
-            throw new WMRuntimeException("Failed to process cursor ", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.process.cursor"), e);
         }
 
         return result;

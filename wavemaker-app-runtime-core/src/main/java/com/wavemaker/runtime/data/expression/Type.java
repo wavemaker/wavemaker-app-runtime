@@ -24,6 +24,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.util.QueryParserConstants;
 
@@ -142,7 +143,7 @@ public enum Type implements Criteria {
             if (value instanceof Collection) {
                 return Restrictions.in(name, (Collection) value);
             }
-            throw new WMRuntimeException("Expected Collection type but found value of type " + value.getClass());
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unexpected.value.type"), value.getClass());
         }
     }, NULL_OR_EMPTY("nullorempty") {
         @Override
@@ -164,8 +165,7 @@ public enum Type implements Criteria {
             } else if (QueryParserConstants.EMPTY.equalsIgnoreCase(castedValue)) {
                 return EMPTY.criterion(name, value);
             }
-            throw new WMRuntimeException("Value for IS operator can be either of null, notnull, nullorempty, empty" +
-                    value.getClass());
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.IS.operator.value"), value.getClass());
         }
     };
 

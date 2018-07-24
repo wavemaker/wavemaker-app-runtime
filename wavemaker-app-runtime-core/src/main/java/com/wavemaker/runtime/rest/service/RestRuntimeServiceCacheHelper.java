@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
@@ -46,7 +47,7 @@ public class RestRuntimeServiceCacheHelper {
                 Swagger swaggerDoc = JSONUtils.toObject(stream, Swagger.class);
                 serviceIdVsSwaggerCache.put(serviceId, swaggerDoc);
             } catch (IOException e) {
-                throw new WMRuntimeException("Failed to read the swagger for the service " + serviceId, e);
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.read.swagger"), e, serviceId);
             } finally {
                 WMIOUtils.closeSilently(stream);
             }

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.annotations.TableTemporal;
 import com.wavemaker.runtime.data.dao.generators.TemporalQueryGenerator;
@@ -75,7 +76,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
                     .map(name -> BeanUtils.getPropertyDescriptor(entityClass, name))
                     .collect(Collectors.toList());
         } else {
-            throw new WMRuntimeException("Class " + entityClass.getName() + " should annotate with TableTemporal");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.tableTemporal.annotation.error"), entityClass.getName());
         }
     }
 
@@ -128,7 +129,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
                 builder.withSetter(property.getName(),
                         property.getReadMethod().invoke(entity));
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new WMRuntimeException("Error while reading property: " + property.getName() + " value", e);
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.property.read.error"), e, property.getName());
             }
         });
 

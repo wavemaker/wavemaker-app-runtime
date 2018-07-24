@@ -26,6 +26,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.SSLUtils;
 import com.wavemaker.commons.util.WMIOUtils;
@@ -58,7 +59,7 @@ public class FileDownload {
             }
             downloadedFile = closeableHttpClient.execute(httpGet, new FileResponseHandler(file));
         } catch (IOException e) {
-            throw new WMRuntimeException("Failed to download file from url " + url, e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.download.file.from.url"), e, url);
         } finally {
             WMIOUtils.closeSilently(closeableHttpClient);
         }

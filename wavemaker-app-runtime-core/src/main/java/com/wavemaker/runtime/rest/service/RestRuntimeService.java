@@ -30,6 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseExtractor;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.UnAuthorizedResourceAccessException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
@@ -130,7 +131,7 @@ public class RestRuntimeService {
         try {
             httpRequestData = new RequestDataBuilder().getRequestData(httpServletRequest);
         } catch (Exception e) {
-            throw new WMRuntimeException("Failed to construct HttpRequestData for the request", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.HttpRequestData.construction.failed"), e);
         }
         return httpRequestData;
     }
@@ -251,7 +252,7 @@ public class RestRuntimeService {
                 return operation;
             }
         }
-        throw new WMRuntimeException("Operation does not exist with id " + operationId);
+        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.operation.doesnt.exist"), operationId);
     }
 
     private String getNormalizedString(String str) {

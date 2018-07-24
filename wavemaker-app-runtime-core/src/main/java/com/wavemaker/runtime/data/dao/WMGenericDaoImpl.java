@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -40,6 +41,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.dao.generators.EntityQueryGenerator;
 import com.wavemaker.runtime.data.dao.generators.SimpleEntitiyQueryGenerator;
@@ -84,7 +86,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     @PostConstruct
     public void init() {
         if (getTemplate() == null) {
-            throw new WMRuntimeException("hibernate template is not set.");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.hibernateTemplate.not.set"));
         }
 
         ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
@@ -114,7 +116,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         final SelectQueryBuilder builder = queryGenerator.findById(entityId);
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
-                .orElseThrow(() -> new EntityNotFoundException("No entity exists for given id:" + entityId));
+                .orElseThrow(() -> new EntityNotFoundException(MessageResource.create("com.wavemaker.runtime.no.entity.exists.for.given.id"), entityId));
     }
 
     @Override
@@ -143,7 +145,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "No entity found for given unique key values:" + fieldValueMap));
+                        MessageResource.create("com.wavemaker.runtime.entity.not.found.for.given.map"), fieldValueMap));
     }
 
     @Override

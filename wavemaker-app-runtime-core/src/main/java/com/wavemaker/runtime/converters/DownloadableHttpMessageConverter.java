@@ -26,6 +26,7 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServletServerHttpResponse;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.file.model.DownloadResponse;
@@ -50,7 +51,7 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
     @Override
     protected DownloadResponse readInternal(
             Class<? extends Downloadable> clazz, HttpInputMessage inputMessage) throws IOException {
-        throw new WMRuntimeException("Does not support DownloadResponse de-serialization");
+        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unsupported.de-serialization"));
     }
 
     @Override

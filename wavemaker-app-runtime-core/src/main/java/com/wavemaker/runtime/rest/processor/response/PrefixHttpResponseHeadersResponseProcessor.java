@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
@@ -37,7 +38,7 @@ public class PrefixHttpResponseHeadersResponseProcessor extends AbstractHttpResp
     @Override
     public void afterPropertiesSet() throws Exception {
         if (StringUtils.isBlank(headerPrefix)) {
-            throw new WMRuntimeException("headerPrefix should not be empty");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.header.prefix"));
         }
     }
 

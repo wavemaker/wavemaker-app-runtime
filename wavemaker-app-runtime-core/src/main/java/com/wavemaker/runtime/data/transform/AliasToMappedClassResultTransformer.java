@@ -77,7 +77,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
             }
             return object;
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new WMRuntimeException("Cannot instantiate class:" + resultClass, e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.cannot.instantiate.class"), e, resultClass);
         }
     }
 
@@ -95,7 +95,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
             }
             return object;
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new WMRuntimeException("Cannot instantiate class:" + resultClass.getName(), e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.cannot.instantiate.class"), e, resultClass);
         }
     }
 

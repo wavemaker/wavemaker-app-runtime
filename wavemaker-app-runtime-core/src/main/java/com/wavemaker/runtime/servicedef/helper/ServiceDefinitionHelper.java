@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
@@ -40,7 +41,7 @@ public class ServiceDefinitionHelper {
 
     public Map<String, ServiceDefinition> build(InputStream inputStream) {
         if (inputStream == null) {
-            throw new WMRuntimeException("Attempt to build service definition from null input stream");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.attempt.to.build.service.definition"), "InputStream");
         }
         logger.debug("Building service definitions from InputStream");
         final String serviceDefJson = WMIOUtils.toString(inputStream);
@@ -49,7 +50,7 @@ public class ServiceDefinitionHelper {
 
     public Map<String, ServiceDefinition> build(String serviceDefJson) {
         if (serviceDefJson == null) {
-            throw new WMRuntimeException("Attempt to build service def from null String");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.attempt.to.build.service.definition"), "String");
         }
         logger.debug("Building service definition from json content");
         return buildServiceDef(serviceDefJson);
@@ -64,7 +65,7 @@ public class ServiceDefinitionHelper {
             }
             return serviceDefMap;
         } catch (IOException e) {
-            throw new WMRuntimeException("Failed to build service def from the given json", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.attempt.to.build.service.definition"), e, "json");
         }
     }
 

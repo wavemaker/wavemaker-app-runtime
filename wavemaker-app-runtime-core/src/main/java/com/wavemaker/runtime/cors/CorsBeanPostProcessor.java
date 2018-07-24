@@ -11,6 +11,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.model.security.CorsConfig;
 import com.wavemaker.commons.model.security.PathEntry;
@@ -51,7 +52,7 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
         for (PathEntry pathEntry : pathEntriesList) {
             String path = pathEntry.getPath();
             if (StringUtils.isBlank(path)) {
-                throw new WMRuntimeException("Path cannot be empty for corsPathEntry " + pathEntry.getName());
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.path.cannot.be.empty"), pathEntry.getName());
             }
             CorsConfiguration corsConfiguration = buildCorsConfigurationObject(pathEntry, maxAge, allowCredentials);
             ((UrlBasedCorsConfigurationSource) corsConfigurationSource).registerCorsConfiguration(path, corsConfiguration);
@@ -67,7 +68,7 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
 
         String allowedOrigins = pathEntry.getAllowedOrigins();
         if (StringUtils.isBlank(allowedOrigins)) {
-            throw new WMRuntimeException("AllowedOrigins cannot be empty for corsPathEntry " + pathEntry.getName());
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.allowedOrigins.cannot.be.empty"), pathEntry.getName());
         }
         corsConfiguration.setMaxAge(maxAge);
         corsConfiguration.setAllowedOrigins(toList(allowedOrigins));

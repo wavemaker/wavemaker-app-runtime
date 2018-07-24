@@ -19,6 +19,7 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -40,7 +41,7 @@ public class FieldValueReplacer implements Serializable {
         try {
             descriptor.getWriteMethod().invoke(context.getEntity(), provider.getValue(context));
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException("Error while overriding property value", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.property.value.overriding.error"), e);
         }
     }
 

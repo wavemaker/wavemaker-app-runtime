@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.ws;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -24,8 +25,8 @@ public class WebServiceInvocationException extends WMRuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public WebServiceInvocationException(String message) {
-        super(message);
+    public WebServiceInvocationException(MessageResource resource) {
+        super(resource);
     }
 
     public WebServiceInvocationException(Throwable cause) {
