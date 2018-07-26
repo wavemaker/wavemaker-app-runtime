@@ -180,9 +180,15 @@ WM.module('wm.prefabs')
 
                         if (!prop.hasOwnProperty('show')) {
                             prop.show = true;
+                        } else if (Utils.stringStartsWith(prop.show, 'bind:')) {
+                            prop.__show = prop.show;
+                            prop.show = true;
                         }
 
                         if (!prop.hasOwnProperty('disabled')) {
+                            prop.disabled = false;
+                        } else if (Utils.stringStartsWith(prop.disabled, 'bind:')) {
+                            prop.__disabled = prop.disabled;
                             prop.disabled = false;
                         }
 
@@ -324,6 +330,18 @@ WM.module('wm.prefabs')
                                     $is._watchers[propName] = $is.pfScope.$watch(key, function (nv) {
                                         $is[propName + '__updateFromWatcher'] = true;
                                         $is[propName] = nv;
+                                    });
+                                }
+                                if (propDetails.__show) {
+                                    var key = propDetails.__show.replace('bind:', '');
+                                    $is._watchers[propName] = $is.pfScope.$watch(key, function (nv) {
+                                        $is.widgetProps[propName].show = nv;
+                                    });
+                                }
+                                if (propDetails.__disabled) {
+                                    var key = propDetails.__disabled.replace('bind:', '');
+                                    $is._watchers[propName] = $is.pfScope.$watch(key, function (nv) {
+                                        $is.widgetProps[propName].disabled = nv;
                                     });
                                 }
                             });
