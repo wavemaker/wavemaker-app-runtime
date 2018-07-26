@@ -1239,95 +1239,93 @@ body {
     }
   }
 
-  #wm-app-content {
-    >.page-transition {
-      &.app-page, +.app-page {
-        position: fixed;
-        top: 0;
-        left: 0;
-        -webkit-backface-visibility: visible !important;
-        -ms-backface-visibility: visible !important;
-        -webkit-backface-visibility: visible !important;
-        backface-visibility: visible !important;
-        -webkit-animation-duration: 0.3s;
-        animation-duration: 0.3s;
-        -webkit-animation-timing-function: ease-in-out;
-        animation-timing-function: ease-in-out;
-        -webkit-animation-fill-mode: forwards;
-        animation-fill-mode: forwards;
-      }
-      > .app-page > .app-left-panel {
+  app-root {
+    >.page-transition >* {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: visible !important;
+      backface-visibility: visible !important;
+      -webkit-animation-duration: 0.3s;
+      animation-duration: 0.3s;
+      -webkit-animation-timing-function: ease-in-out;
+      animation-timing-function: ease-in-out;
+      -webkit-animation-fill-mode: forwards;
+      animation-fill-mode: forwards;
+      .app-page > .app-left-panel {
         display: none;
       }
     }
 
     >.page-transition-slide {
-      &.ng-leave-active {
+      >:nth-child(1) {
         -webkit-animation-name: slideOutLeft;
         animation-name: slideOutLeft;
       }
-      +.ng-enter-active {
+      >:nth-child(2) {
         -webkit-animation-name: slideInRight;
         animation-name: slideInRight;
       }
     }
 
     >.page-transition-slide-exit {
-      &.ng-leave-active {
+      >:nth-child(1) {
         -webkit-animation-name: slideOutRight;
         animation-name: slideOutRight;
       }
-      +.ng-enter-active {
+      >:nth-child(2) {
         -webkit-animation-name: slideInLeft;
         animation-name: slideInLeft;
       }
     }
 
     /** popup **/
-    >.page-transition-pop +.ng-enter {
+    >.page-transition-pop >:nth-child(2) {
       -webkit-animation-name: zoomIn;
       animation-name: zoomIn ;
     }
 
     >.page-transition-pop-exit {
-      &.ng-leave-active {
+      >:nth-child(1) {
         z-index: 1;
         -webkit-animation-name: zoomOut;
         animation-name: zoomOut;
       }
-      &.ng-enter-active {
+      >:nth-child(2) {
         z-index: 0;
       }
     }
 
     >.page-transition-flip {
-      &.ng-leave-active {
+      >:nth-child(1) {
         -webkit-animation-name: flipExit;
         animation-name: flipExit;
       }
-      +.ng-enter-active {
+      >:nth-child(2) {
         -webkit-animation-name: flipEntry;
         animation-name: flipEntry;
       }
     }
 
     >.page-transition-flip-exit {
-      &.ng-leave-active {
+      >:nth-child(1) {
         -webkit-animation-name: flipReverseExit;
         animation-name: flipReverseExit;
       }
-      +.ng-enter-active {
+      >:nth-child(2) {
         -webkit-animation-name: flipReverseEntry;
         animation-name: flipReverseEntry;
       }
     }
 
     /** fade **/
-    >.page-transition-fade +.ng-enter-active {
+    >.page-transition-fade >:nth-child(2) {
       -webkit-animation-name: fadeIn;
       animation-name: fadeIn;
     }
-    >.page-transition-fade-exit.ng-leave-active {
+    >.page-transition-fade-exit >:nth-child(1) {
       -webkit-animation-name: fadeOut;
       animation-name: fadeOut;
       z-index: 1;
