@@ -3093,6 +3093,10 @@ WM.module('wm.utils', [])
             return docLinks;
         }
 
+        function getDecodedData (content) {
+            return decodeURIComponent(content.replace(/\+/g, ' '));
+        }
+
         $.cachedScript = function () {
             var inProgress = {};
             var resolved = [];
@@ -3294,4 +3298,5 @@ WM.module('wm.utils', [])
         this.disableRightClick          = disableRightClick;
         this.formatExportExpression     = formatExportExpression;
         this.prepareDocLinks            = prepareDocLinks;
+        this.getDecodedData             = getDecodedData;
     }]);

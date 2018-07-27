@@ -235,10 +235,20 @@ WM.module('wm.widgets.base')
                             }
                             /*read the file content*/
                             FileService.read({
-                                path: CONSTANTS.isStudioMode ? "../../../" + page + 'page.min.html' : page + 'page.min.html',
+                                path: CONSTANTS.isStudioMode ? "../../../" + page + 'page.min.json' : page + 'page.min.json',
                                 projectID : $rootScope.project.id
                             }, function (pageContent) {
-                                onPageFetchSuccess(Utils.parseCombinedPageContent(pageContent, newVal, true));
+                                var variableContext = '_' + newVal + 'Page_Variables_',
+                                    $styles = Utils.getDecodedData(pageContent.styles),
+                                    pageContetObj = {};
+                                WM.element(document.head).append('<style>'+ $styles +'</style>');
+                                pageContetObj = {
+                                    html: Utils.getDecodedData(pageContent.markup),
+                                    variables: window[variableContext] || {},
+                                    css: $styles
+                                };
+
+                                onPageFetchSuccess(pageContetObj);
                             }, onPageFetchError);
                         } else {
                             var AppManager = Utils.getService('AppManager');

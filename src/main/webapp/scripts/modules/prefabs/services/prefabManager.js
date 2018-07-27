@@ -631,9 +631,7 @@ WM.module('wm.prefabs')
                 return deferred.promise;
             }
 
-            function cachePrefabScript(prefabName, pageDom) {
-                var script = pageDom.find('script[id="Main.js"]').html() || '';
-
+            function cachePrefabScript(prefabName, script) {
                 prefabScriptCache[prefabName] = script;
             }
 
@@ -644,7 +642,7 @@ WM.module('wm.prefabs')
             /* loads the script, styles, variables, template of the prefab */
             function loadPrefabMinifiedPage(prefabName) {
                 var config = appPrefabNameConfigMap[prefabName], url, deferred = $q.defer();
-                url = config.templateUrl.substr(0, config.templateUrl.lastIndexOf('/') + 1) + 'page.min.html';
+                url = config.templateUrl.substr(0, config.templateUrl.lastIndexOf('/') + 1) + 'page.min.json';
                 /*read the file content*/
                 FileService.read({
                     path: CONSTANTS.isRunMode
@@ -652,13 +650,12 @@ WM.module('wm.prefabs')
                         : 'WEB-INF/prefabs/' + prefabName + '/webapp' + url,
                     projectID: $rs.project.id
                 }, function (prefabContent) {
-                    var pageDom = WM.element("<div>" + prefabContent + "</div>"),
-                        htmlMarkup = pageDom.find('script[id="Main.html"]').html() || '';
+                    var htmlMarkup = Utils.getDecodedData(prefabContent.markup) || '';
                     /*load the styles & scripts*/
 
-                    cachePrefabScript(prefabName, pageDom);
+                    cachePrefabScript(prefabName, Utils.getDecodedData(prefabContent.script));
 
-                    WM.element('head').append(pageDom.find('style'));
+                    WM.element('head').append('<style>'+ Utils.getDecodedData(prefabContent.styles) +'</style>');
                     /* append the isPrefab flag to each variable */
                     WM.forEach(window["_MainPage_Variables_"], function (variable) {
                         variable._prefabName = prefabName;
