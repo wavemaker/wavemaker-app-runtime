@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.exception;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -14,5 +15,9 @@ public class BlobContentNotFoundException extends WMRuntimeException {
 
     public BlobContentNotFoundException(final String message, final Throwable cause) {
         super(message, cause);
+    }
+
+    public BlobContentNotFoundException(MessageResource messageResource, Object... args) {
+        super(messageResource, args);
     }
 }
