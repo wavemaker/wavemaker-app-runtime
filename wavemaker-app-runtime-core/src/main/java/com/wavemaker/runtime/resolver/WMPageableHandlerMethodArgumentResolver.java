@@ -37,6 +37,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.wavemaker.commons.InvalidInputException;
+import com.wavemaker.commons.MessageResource;
 
 /**
  * Created by sunilp on 24/9/15.
@@ -326,7 +327,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
                 return 0;
             }
             // cannot wrap the exception
-            throw new InvalidInputException(parameterName + " value is invalid");
+            throw new InvalidInputException(MessageResource.create("com.wavemaker.runtime.invalid.parameter"), parameterName);
         }
     }
 

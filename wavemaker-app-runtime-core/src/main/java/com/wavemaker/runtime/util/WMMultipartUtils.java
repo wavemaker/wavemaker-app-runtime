@@ -86,7 +86,7 @@ public class WMMultipartUtils {
                 final String wmJson = multipartHttpServletRequest.getParameter(WM_DATA_JSON);
                 if (StringUtils.isBlank(wmJson)) {
                     LOGGER.error("Request does not have wm_data_json multipart data");
-                    throw new InvalidInputException("Invalid Input : wm_data_json part can not be NULL or Empty");
+                    throw new InvalidInputException(MessageResource.create("com.wavemaker.runtime.request.emptyJson"));
                 }
                 t = toObject(wmJson, instance);
             } else {

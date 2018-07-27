@@ -51,7 +51,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.MessageResourceHolder;
 import com.wavemaker.commons.UnAuthorizedResourceAccessException;
+import com.wavemaker.commons.WMException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
@@ -126,6 +128,9 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof WMRuntimeException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleWMExceptions((WMRuntimeException) ex, null, null);
+        } else if (ex instanceof WMException) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return handleWMExceptions((WMException) ex, null, null);
         }
         // Any other exception
         else {
@@ -217,17 +222,22 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         return getModelAndView(errorResponse);
     }
 
-    private ModelAndView handleWMExceptions(WMRuntimeException ex, MessageResource defaultMessageResource, Object... defaultArgs) {
-        MessageResource messageResource = ex.getMessageResource();
-        ErrorResponse errorResponse;
+    private ModelAndView handleWMExceptions(MessageResourceHolder messageResourceHolder, MessageResource defaultMessageResource, Object... defaultArgs) {
+        MessageResource messageResource = messageResourceHolder.getMessageResource();
+        Object[] args;
         if (messageResource != null) {
-            errorResponse = getErrorResponse(ex.getMessageResource(), ex.getArgs());
+            args = messageResourceHolder.getArgs();
         } else if (defaultMessageResource != null) {
-            errorResponse = getErrorResponse(defaultMessageResource, defaultArgs);
+            messageResource = defaultMessageResource;
+            args = defaultArgs;
         } else {
-            String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
-            errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
+            messageResource = MessageResource.UNEXPECTED_ERROR;
+            String message = messageResourceHolder.getMessage();
+            String errorMsg = (message != null) ? message : "";
+            args = new Object[]{errorMsg};
         }
+        ErrorResponse errorResponse = getErrorResponse(messageResource, args);
+        errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
         return getModelAndView(errorResponse);
     }
 
