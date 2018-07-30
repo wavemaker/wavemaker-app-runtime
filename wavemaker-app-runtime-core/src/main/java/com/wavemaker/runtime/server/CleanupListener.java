@@ -102,7 +102,9 @@ public class CleanupListener implements ServletContextListener {
                     Thread.currentThread().setContextClassLoader(XSSFPicture.class.getClassLoader());
                     logger.info("warming up poi prototype field");
                     final Method prototype = findMethod(XSSFPicture.class, "prototype");
-                    prototype.invoke(null);
+                    if(prototype!=null) {
+                        prototype.invoke(null);
+                    }
                 } finally {
                     Thread.currentThread().setContextClassLoader(currentCL);
                 }
@@ -275,11 +277,15 @@ public class CleanupListener implements ServletContextListener {
             Field levelObjectField = findField(klass, "levelObject");
             Field mirroredLevelField = findField(klass, "mirroredLevel");
             synchronized (klass) {
-                Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
-                removeTCLKnownLevels(classLoader, nameToKnownLevels, levelObjectField, mirroredLevelField);
+                if(nameToKnownLevelsField!=null) {
+                    Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
+                    removeTCLKnownLevels(classLoader, nameToKnownLevels, levelObjectField, mirroredLevelField);
+                }
+                if(intToKnownLevelsField!=null){
+                    Map<Object, List> intToKnownLevels = (Map<Object, List>) intToKnownLevelsField.get(null);
+                    removeTCLKnownLevels(classLoader, intToKnownLevels, levelObjectField, mirroredLevelField);
+                }
 
-                Map<Object, List> intToKnownLevels = (Map<Object, List>) intToKnownLevelsField.get(null);
-                removeTCLKnownLevels(classLoader, intToKnownLevels, levelObjectField, mirroredLevelField);
 
             }
         } catch (Exception e) {
@@ -345,12 +351,14 @@ public class CleanupListener implements ServletContextListener {
         Class<ResourceManager> klass = ResourceManager.class;
         try {
             Field propertiesCache = findField(klass, "propertiesCache");
-            WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache
-                    .get(null);
+            if (propertiesCache != null){
+                WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache
+                        .get(null);
             if (!map.isEmpty()) {
                 logger.info("Clearing propertiesCache from ");
                 map.clear();
             }
+        }
         } catch (Throwable e) {
             logger.warn("Failed to clear propertiesCache from {}", klass, e);
         }
@@ -478,7 +486,9 @@ public class CleanupListener implements ServletContextListener {
                 newTasksMayBeScheduled.set(thread, false);
                 Method clearMethod = findMethod(queue.getClass(), "clear");
                 synchronized (queue) {
-                    clearMethod.invoke(queue);
+                    if (clearMethod != null) {
+                        clearMethod.invoke(queue);
+                    }
                     newTasksMayBeScheduled.set(thread, false);
                     queue.notify();
                 }
