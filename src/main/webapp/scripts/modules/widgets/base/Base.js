@@ -808,9 +808,10 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3", "showPrettyExprInDesigner": true, "defaultvalue": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
                         "selectedvalues": {"type": "string, object", "isList": true, "bindable": "in-bound", "widget": "string", "getTypeFrom": "dataset", "show": false},
-                        "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onReady": {"type": "event", "show": false, "options": widgetEventOptions, "widget": "eventlist"},
                         "displayValue": {"type": "string, array", "isList": true, "show": false, "bindable": "out-bound"},
-                        "compareby": {"type": "list", "widget": "select-all", "datasetfilter": "terminals", "show": false}
+                        "compareby": {"type": "list", "widget": "select-all", "datasetfilter": "terminals", "show": false},
+                        "required": {"type": "boolean", "bindable": "in-bound", "value": false}
                     },
 
                     "wm.chips": {
