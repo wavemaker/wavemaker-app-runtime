@@ -355,7 +355,7 @@ public class SecurityService {
     }
 
     public void ssoLogin() {
-        //DUMMY METHOD to redirect to cas entry point...
-        //When this method is invoked, the CAS Filter is intercepted and sends the user to the CAS Login page through CASAuthenticationEntryPoint.
+        //DUMMY METHOD to redirect to default sso entry point...
+        //When this method is invoked, the sso Filter is intercepted and sends the user to the default sso Login page through its AuthenticationEntryPoint.
     }
 }

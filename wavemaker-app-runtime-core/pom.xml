@@ -20,6 +20,20 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Required, to escape java.lang.NoClassDefFoundError: org/springframework/security/oauth2/jwt/JwtDecoder -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wavemaker-app-runtime-prefab</artifactId>
             <version>${project.version}</version>
@@ -184,7 +198,7 @@
         <dependency>
             <groupId>org.owasp</groupId>
             <artifactId>antisamy</artifactId>
-         </dependency>
+        </dependency>
 
         <!-- Provided -->
         <dependency>

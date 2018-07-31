@@ -32,6 +32,7 @@ import org.springframework.security.core.AuthenticationException;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.security.entrypoint.SSOEntryPoint;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
 import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND;
@@ -40,7 +41,7 @@ import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_
 /**
  * Created by ArjunSahasranam on 5/16/16.
  */
-public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryPoint {
+public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryPoint implements SSOEntryPoint {
 
     @Autowired
     @Qualifier("casServiceProperties")
