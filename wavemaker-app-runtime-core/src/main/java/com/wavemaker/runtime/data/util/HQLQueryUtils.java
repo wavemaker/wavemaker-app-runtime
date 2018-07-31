@@ -109,12 +109,10 @@ public class HQLQueryUtils {
             fieldType.setTypeRef(typeRef);
             property.setFieldType(fieldType);
 
-            if (i == 0 && (returnAliases == null || returnAliases.length == 1)) {
-                if (fieldType.getType() == ReferenceType.ENTITY) {
-                    // setting property name to for avoiding creating new model class
-                    // in case of query returning only entity.
-                    property.setName(null);
-                }
+            if (i == 0 && (returnAliases == null || returnAliases.length == 1) && (fieldType.getType() == ReferenceType.ENTITY)) {
+                // setting property name to for avoiding creating new model class
+                // in case of query returning only entity.
+                property.setName(null);
             }
 
             properties.add(property);
