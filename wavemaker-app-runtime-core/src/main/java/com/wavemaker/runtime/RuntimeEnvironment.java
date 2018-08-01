@@ -27,23 +27,23 @@ public class RuntimeEnvironment {
     private static final String WMAPP_ENVIRONMENT_KEY = "wmapp.environment";
     private static final String WM_STUDIO_URL = "wm.studioUrl";
 
-    private static final String environment;
-    private static final String studioUrl;
+    private static final String ENVIRONMENT;
+    private static final String STUDIOURL;
 
     static {
         String property = System.getProperty(WMAPP_ENVIRONMENT_KEY);
         property = StringUtils.isNotBlank(property) ? property : System.getenv(WMAPP_ENVIRONMENT_KEY);
-        environment = StringUtils.isNotBlank(property) ? property : "production";
+        ENVIRONMENT = StringUtils.isNotBlank(property) ? property : "production";
 
         String studioUrlValue = System.getProperty(WM_STUDIO_URL);
-        studioUrl = StringUtils.isNotBlank(studioUrlValue) ? studioUrlValue : System.getenv(WM_STUDIO_URL);
+        STUDIOURL = StringUtils.isNotBlank(studioUrlValue) ? studioUrlValue : System.getenv(WM_STUDIO_URL);
     }
 
     public static boolean isTestRunEnvironment() {
-        return "testRun".equalsIgnoreCase(environment);
+        return "testRun".equalsIgnoreCase(ENVIRONMENT);
     }
 
     public static String getStudioUrl() {
-        return isTestRunEnvironment() ? studioUrl : null;
+        return isTestRunEnvironment() ? STUDIOURL : null;
     }
 }

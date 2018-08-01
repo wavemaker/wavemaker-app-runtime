@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -269,7 +270,7 @@ public class WMObjectMapper extends ObjectMapper {
     public <T> T readValue(InputStream src, JavaType valueType) throws IOException {
         if (String.class.equals(valueType.getRawClass())) {
             StringWriter stringWriter = new StringWriter();
-            IOUtils.copy(src, stringWriter);
+            IOUtils.copy(src, stringWriter, Charset.defaultCharset());
             return (T) stringWriter.toString();
         }
         return readMapper.readValue(src, valueType);
