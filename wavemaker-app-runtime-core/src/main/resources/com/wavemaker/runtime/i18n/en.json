@@ -67,5 +67,6 @@
   "LABEL_DATA_PULL_PROGRESS_STOP_BTN": "Stop",
   "LABEL_DATA_PUSH_PROGRESS": "Pushing offline changes",
   "LABEL_DATA_PUSH_PROGRESS_STOP_BTN": "Stop",
-  "MESSAGE_LOGIN_REDIRECTION": "Redirecting to SSO login..."
+  "MESSAGE_LOGIN_REDIRECTION": "Redirecting to SSO login...",
+  "LABEL_ICON": "Icon"
 }
