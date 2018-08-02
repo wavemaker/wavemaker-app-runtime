@@ -45,13 +45,12 @@ public class JSONExceptionTranslationFilter extends ExceptionTranslationFilter {
     @Override
     protected void sendStartAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, AuthenticationException reason)
         throws ServletException, IOException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String requestPath = httpRequest.getServletPath();
+        String requestPath = request.getServletPath();
         if (requestPath != null && requestPath.endsWith(".json")) {
             logger.error("Access to {} is denied.  Reason: {}", requestPath, reason.getMessage());
 
             // send 403
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, requestPath);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, requestPath);
         } else {
             // do normal processing
             super.sendStartAuthentication(request, response, chain, reason);
