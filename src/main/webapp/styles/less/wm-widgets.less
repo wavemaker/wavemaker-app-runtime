@@ -2450,13 +2450,18 @@ If the height and width are not specified the video takes the height of the post
       &.datetime-wrapper {
         overflow-x: hidden;
       }
-      &.cell-editing:not(.checkbox-widget) {
-        padding: 0;
-        .uib-timepicker input {
-          border: 1px solid #e0e0e0;
+      &.cell-editing {
+        .app-select-wrapper {
+          display: block;
         }
-        form {
-          margin: 7px 0 0 0;
+        &:not(.checkbox-widget) {
+          padding: 0;
+          .uib-timepicker input {
+            border: 1px solid #e0e0e0;
+          }
+          form {
+            margin: 7px 0 0 0;
+          }
         }
       }
       &.required-field:before {
