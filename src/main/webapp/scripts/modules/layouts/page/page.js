@@ -243,7 +243,7 @@ WM.module('wm.layouts.page')
                             $s.registerPagePart = $s.onPagePartLoad = _.noop;
                         }
                         // trigger the onPagePartLoad of parent container
-                        Utils.triggerFn($s.$parent.onPagePartLoad);
+                        Utils.triggerFn($s.onPagePartLoad);
                     });
                 });
             }
@@ -289,7 +289,7 @@ WM.module('wm.layouts.page')
                             $s.Actions = {};
 
                             // get partial container's scope
-                            containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
+                            containerScope = $s.Widgets && $s.Widgets[$s.partialcontainername];
 
                             // expose partial's Widgets to its container's scope (to be visible to parent)
                             if (containerScope) {
@@ -329,7 +329,7 @@ WM.module('wm.layouts.page')
                             };
 
                         } else {
-                            containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
+                            containerScope = $s.Widgets && $s.Widgets[$s.partialcontainername];
                             if (containerScope && WM.isDefined(containerScope.Widgets)) {
                                 containerScope.Widgets = $s.Widgets = {};
                             }
