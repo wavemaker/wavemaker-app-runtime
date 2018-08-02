@@ -70,25 +70,6 @@ WM.module('wm.prefabs')
             }
 
             /*
-             * Get the list of prefabs from EDN.
-             * returns promise.
-             */
-            function getArtifactsList(pageNumber, filter, searchKey) {
-                if(searchKey) {
-                    return getArtifactsSearchList(searchKey, filter, pageNumber);
-                }
-                return PrefabService.getArtifactsList(pageNumber, filter);
-            }
-
-            /*
-             * Get the matched list of prefabs from EDN.
-             * returns promise.
-             */
-            function getArtifactsSearchList(searchKey, filter, pageNumber) {
-                return PrefabService.getArtifactsSearchList(searchKey, filter, pageNumber);
-            }
-
-            /*
              * update the app-prefab properties in appPrefabNamePropertiesMap
              */
             function onAppPrefabsLoad(prefabs) {
@@ -818,18 +799,6 @@ WM.module('wm.prefabs')
                 return $markup[0].outerHTML;
             }
 
-            function getArtifactChangeLog(artifactId, successCallback, failureCallback) {
-                return PrefabService.getArtifactChangeLog(artifactId, successCallback, failureCallback);
-            }
-
-            function getArtifact(ednProjectId, successCallback, failureCallback) {
-                return PrefabService.getArtifact(ednProjectId, successCallback, failureCallback);
-            }
-
-            function getArtifactCategories(successCallback, failureCallback) {
-                return PrefabService.getArtifactCategories(successCallback, failureCallback);
-            }
-
             function publishPrefabToWorkspace() {
                 projectDetails = ProjectService.getDetails();
                 var payload = {
@@ -840,21 +809,6 @@ WM.module('wm.prefabs')
                     }
                 };
                 return PrefabService.publishPrefabToWorkSpace(payload);
-            }
-
-            function importArtifactToWorkSpace(artifactId, success, error) {
-                var params = {
-                    "artifactId" : artifactId
-                };
-                return PrefabService.importArtifact(params, function(response) {
-                    Utils.triggerFn(success, response);
-                }, function(response) {
-                    Utils.triggerFn(error, response);
-                });
-            }
-
-            function publishArtifactToEDN(payload) {
-                return PrefabService.publishArtifactToEDN(payload);
             }
 
             function publishPrefabToProject(targetProjectId) {
@@ -877,41 +831,6 @@ WM.module('wm.prefabs')
                 }, successHandler, errorHandler);
             }
 
-            /**
-             *
-             * imports the prefab to the workspace
-             * @type {importArtifactToWorkSpace}
-             *
-             * @param {version} version
-             */
-            this.importArtifactToWorkSpace = importArtifactToWorkSpace;
-
-            /**
-             *
-             * get artifact details from  EDN
-             * @type {getArtifact}
-             *
-             * @param {version} version
-             */
-            this.getArtifact = getArtifact;
-
-            /**
-             *
-             * get artifact categories from  EDN
-             * @type {getArtifactCategories}
-             *
-             * @param {version} version
-             */
-            this.getArtifactCategories = getArtifactCategories;
-
-            /**
-             *
-             * publishes the artifact to the EDN
-             * @type {publishArtifactToEDN}
-             *
-             * @param {version} version
-             */
-            this.publishArtifactToEDN = publishArtifactToEDN;
 
             /**
              *
@@ -978,24 +897,6 @@ WM.module('wm.prefabs')
              * this function will load the list of prefabs in studio
              */
             this.listStudioPrefabs = listStudioPrefabs;
-
-            /**
-             * @ngdoc function
-             * @name PrefabManager#getArtifactsList
-             * @methodOf wm.prefab.$PrefabManager
-             * @description
-             * this function will load the list of prefabs from EDN
-             */
-            this.getArtifactsList = getArtifactsList;
-
-            /**
-             * @ngdoc function
-             * @name PrefabManager#getArtifactChangeLog
-             * @methodOf wm.prefab.$PrefabManager
-             * @description
-             * this function will load the changelog for a given prefab from EDN
-             */
-            this.getArtifactChangeLog = getArtifactChangeLog;
 
             /**
              * @ngdoc function
