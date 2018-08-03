@@ -511,6 +511,31 @@ wm.plugins.security.services.SecurityService = [
 
             /**
              * @ngdoc function
+             * @name wm.security.$SecurityService#configOpenId
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The API is used to configure Security Provider as “OpenId” .
+             *
+             * @param {object} params object containing parameters for the request
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+
+            configOpenId: function (params, successCallback, failureCallback) {
+                BaseService.send({
+                    target: 'Security',
+                    action: 'configOpenId',
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.config
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
              * @name wm.security.$SecurityService#getADOptions
              * @methodOf wm.security.$SecurityService
              * @function
@@ -530,6 +555,50 @@ wm.plugins.security.services.SecurityService = [
                     urlParams: {
                         projectID: projectID
                     }
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#getOpenIdOptions
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The API is used to get the values of configured OpenId security provider.
+             *
+             * @param {string} projectID project id
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+
+            getOpenIdOptions: function (projectID, successCallback, failureCallback) {
+                BaseService.send({
+                    target: 'Security',
+                    action: 'getOpenIdOptions',
+                    urlParams: {
+                        projectID: projectID
+                    }
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#getDefaultProviders
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The API is used to get the all the default providers.
+             *
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+
+            getDefaultProviders: function (successCallback, failureCallback) {
+                return BaseService.execute({
+                    target: 'Security',
+                    action: 'getDefaultProviders'
                 }, successCallback, failureCallback);
             },
 

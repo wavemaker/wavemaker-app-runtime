@@ -91,6 +91,18 @@ wm.plugins.security.constant('SECURITY_URLS', {
                 'Content-Type': undefined
             }
         },
+        getOpenIdOptions: {
+            url: "services/projects/:projectID/securityservice/providers/openId",
+            method: "GET"
+        },
+        configOpenId: {
+            url: "services/projects/:projectID/securityservice/providers/openId",
+            method: "POST"
+        },
+        getDefaultProviders: {
+            url: "services/openid/providers/default",
+            method: "GET"
+        },
         configCustomAuth: {
             url: "services/projects/:projectID/securityservice/providers/customauth",
             method: "POST"
