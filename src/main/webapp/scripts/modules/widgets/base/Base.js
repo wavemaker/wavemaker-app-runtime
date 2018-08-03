@@ -985,7 +985,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.iframedialog": {
                         "title": {"type": "string", "value": "External Content", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "url": {"type": "string", "value": "http://www.wavemaker.com", "bindable": "in-out-bound"},
+                        "url": {"type": "string", "value": "https://www.wavemaker.com", "bindable": "in-out-bound"},
                         "encodeurl": {"type": "boolean", "value": false},
                         "height": {"type": "string", "value": "400", "pattern": dimensionRegex},
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
