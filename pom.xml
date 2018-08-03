@@ -23,7 +23,7 @@
         <log4j.version>1.2.17</log4j.version>
 
         <spring.version>4.3.14.RELEASE</spring.version>
-        <spring.security.version>4.2.4.RELEASE</spring.security.version>
+        <spring.security.version>5.0.7.RELEASE</spring.security.version>
         <spring.ldap.version>2.3.2.RELEASE</spring.ldap.version>
         <spring.data.commons.version>2.0.4.RELEASE</spring.data.commons.version>
         <spring.data.jpa.version>2.0.4.RELEASE</spring.data.jpa.version>
@@ -370,6 +370,19 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-client</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-jose</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>

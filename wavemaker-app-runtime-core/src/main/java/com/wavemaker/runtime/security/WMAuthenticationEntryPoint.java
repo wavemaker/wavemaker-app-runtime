@@ -24,12 +24,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
+import com.wavemaker.runtime.security.entrypoint.FormLoginEntryPoint;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
 import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND;
 import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
 
-public class WMAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
+public class WMAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint implements FormLoginEntryPoint {
 
     /**
      * @param loginFormUrl URL where the login page can be found. Should either be
