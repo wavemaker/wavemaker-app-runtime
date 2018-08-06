@@ -100,7 +100,12 @@ wm.modules.wmCommon.services.BaseService = [
                             if (urlParams.hasOwnProperty(param)) {
                                 val = urlParams[param];
                                 if (WM.isDefined(val) && val !== null) {
-                                    config.url = config.url.replace(new RegExp(":" + param, "g"), val);
+                                    //if the param is not present in the url, just add it to the URL or else replace the placeholder for the param value
+                                    if(config.url.indexOf(param) === -1) {
+                                        config.url.indexOf("?") !== -1 ? config.url = config.url + "&" + param + "=" + val : config.url = config.url + "?" + param + "=" + val;
+                                    } else {
+                                        config.url = config.url.replace(new RegExp(":" + param, "g"), val);
+                                    }
                                 }
                             }
                         }
