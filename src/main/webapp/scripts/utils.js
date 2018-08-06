@@ -393,45 +393,50 @@ WM.module('wm.utils', [])
             return variableCategoryMap[variableCategory];
         }
 
-        /*helper function for prepareFieldDefs*/
-        function pushFieldDef(dataObject, columnDefObj, namePrefix, options) {
-            /*loop over the fields in the dataObject to process them*/
+        // Generate default field definition object for a given field
+        function getFieldDefProps(title, namePrefix, options) {
             var modifiedTitle,
                 relatedTable,
                 relatedField,
                 relatedInfo,
                 fieldName,
                 isRelated;
+            options = options || {};
+            if (_.includes(title, '.')) {
+                relatedInfo  = _.split(title, '.');
+                relatedTable = relatedInfo[0];
+                relatedField = relatedInfo[1];
+                isRelated    = true;
+            }
+            if (options.noModifyTitle) {
+                modifiedTitle = title;
+            } else {
+                if (WM.isString(title)) {
+                    modifiedTitle = prettifyLabel(title);
+                    modifiedTitle = deHyphenate(modifiedTitle);
+                    modifiedTitle = namePrefix ? initCaps(namePrefix) + ' ' + modifiedTitle : modifiedTitle;
+                } else {
+                    modifiedTitle = title;
+                }
+            }
+            title = namePrefix ? namePrefix + '.' + title : title;
+            if (isRelated) {
+                //For related columns, shorten the title to last two words
+                fieldName = _.split(modifiedTitle, ' ');
+                fieldName = fieldName.length > 1 ? fieldName[fieldName.length - 2] + ' ' + fieldName[fieldName.length - 1] : fieldName[0];
+            } else {
+                fieldName = modifiedTitle;
+            }
+            return options.setBindingField ? {'displayName': fieldName, 'field': title, 'relatedTable': relatedTable, 'relatedField': relatedField || modifiedTitle} : {'displayName': fieldName, 'relatedTable': relatedTable, 'relatedField': relatedField || modifiedTitle};
+        }
+        /*helper function for prepareFieldDefs*/
+        function pushFieldDef(dataObject, columnDefObj, namePrefix, options) {
+            /*loop over the fields in the dataObject to process them*/
             if (!options) {
                 options = {};
             }
             WM.forEach(dataObject, function (value, title) {
-                if (_.includes(title, '.')) {
-                    relatedInfo  = _.split(title, '.');
-                    relatedTable = relatedInfo[0];
-                    relatedField = relatedInfo[1];
-                    isRelated    = true;
-                }
-                if (options.noModifyTitle) {
-                    modifiedTitle = title;
-                } else {
-                    if (WM.isString(title)) {
-                        modifiedTitle = prettifyLabel(title);
-                        modifiedTitle = deHyphenate(modifiedTitle);
-                        modifiedTitle = namePrefix ? initCaps(namePrefix) + ' ' + modifiedTitle : modifiedTitle;
-                    } else {
-                        modifiedTitle = title;
-                    }
-                }
-                title = namePrefix ? namePrefix + '.' + title : title;
-                if (isRelated) {
-                    //For related columns, shorten the title to last two words
-                    fieldName = _.split(modifiedTitle, ' ');
-                    fieldName = fieldName.length > 1 ? fieldName[fieldName.length - 2] + ' ' + fieldName[fieldName.length - 1] : fieldName[0];
-                } else {
-                    fieldName = modifiedTitle;
-                }
-                var defObj = options.setBindingField ? {'displayName': fieldName, 'field': title, 'relatedTable': relatedTable, 'relatedField': relatedField || modifiedTitle} : {'displayName': fieldName, 'relatedTable': relatedTable, 'relatedField': relatedField || modifiedTitle};
+                var defObj = getFieldDefProps(title, namePrefix, options);
                 /*if field is a leaf node, push it in the columnDefs*/
                 if (!WM.isObject(value) || (WM.isArray(value) && !value[0])) {
                     /*if the column counter has reached upperBound return*/
@@ -3184,6 +3189,7 @@ WM.module('wm.utils', [])
         this.loadStyleSheets            = loadStyleSheets;
         this.loadStyleSheet             = loadStyleSheet;
         this.prepareFieldDefs           = prepareFieldDefs;
+        this.getFieldDefProps           = getFieldDefProps;
         this.prettifyCSS                = prettifyCSS;
         this.prettifyHTML               = prettifyHTML;
         this.prettifyJS                 = prettifyJS;

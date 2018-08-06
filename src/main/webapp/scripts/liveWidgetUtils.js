@@ -33,7 +33,7 @@ WM.module('wm.widgets.live')
                 resetDataSetProps      = ['datafield', 'searchkey', 'displaylabel', 'displayfield', 'displayexpression'],
                 LIVE_CONSTANTS         = {
                     'EMPTY_KEY'     : 'EMPTY_NULL_FILTER',
-                    'EMPTY_VALUE'   : $rs.appLocale.LABEL_NO_VALUE,
+                    'EMPTY_VALUE'   : $rs.appLocale && $rs.appLocale.LABEL_NO_VALUE,
                     'LABEL_KEY'     : 'key',
                     'LABEL_VALUE'   : 'value',
                     'NULL_EMPTY'    : ['null', 'empty'],
