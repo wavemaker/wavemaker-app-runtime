@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security.provider.database.authorities;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Session;

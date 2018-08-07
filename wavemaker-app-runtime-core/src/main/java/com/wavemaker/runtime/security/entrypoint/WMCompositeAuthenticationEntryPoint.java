@@ -2,9 +2,7 @@ package com.wavemaker.runtime.security.entrypoint;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,9 +15,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-
-import com.wavemaker.commons.MessageResource;
-import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * Created by srujant on 2/8/18.

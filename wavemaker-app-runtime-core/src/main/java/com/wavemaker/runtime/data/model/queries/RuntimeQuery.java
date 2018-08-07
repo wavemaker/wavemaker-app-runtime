@@ -18,6 +18,7 @@ package com.wavemaker.runtime.data.model.queries;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;

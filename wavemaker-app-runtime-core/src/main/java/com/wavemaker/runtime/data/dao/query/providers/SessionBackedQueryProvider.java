@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.data.dao.query.providers;
 
 import java.util.Optional;
+
 import javax.persistence.Entity;
 
 import org.hibernate.Session;

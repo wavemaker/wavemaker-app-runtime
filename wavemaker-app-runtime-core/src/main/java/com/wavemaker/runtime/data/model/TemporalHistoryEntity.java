@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.data.model;
 
 import java.io.Serializable;
+
 import javax.persistence.Transient;
 
 /**
