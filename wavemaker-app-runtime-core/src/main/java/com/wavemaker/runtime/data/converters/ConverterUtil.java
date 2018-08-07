@@ -29,7 +29,7 @@ public class ConverterUtil {
 
     public static Object toLongIfPossible(final Object fromValue) {
         Object value = fromValue;
-            if (fromValue instanceof String && NumberUtils.isNumber(((String) value))) {
+            if (fromValue instanceof String && NumberUtils.isCreatable(((String) value))) {
                 value = Long.valueOf(((String) value));
             }
         return value;

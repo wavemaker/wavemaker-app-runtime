@@ -19,7 +19,6 @@ import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -72,8 +71,7 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
     private ApplicationContext context;
 
     @Override
-    public void setApplicationContext(final ApplicationContext applicationContext)
-            throws BeansException {
+    public void setApplicationContext(final ApplicationContext applicationContext) {
         context = applicationContext;
     }
 
@@ -116,10 +114,8 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
             if (event.getSource() == context) {
                 installPrefabs();
             }
-        } else if (event instanceof PrefabsUnloadedEvent) {
-            if (event.getSource() == context) {
+        } else if (event instanceof PrefabsUnloadedEvent && event.getSource() == context) {
                 uninstallPrefabs();
-            }
         }
     }
 
