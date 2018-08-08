@@ -147,17 +147,7 @@ wm.modules.wmCommon.services.BaseService = [
         /* replace the parameters from service-error message*/
             parseError = function (errorDetails) {
                 var errMsg;
-                localeObject = localeObject || getLocaleObject();
-                /*Check for local resources and code in the resource */
-                if (!localeObject || !localeObject[errorDetails.messageKey]) {
-                    errMsg = errorDetails.message || (errorDetails.parameters && errorDetails.parameters[0]) || "";
-                    return errMsg;
-                }
-
-                /*Assigning the error message*/
-                errMsg = Utils.getClonedObject(localeObject[errorDetails.messageKey]);
-                /*Replace the parameters in the error code with the actual strings.*/
-                errMsg = Utils.replace(errMsg, errorDetails.parameters);
+                errMsg = errorDetails.message ? Utils.replace(errorDetails.message, errorDetails.parameters, true) : ((errorDetails.parameters && errorDetails.parameters[0]) || "");
                 return errMsg;
             },
 

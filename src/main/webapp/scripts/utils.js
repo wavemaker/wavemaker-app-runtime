@@ -1314,13 +1314,19 @@ WM.module('wm.utils', [])
          * Examples:
          * Utils.replace('Hello, ${first} ${last} !', {first: 'wavemaker', last: 'ng'}) --> Hello, wavemaker ng
          * Utils.replace('Hello, ${0} ${1} !', ['wavemaker','ng']) --> Hello, wavemaker ng
+         * Examples if parseError is true:
+         * Utils.replace('Hello, {0} {1} !', ['wavemaker','ng']) --> Hello, wavemaker ng
          */
-        function replace(template, map) {
+        function replace(template, map, parseError) {
+            var regEx = REGEX.REPLACE_PATTERN;
             if (!template) {
                 return;
             }
 
-            return template.replace(REGEX.REPLACE_PATTERN, function (match, key) {
+            if (parseError) {
+                regEx = /\{([^\}]+)\}/g;
+            }
+            return template.replace(regEx, function (match, key) {
                 return _.get(map, key);
             });
         }
