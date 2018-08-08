@@ -64,6 +64,19 @@ WM.module('wm.prefabs')
                     scope.overflow = newVal ? 'auto' : '';
                     break;
                 }
+                // Getting meta data from the bind string for those properties which are bindable of type "in-bound", "in-out-bound",
+                if (CONSTANTS.isStudioMode && ['in-bound', 'in-out-bound'].indexOf(scope.widgetProps[key].bindable) > -1) {
+                    var expr = scope.pfScope['bind' + key];
+                    if (expr) {
+                        var typeUtilsObj = Utils.getService('TypeUtils');
+                        var columns = typeUtilsObj.getFieldsForExpr(expr);
+                        if (columns.length > 0) {
+                            scope.widgetProps[key].keys = columns;
+                        } else {
+                            scope.widgetProps[key].keys = [];
+                        }
+                    }
+                }
 
                 if (_.isFunction(scope.pfScope.onPropertyChange)) {
                     scope.pfScope.onPropertyChange(key, newVal, oldVal);
@@ -181,6 +194,11 @@ WM.module('wm.prefabs')
 
                         if (!_.includes(propsSkipList, key)) {
                             prefabProperties.push(key);
+                        }
+
+                        if (prop.hasOwnProperty('options') && Utils.stringStartsWith(prop.options, 'bind:')) {
+                            prop.__options = prop.options;
+                            delete prop.options;
                         }
 
                         if (!prop.hasOwnProperty('show')) {
@@ -382,15 +400,25 @@ WM.module('wm.prefabs')
                                         $is[propName] = overrideResourcePath($is, nv);
                                     });
                                 }
+                                if (propDetails.__options) {
+                                    var bindOptKey = propDetails.__options.replace('bind:', '');
+                                    $is._watchers[propName + '_options'] = $is.pfScope.$watch(bindOptKey, function (nv) {
+                                        if (!_.isEmpty(nv) && _.isArray(nv)) {
+                                            $is.widgetProps[propName].options = [''].concat(nv);
+                                        } else {
+                                            $is.widgetProps[propName].options = [];
+                                        }
+                                    });
+                                }
                                 if (propDetails.__show) {
                                     var key = propDetails.__show.replace('bind:', '');
-                                    $is._watchers[propName] = $is.pfScope.$watch(key, function (nv) {
+                                    $is._watchers[propName + '_show'] = $is.pfScope.$watch(key, function (nv) {
                                         $is.widgetProps[propName].show = nv;
                                     });
                                 }
                                 if (propDetails.__disabled) {
                                     var key = propDetails.__disabled.replace('bind:', '');
-                                    $is._watchers[propName] = $is.pfScope.$watch(key, function (nv) {
+                                    $is._watchers[propName + '_disabled'] = $is.pfScope.$watch(key, function (nv) {
                                         $is.widgetProps[propName].disabled = nv;
                                     });
                                 }
