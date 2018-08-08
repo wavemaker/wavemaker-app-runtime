@@ -39,6 +39,14 @@
     }
   }
   .app-mobile-navbar {
+    & ~ .app-search.full-screen {
+      .calc('height', ~"calc(100% - @{app-mobile-nav-height} - 1pt)") !important;
+      margin: 0;
+      top: @app-mobile-nav-height;
+        &.inline {
+        height: auto !important;
+      }
+    }
     & + .app-content {
       .calc('height', ~"calc(100% - @{app-mobile-nav-height} - 1pt)") !important;
       margin: 0;
