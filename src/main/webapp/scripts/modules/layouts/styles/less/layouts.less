@@ -454,7 +454,7 @@ body {
   height: 100%;
   position: relative;
   // Required for left panel swipe transition
-  &.wm-mobile-app {
+  &.wm-mobile-app:not(.domcontent) {
     overflow: hidden;
   }
   #wm-app-content , .app-page, .app-partial, .app-included-page {
