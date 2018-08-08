@@ -339,10 +339,13 @@
   /*******************************************************************************************
   **************************************form group******************************************************
   ********************************************************************************************/
-    .form-group {
-    /*supporting full width in form*/
-      .form-control-static + .form-control, .form-control-static + .form-control + .help-block {
+    .form-group .form-control-static {
+      /*supporting full width in form*/
+      + .form-control, + .app-select-wrapper > .form-control, + .app-input-wrapper > .form-control {
         width: 100%;
+        + .help-block {
+          width: 100%;
+        }
       }
     }
     .live-field {
