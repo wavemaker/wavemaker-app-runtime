@@ -184,7 +184,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         if (org.apache.commons.lang3.StringUtils.isNotBlank(studioUrl)) {
             redirectUrl = studioUrl + OpenIdConstants.REDIRECT_URL;
         } else {
-            redirectUrl = new StringBuilder(appPath).append(OpenIdConstants.REDIRECT_URL).toString();
+                redirectUrl = new StringBuilder(appPath).append(OpenIdConstants.REDIRECT_URL).toString();
         }
         Map<String, String> valuesMap = Collections.singletonMap(OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME, clientRegistration.getRegistrationId());
         redirectUrl = StrSubstitutor.replace(redirectUrl, valuesMap);

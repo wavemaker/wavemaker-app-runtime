@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.security.provider.database.authorities;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -24,12 +25,14 @@ import org.hibernate.Session;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import com.wavemaker.runtime.security.AuthenticationContext;
+import com.wavemaker.runtime.security.UserAuthoritiesProvider;
 import com.wavemaker.runtime.security.provider.database.AbstractDatabaseSupport;
 
 /**
  * Created by ArjunSahasranam on 11/3/16.
  */
-public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport implements AuthoritiesProvider {
+public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport implements AuthoritiesProvider, UserAuthoritiesProvider {
 
     private static final String USERNAME = "username";
     private static final String COLON_USERNAME = ":username";
@@ -49,6 +52,13 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
         if (authoritiesByUsernameQuery.contains(Q_MARK)) {
             authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(Q_MARK, COLON_USERNAME);
         }
+    }
+
+    @Override
+    public List<GrantedAuthority> loadAuthorities(AuthenticationContext authenticationContext) {
+        String userName = authenticationContext.getUsername();
+        Collection<? extends GrantedAuthority> authoritiesProviderCollection = this.loadUserAuthorities(userName);
+        return authoritiesProviderCollection != null ? (List<GrantedAuthority>) authoritiesProviderCollection : null;
     }
 
     public String getAuthoritiesByUsernameQuery() {
