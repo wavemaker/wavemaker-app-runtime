@@ -105,7 +105,7 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             method: "DELETE"
         },
         saveDataModel: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/save",
+            url: "services/projects/:projectID/models/:dataModelName/save",
             method: "POST"
         },
         applyDataModel: {
@@ -121,19 +121,19 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             method: "GET"
         },
         listDataModels: {
-            url: "services/projects/:projectID/models/schemas",
-            method: "GET"
-        },
-        getAllModels: {
-            url: "services/projects/:projectID/models/:serviceId",
+            url: "services/projects/:projectID/models/schemas/:regionId/:scope",
             method: "GET"
         },
         getModel: {
-            url: "services/projects/:projectID/models/:serviceId/:modelId",
+            url: "services/projects/:projectID/models/:serviceId",
             method: "GET"
         },
         listScopeTypes: {
-            url: "services/projects/:projectID/models/scopes",
+            url: "services/projects/:projectID/models/regions/:regionId/scopes",
+            method: "GET"
+        },
+        listRegions: {
+            url: "services/projects/:projectID/models/regions",
             method: "GET"
         },
         createDataModel: {
@@ -219,15 +219,15 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             method: "DELETE"
         },
         addAttributes: {
-            url: "services/projects/:projectID/models/:serviceId/:modelId/:entityName/:attributeId",
+            url: "services/projects/:projectID/models/:serviceId/:entityName/:attributeId",
             method: "POST"
         },
         deleteAttribute: {
-            url: "services/projects/:projectID/models/:serviceId/:modelId/:entityName/:attributeId",
+            url: "services/projects/:projectID/models/:serviceId/:entityName/:attributeId",
             method: "DELETE"
         },
         updateAttribute: {
-            url: "services/projects/:projectID/models/:serviceId/:modelId/:entityName/:attributeId",
+            url: "services/projects/:projectID/models/:serviceId/:entityName/:attributeId",
             method: "PUT"
         },
 
