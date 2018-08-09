@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,12 +15,6 @@
  */
 package com.wavemaker.runtime.security.xss.handler;
 
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletRequestWrapper;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -29,7 +23,6 @@ import com.wavemaker.commons.model.security.XSSConfig;
 import com.wavemaker.commons.model.security.XSSFilterStrategy;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
-import com.wavemaker.runtime.security.xss.XSSRequestWrapper;
 import com.wavemaker.runtime.security.xss.sanitizer.DefaultXSSSanitizer;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizer;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSSanitizer;
@@ -50,22 +43,13 @@ public class XSSSecurityHandler {
     private boolean isInitialized = false;
     private XSSSanitizer xssSanitizer;
     private XSSConfig xssConfig;
+    private boolean xssEnabled;
 
     private XSSSecurityHandler() {
     }
 
     public static XSSSecurityHandler getInstance() {
         return instance;
-    }
-
-    public ServletRequestWrapper getRequestWrapper(HttpServletRequest request) {
-        if (!isInitialized) {
-            initConfiguration();
-        }
-        if (isXSSEnabledForMethod(request)) {
-            return new XSSRequestWrapper(request, this);
-        }
-        return new HttpServletRequestWrapper(request);
     }
 
     public String sanitizeRequestData(String data) {
@@ -75,16 +59,15 @@ public class XSSSecurityHandler {
         return xssSanitizer.sanitizeRequestData(data);
     }
 
-    private boolean isXSSEnabledForMethod(HttpServletRequest request) {
-        return isXSSEnabled() && matches(request, XSSConfig.ALLOWED_METHODS);
+    public boolean isXSSEnabled() {
+        if (!isInitialized) {
+            initConfiguration();
+        }
+        return xssEnabled;
     }
 
-    private boolean isXSSEnabled() {
+    private boolean isXSSEnabled(XSSConfig xssConfig) {
         return xssConfig != null && xssConfig.isEnforceXssSecurity();
-    }
-
-    private boolean matches(HttpServletRequest httpServletRequest, Pattern allowedMethods) {
-        return !allowedMethods.matcher(httpServletRequest.getMethod()).matches();
     }
 
     private void initConfiguration() {
@@ -96,7 +79,8 @@ public class XSSSecurityHandler {
         }
         if (wmAppSecurityConfig != null) {
             xssConfig = wmAppSecurityConfig.getXssConfig();
-            if (isXSSEnabled()) {
+            if (isXSSEnabled(xssConfig)) {
+                xssEnabled = true;
                 buildSanitizer(xssConfig.getXssFilterStrategy());
             } else {
                 buildSanitizer(XSSFilterStrategy.NONE);

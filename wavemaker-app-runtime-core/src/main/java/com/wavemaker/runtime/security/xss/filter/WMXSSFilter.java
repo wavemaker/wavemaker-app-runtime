@@ -16,19 +16,15 @@
 package com.wavemaker.runtime.security.xss.filter;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestWrapper;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.web.filter.GenericFilterBean;
-
-import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
 
 /**
@@ -54,9 +50,7 @@ public class WMXSSFilter extends GenericFilterBean {
 
         xXssProtectionHeaderWriter.writeHeaders(httpServletRequest, httpServletResponse);
 
-        XSSSecurityHandler xssSecurityHandler = XSSSecurityHandler.getInstance();
-        ServletRequestWrapper requestWrapper = xssSecurityHandler.getRequestWrapper(httpServletRequest);
-        chain.doFilter(requestWrapper, httpServletResponse);
+        chain.doFilter(request, httpServletResponse);
     }
 
     @Override
