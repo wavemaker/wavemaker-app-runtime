@@ -3927,8 +3927,14 @@ If the height and width are not specified the video takes the height of the post
 }
 
 //date picker styles
-.bs-datepicker-body table td span:focus {
-   outline: 1px dotted !important;
+.bs-datepicker-body table td span {
+  &:focus {
+    background-color: #bbb !important;
+    color: #333 !important;
+  }
+  &.current-date:focus {
+    color: #fff !important;
+  }
 }
 
 //Focus styles for Menu in navbar
