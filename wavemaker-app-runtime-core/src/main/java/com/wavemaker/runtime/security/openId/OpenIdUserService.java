@@ -19,21 +19,23 @@ import com.wavemaker.runtime.security.UserAuthoritiesProvider;
  */
 public class OpenIdUserService extends OidcUserService {
 
-    @Autowired
+    @Autowired(required = false)
     private UserAuthoritiesProvider userAuthoritiesProvider;
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         OidcUser oidcUser = super.loadUser(userRequest);
-        OpenIdAuthenticationContext openIdAuthenticationContext = new OpenIdAuthenticationContext(oidcUser.getName(), oidcUser);
-        List<GrantedAuthority> grantedAuthorities = userAuthoritiesProvider.loadAuthorities(openIdAuthenticationContext);
-        if (!CollectionUtils.isEmpty(grantedAuthorities)) {
-            String userNameAttributeName = userRequest.getClientRegistration()
-                    .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-            if (org.springframework.util.StringUtils.hasText(userNameAttributeName)) {
-                oidcUser = new DefaultOidcUser(new HashSet<>(grantedAuthorities), oidcUser.getIdToken(), oidcUser.getUserInfo(), userNameAttributeName);
-            } else {
-                oidcUser = new DefaultOidcUser(new HashSet<>(grantedAuthorities), userRequest.getIdToken(), oidcUser.getUserInfo());
+        if (userAuthoritiesProvider != null) {
+            OpenIdAuthenticationContext openIdAuthenticationContext = new OpenIdAuthenticationContext(oidcUser.getName(), oidcUser);
+            List<GrantedAuthority> grantedAuthorities = userAuthoritiesProvider.loadAuthorities(openIdAuthenticationContext);
+            if (!CollectionUtils.isEmpty(grantedAuthorities)) {
+                String userNameAttributeName = userRequest.getClientRegistration()
+                        .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+                if (org.springframework.util.StringUtils.hasText(userNameAttributeName)) {
+                    oidcUser = new DefaultOidcUser(new HashSet<>(grantedAuthorities), oidcUser.getIdToken(), oidcUser.getUserInfo(), userNameAttributeName);
+                } else {
+                    oidcUser = new DefaultOidcUser(new HashSet<>(grantedAuthorities), userRequest.getIdToken(), oidcUser.getUserInfo());
+                }
             }
         }
         return oidcUser;
