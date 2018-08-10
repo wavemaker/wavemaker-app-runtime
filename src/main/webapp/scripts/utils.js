@@ -3148,6 +3148,12 @@ WM.module('wm.utils', [])
             };
         }();
 
+        // Function return the studio url.
+        function getStudioUrl() {
+            var locationObj = $window.location;
+            return locationObj.origin + (locationObj.host.indexOf(':8080') > -1 ? '/wavemaker' : '/studio');
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3311,4 +3317,5 @@ WM.module('wm.utils', [])
         this.formatExportExpression     = formatExportExpression;
         this.prepareDocLinks            = prepareDocLinks;
         this.getDecodedData             = getDecodedData;
+        this.getStudioUrl               = getStudioUrl;
     }]);
