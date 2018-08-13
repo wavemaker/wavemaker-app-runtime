@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,15 +27,14 @@ import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.core.userdetails.User;
 
 /**
- *
  * @author Seung Lee
  */
 public class WMUser extends User implements WMUserDetails {
 
-    private final String userLongName;
-    private final int tenantId;
-    private final String userId;
-    private final long loginTime;
+    private String userLongName;
+    private int tenantId;
+    private String userId;
+    private long loginTime;
     private Map<String, Object> customAttributes;
 
     private static GrantedAuthoritiesMapper authoritiesMapper = new SimpleAuthorityMapper();
@@ -44,14 +43,26 @@ public class WMUser extends User implements WMUserDetails {
         this(userName, userName, "", userName, 0, roles);
     }
 
+    /**
+     * @deprecated  use WMUserBuilder to create this class objects
+     */
+    @Deprecated
     public WMUser(String userName, String password, Collection<String> roles) {
         this(userName, userName, password, userName, 0, roles);
     }
 
+    /**
+     * @deprecated  use WMUserBuilder to create this class objects
+     */
+    @Deprecated
     public WMUser(String userId, String username, String password, String userLongName, int tenantId, Collection<String> roles) {
         this(userId, username, password, userLongName, tenantId, true, true, true, true, getGrantedAuthorities(roles), System.currentTimeMillis());
     }
 
+    /**
+     * @deprecated  use WMUserBuilder to create this class objects
+     */
+    @Deprecated
     public WMUser(String userId, String username, String password, String userLongName, int tenantId, boolean enabled, boolean accountNonExpired,
                   boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, long loggedInAt) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authoritiesMapper.mapAuthorities(authorities));
@@ -62,7 +73,7 @@ public class WMUser extends User implements WMUserDetails {
         this.customAttributes = new HashMap<>();
     }
 
-    private static Collection<? extends  GrantedAuthority> getGrantedAuthorities(Collection<String> roles) {
+    static Collection<? extends GrantedAuthority> getGrantedAuthorities(Collection<String> roles) {
         Collection<GrantedAuthority> grantedAuthorities = new ArrayList();
         for (String role : roles) {
             grantedAuthorities.add(new SimpleGrantedAuthority(role));
@@ -93,6 +104,26 @@ public class WMUser extends User implements WMUserDetails {
     @Override
     public Map<String, Object> getCustomAttributes() {
         return customAttributes;
+    }
+
+    public void setCustomAttributes(Map<String, Object> customAttributes) {
+        this.customAttributes = customAttributes;
+    }
+
+    public void setUserLongName(String userLongName) {
+        this.userLongName = userLongName;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setLoginTime(long loginTime) {
+        this.loginTime = loginTime;
     }
 
     public void addCustomAttribute(String name, Object value) {

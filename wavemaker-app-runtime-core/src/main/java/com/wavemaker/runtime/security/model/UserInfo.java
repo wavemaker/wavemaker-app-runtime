@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.security.model;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Created by ArjunSahasranam on 13/1/16.
@@ -25,6 +26,7 @@ public class UserInfo {
     private String userName;
     private String[] userRoles;
     private String landingPage;
+    private Map<String,Object> userAttributes;
 
     public String getUserId() {
         return userId;
@@ -56,6 +58,14 @@ public class UserInfo {
 
     public void setLandingPage(final String landingPage) {
         this.landingPage = landingPage;
+    }
+
+    public Map<String, Object> getUserAttributes() {
+        return userAttributes;
+    }
+
+    public void setUserAttributes(Map<String, Object> userAttributes) {
+        this.userAttributes = userAttributes;
     }
 
     @Override

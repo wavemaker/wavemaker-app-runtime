@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -81,9 +81,9 @@ public class SecurityService {
     public static int getTenantId() {
         Authentication authentication = getAuthenticatedAuthentication();
 
-            if (authentication != null && authentication.getPrincipal() instanceof WMUserDetails) {
-                WMUserDetails principal = (WMUserDetails) authentication.getPrincipal();
-                return principal.getTenantId();
+        if (authentication != null && authentication.getPrincipal() instanceof WMUserDetails) {
+            WMUserDetails principal = (WMUserDetails) authentication.getPrincipal();
+            return principal.getTenantId();
         }
         return 0;
     }
@@ -144,14 +144,14 @@ public class SecurityService {
     public boolean isAuthenticated() {
         return getAuthenticatedAuthentication() != null;
     }
-    
+
     public Map<String, Object> getCustomAttributes() {
         Authentication authentication = getAuthenticatedAuthentication();
 
-            if (authentication != null && authentication.getPrincipal() instanceof WMUserDetails) {
-                WMUserDetails wmUserDetails = (WMUserDetails) authentication.getPrincipal();
-                return wmUserDetails.getCustomAttributes();
-            }
+        if (authentication != null && authentication.getPrincipal() instanceof WMUserDetails) {
+            WMUserDetails wmUserDetails = (WMUserDetails) authentication.getPrincipal();
+            return wmUserDetails.getCustomAttributes();
+        }
         return null;
     }
 
@@ -323,6 +323,7 @@ public class SecurityService {
             userInfo.setUserName(getUserName());
             userInfo.setUserRoles(getUserRoles());
             userInfo.setLandingPage(getUserLandingPage());
+            userInfo.setUserAttributes(getCustomAttributes());
         }
 
         SecurityInfo securityInfo = new SecurityInfo();
