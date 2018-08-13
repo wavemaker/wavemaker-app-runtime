@@ -3050,6 +3050,8 @@ If the height and width are not specified the video takes the height of the post
   .app-media-thumbnail {
     z-index: 100;
   }
+}
+.app-medialist,.wm-mobile-app {
   .app-media-fullscreen {
     z-index: 1000;
     position: fixed;
@@ -3059,6 +3061,10 @@ If the height and width are not specified the video takes the height of the post
     left: 0;
     .app-mobile-navbar .left-nav-btn{
       display: none;
+    }
+    .app-header+.app-content{
+      margin: 0;
+      .calc('height', ~"calc(100% - 36pt)");
     }
     .media-content{
       display: table;
