@@ -101,11 +101,16 @@ WM.module('wm.layouts.containers')
             // set the show property for the search related properties
             function enableWidgetProps($is, wp, bool) {
                 wp.searchbuttoniconclass.show     = wp.searchbuttonlabel.show =
-                    wp.searchplaceholder.show     = wp.scopedatavalue.show    =
-                    wp.scopedataset.show          = wp.dataset.show           =
+                    wp.searchplaceholder.show     = wp.dataset.show           =
                     wp.searchkey.show             = wp.displaylabel.show      =
                     wp.displayimagesrc.show       = wp.datafield.show         =
-                    wp.datavalue.show             =  bool;
+                    wp.datavalue.show             = bool;
+                if (wp.scopedataset) {
+                    wp.scopedataset.show          = bool;
+                }
+                if (wp.scopedatavalue) {
+                    wp.scopedatavalue.show    = bool;
+                }
                 if ($is.active) {
                     $is.$emit('wms:refresh-properties-panel');
                 }
