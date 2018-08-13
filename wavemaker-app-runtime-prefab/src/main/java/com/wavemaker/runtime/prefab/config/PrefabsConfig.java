@@ -83,7 +83,7 @@ public class PrefabsConfig {
         if (value != null && !value.isEmpty()) {
             return value;
         }
-        LOGGER.info("Property:'" + propKey + "', Not found in properties file. Using default value:" + defaultValue);
+        LOGGER.info("Property:'{}', Not found in properties file. Using default value:{}", propKey, defaultValue);
         return defaultValue;
     }
 }

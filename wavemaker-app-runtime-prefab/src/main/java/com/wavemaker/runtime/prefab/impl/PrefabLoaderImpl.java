@@ -112,10 +112,8 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
             if (event.getSource() == context) {
                 loadPrefabs();
             }
-        } else if (event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent) {
-            if (event.getSource() == context) {
-                publishEvent(new PrefabsUnloadedEvent(context));
-            }
+        } else if ((event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent) && event.getSource() == context) {
+            publishEvent(new PrefabsUnloadedEvent(context));
         }
     }
 

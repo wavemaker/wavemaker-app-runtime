@@ -35,7 +35,7 @@ public class PrefabWebApplicationContext extends XmlWebApplicationContext {
         setClassLoader(prefabClassLoader);
         setServletContext(servletContext);
         setDisplayName("Prefab Context [" + prefab.getName() + "]");
-        setConfigLocations(new String[]{"classpath:prefab-springapp.xml"});
+        setConfigLocations("classpath:prefab-springapp.xml");
         ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(prefabClassLoader);

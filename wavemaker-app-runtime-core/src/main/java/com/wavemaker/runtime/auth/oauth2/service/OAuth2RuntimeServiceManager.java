@@ -11,9 +11,8 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,7 @@ import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.auth.oauth2.extractors.AccessTokenRequestContext;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.HttpRequestUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.WMObjectMapper;
@@ -116,31 +116,27 @@ public class OAuth2RuntimeServiceManager {
 
         HttpResponseDetails httpResponseDetails = restConnector.invokeRestCall(httpRequestDetails);
 
-        try {
-            if (httpResponseDetails.getStatusCode() == 200) {
-                String response = IOUtils.toString(httpResponseDetails.getBody());
-                AccessTokenRequestContext accessTokenRequestContext = new AccessTokenRequestContext(httpResponseDetails.getHeaders().getContentType(),
-                        oAuth2ProviderConfig.getAccessTokenUrl(), response);
+        if (httpResponseDetails.getStatusCode() == 200) {
+            String response = WMIOUtils.toString(httpResponseDetails.getBody());
+            AccessTokenRequestContext accessTokenRequestContext = new AccessTokenRequestContext(httpResponseDetails.getHeaders().getContentType(),
+                    oAuth2ProviderConfig.getAccessTokenUrl(), response);
 
-                String accessToken = OAuth2Helper.extractAccessToken(accessTokenRequestContext);
-                String requestSourceType = null;
+            String accessToken = OAuth2Helper.extractAccessToken(accessTokenRequestContext);
+            String requestSourceType = null;
 //                TODO Have to perform encryption on accessToken
-                if (state != null) {
-                    Map<String, String> jsonObject = OAuth2Helper.getStateObject(state);
-                    if (jsonObject.containsKey(OAuth2Constants.REQUEST_SOURCE_TYPE)) {
-                        requestSourceType = jsonObject.get(OAuth2Constants.REQUEST_SOURCE_TYPE);
-                    }
-                    if ("MOBILE".equalsIgnoreCase(requestSourceType) && customUrlScheme == null) {
-                        setCustomUrlScheme();
-                    }
+            if (state != null) {
+                Map<String, String> jsonObject = OAuth2Helper.getStateObject(state);
+                if (jsonObject.containsKey(OAuth2Constants.REQUEST_SOURCE_TYPE)) {
+                    requestSourceType = jsonObject.get(OAuth2Constants.REQUEST_SOURCE_TYPE);
                 }
-                return OAuth2Helper.getCallbackResponse(providerId, accessToken, customUrlScheme, requestSourceType);
-            } else {
-                logger.error("Failed to fetch access token, request made is {} and its response is {}", httpRequestDetails, httpResponseDetails);
-                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.fetch.accessToken"));
+                if ("MOBILE".equalsIgnoreCase(requestSourceType) && customUrlScheme == null) {
+                    setCustomUrlScheme();
+                }
             }
-        } catch (IOException e) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.parse.responseBody"), e);
+            return OAuth2Helper.getCallbackResponse(providerId, accessToken, customUrlScheme, requestSourceType);
+        } else {
+            logger.error("Failed to fetch access token, request made is {} and its response is {}", httpRequestDetails, httpResponseDetails);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.fetch.accessToken"));
         }
     }
 
@@ -164,7 +160,7 @@ public class OAuth2RuntimeServiceManager {
             } catch (IOException e) {
                 throw new WMRuntimeException(e);
             } finally {
-                IOUtils.closeQuietly(inputStream);
+                WMIOUtils.closeSilently(inputStream);
             }
         }
     }
