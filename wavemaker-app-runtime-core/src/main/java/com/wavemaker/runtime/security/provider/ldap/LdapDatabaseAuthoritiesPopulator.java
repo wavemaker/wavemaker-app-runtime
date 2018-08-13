@@ -22,7 +22,8 @@ import java.util.List;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.wavemaker.runtime.security.provider.database.authorities.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 
 /**
  * Created by ArjunSahasranam on 15/3/16.
@@ -36,7 +37,7 @@ public class LdapDatabaseAuthoritiesPopulator implements
     public Collection<? extends GrantedAuthority> getGrantedAuthorities(
             final DirContextOperations userData, final String username) {
         List<GrantedAuthority> dbAuthsSet = new ArrayList<>();
-        dbAuthsSet.addAll(authoritiesProvider.loadUserAuthorities(username));
+        dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username)));
         return dbAuthsSet;
     }
 

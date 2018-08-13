@@ -10,13 +10,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
-import com.wavemaker.runtime.security.AuthenticationContext;
-import com.wavemaker.runtime.security.UserAuthoritiesProvider;
+import com.wavemaker.runtime.security.core.AuthenticationContext;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 
 /**
  * Created by srujant on 8/8/18.
  */
-public class IdentityProviderUserAuthoritiesProvider implements UserAuthoritiesProvider {
+public class IdentityProviderUserAuthoritiesProvider implements AuthoritiesProvider {
 
     private String roleAttributeName;
 

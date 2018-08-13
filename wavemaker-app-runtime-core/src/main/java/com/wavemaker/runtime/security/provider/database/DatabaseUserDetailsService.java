@@ -26,7 +26,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.wavemaker.runtime.security.provider.database.authorities.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 import com.wavemaker.runtime.security.provider.database.users.UserProvider;
 
 
@@ -59,7 +60,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
         Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
 
         if (enableAuthorities) {
-            dbAuthsSet.addAll(authoritiesProvider.loadUserAuthorities(user.getUsername()));
+            dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(user.getUsername())));
             if (dbAuthsSet.isEmpty()) {
                 logger.debug("User '" + username + "' has no authorities and will be treated as 'not found'");
                 throw new UsernameNotFoundException("User" + username + "has no GrantedAuthority");

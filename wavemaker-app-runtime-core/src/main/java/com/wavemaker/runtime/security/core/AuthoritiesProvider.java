@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.security.provider.database.authorities;
+package com.wavemaker.runtime.security.core;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Created by ArjunSahasranam on 15/3/16.
+ * @author Uday Shankar
  */
 public interface AuthoritiesProvider {
 
-    Collection<? extends GrantedAuthority> loadUserAuthorities(String username);
-
+    List<GrantedAuthority> loadAuthorities(AuthenticationContext authenticationContext);
 }
 

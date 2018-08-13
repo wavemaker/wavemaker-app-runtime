@@ -23,7 +23,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.wavemaker.runtime.security.WMUser;
-import com.wavemaker.runtime.security.provider.database.authorities.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 
 /**
  * @author Arjun Sahasranam
@@ -39,7 +40,7 @@ public class CASDatabaseUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(final String username) {
         Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
 
-        dbAuthsSet.addAll(authoritiesProvider.loadUserAuthorities(username));
+        dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username)));
 
         long loginTime = System.currentTimeMillis();
         return new WMUser("", username, "", username, 0, true, true, true, true, dbAuthsSet, loginTime);

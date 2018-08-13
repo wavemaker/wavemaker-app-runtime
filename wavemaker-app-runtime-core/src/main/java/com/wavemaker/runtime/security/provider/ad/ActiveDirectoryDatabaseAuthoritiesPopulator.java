@@ -20,7 +20,8 @@ import java.util.Collection;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.wavemaker.runtime.security.provider.database.authorities.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 
 /**
  * Created by ArjunSahasranam on 22/3/16.
@@ -31,7 +32,7 @@ public class ActiveDirectoryDatabaseAuthoritiesPopulator implements ActiveDirect
     @Override
     public Collection<? extends GrantedAuthority> getGrantedAuthorities(
             final DirContextOperations userData, final String username) {
-        return authoritiesProvider.loadUserAuthorities(username);
+        return authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username));
     }
 
     public AuthoritiesProvider getAuthoritiesProvider() {
