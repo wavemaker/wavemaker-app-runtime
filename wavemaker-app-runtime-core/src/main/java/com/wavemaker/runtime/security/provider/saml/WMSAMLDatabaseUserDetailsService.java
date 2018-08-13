@@ -23,7 +23,8 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
 import com.wavemaker.runtime.security.WMUser;
-import com.wavemaker.runtime.security.provider.database.authorities.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 
 /**
  * @author Arjun Sahasranam
@@ -40,7 +41,7 @@ public class WMSAMLDatabaseUserDetailsService implements SAMLUserDetailsService 
         String username = credential.getNameID().getValue();
         Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
 
-        dbAuthsSet.addAll(authoritiesProvider.loadUserAuthorities(username));
+        dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username)));
 
         long loginTime = System.currentTimeMillis();
         return new WMUser("", username, "", username, 0, true, true, true, true, dbAuthsSet, loginTime);

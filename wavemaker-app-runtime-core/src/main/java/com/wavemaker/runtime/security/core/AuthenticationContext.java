@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.security;
+package com.wavemaker.runtime.security.core;
 
 /**
  * Created by srujant on 8/8/18.

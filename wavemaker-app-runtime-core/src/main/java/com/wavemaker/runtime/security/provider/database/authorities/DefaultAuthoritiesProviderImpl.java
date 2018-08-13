@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.security.provider.database.authorities;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -25,14 +24,14 @@ import org.hibernate.Session;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.wavemaker.runtime.security.AuthenticationContext;
-import com.wavemaker.runtime.security.UserAuthoritiesProvider;
+import com.wavemaker.runtime.security.core.AuthenticationContext;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.provider.database.AbstractDatabaseSupport;
 
 /**
  * Created by ArjunSahasranam on 11/3/16.
  */
-public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport implements AuthoritiesProvider, UserAuthoritiesProvider {
+public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport implements AuthoritiesProvider {
 
     private static final String USERNAME = "username";
     private static final String COLON_USERNAME = ":username";
@@ -56,9 +55,8 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     @Override
     public List<GrantedAuthority> loadAuthorities(AuthenticationContext authenticationContext) {
-        String userName = authenticationContext.getUsername();
-        Collection<? extends GrantedAuthority> authoritiesProviderCollection = this.loadUserAuthorities(userName);
-        return authoritiesProviderCollection != null ? (List<GrantedAuthority>) authoritiesProviderCollection : null;
+        return getTransactionTemplate()
+                .execute(status -> getHibernateTemplate().execute(session -> getGrantedAuthorities(session, authenticationContext.getUsername())));
     }
 
     public String getAuthoritiesByUsernameQuery() {

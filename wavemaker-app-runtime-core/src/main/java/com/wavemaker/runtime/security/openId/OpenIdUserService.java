@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.util.CollectionUtils;
 
-import com.wavemaker.runtime.security.UserAuthoritiesProvider;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 
 /**
  * Created by srujant on 8/8/18.
@@ -20,14 +20,14 @@ import com.wavemaker.runtime.security.UserAuthoritiesProvider;
 public class OpenIdUserService extends OidcUserService {
 
     @Autowired(required = false)
-    private UserAuthoritiesProvider userAuthoritiesProvider;
+    private AuthoritiesProvider authoritiesProvider;
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         OidcUser oidcUser = super.loadUser(userRequest);
-        if (userAuthoritiesProvider != null) {
+        if (authoritiesProvider != null) {
             OpenIdAuthenticationContext openIdAuthenticationContext = new OpenIdAuthenticationContext(oidcUser.getName(), oidcUser);
-            List<GrantedAuthority> grantedAuthorities = userAuthoritiesProvider.loadAuthorities(openIdAuthenticationContext);
+            List<GrantedAuthority> grantedAuthorities = authoritiesProvider.loadAuthorities(openIdAuthenticationContext);
             if (!CollectionUtils.isEmpty(grantedAuthorities)) {
                 String userNameAttributeName = userRequest.getClientRegistration()
                         .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
