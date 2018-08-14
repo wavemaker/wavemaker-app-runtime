@@ -631,18 +631,20 @@ WM.module('wm.prefabs')
                         : 'WEB-INF/prefabs/' + prefabName + '/webapp' + url,
                     projectID: $rs.project.id
                 }, function (prefabContent) {
-                    var htmlMarkup = Utils.getDecodedData(prefabContent.markup) || '';
+                    var htmlMarkup = Utils.getDecodedData(prefabContent.markup) || '',
+                        PREFAB_VARIABLE_NAMESPACE = '_MainPage_Variables_';
                     /*load the styles & scripts*/
 
                     cachePrefabScript(prefabName, Utils.getDecodedData(prefabContent.script));
 
                     WM.element('head').append('<style>'+ Utils.getDecodedData(prefabContent.styles) +'</style>');
+                    window[PREFAB_VARIABLE_NAMESPACE] = Utils.getValidJSON(Utils.getDecodedData(prefabContent.variables)) || {};
                     /* append the isPrefab flag to each variable */
-                    WM.forEach(window["_MainPage_Variables_"], function (variable) {
+                    WM.forEach(window[PREFAB_VARIABLE_NAMESPACE], function (variable) {
                         variable._prefabName = prefabName;
                     });
                     /* set variables in prefab namespace, registration will occur in page directive */
-                    Variables.setPageVariables(prefabName, window["_MainPage_Variables_"]);
+                    Variables.setPageVariables(prefabName, window[PREFAB_VARIABLE_NAMESPACE]);
                     //In run-mode fetching metaData
                     if (CONSTANTS.isRunMode) {
                         Utils.getService('MetaDataFactory').load(prefabName)

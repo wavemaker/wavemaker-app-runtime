@@ -27,8 +27,9 @@ WM.module('wm.prefabs')
         'DialogService',
         'PrefabService',
         '$http',
+        'Variables',
 
-        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService, $http) {
+        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService, $http, Variables) {
             'use strict';
 
             var prefabDefaultProps   = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
@@ -370,14 +371,15 @@ WM.module('wm.prefabs')
                             var pfScope = $is.$new();
 
                             pfScope.Widgets = {};
-
                             $is.pfScope = pfScope;
-
-
                             $is.showVersionMismatch = versionMsg ? true : false;
-                            $el.append($prefabEle);
-                            $compile($el.children())($is.pfScope);
-                            $timeout(onTemplateLoad);
+                            // register the page variables for prefab (not putting studio mode check here as it is 10.x studio code only)
+                            Variables.getPageVariables(prefabName, function (variables) {
+                                Variables.register(prefabName, variables, true, $is.pfScope);
+                                $el.append($prefabEle);
+                                $compile($el.children())($is.pfScope);
+                                $timeout(onTemplateLoad);
+                            });
                         }
 
                         if (!depsMap[prefabName]) {
