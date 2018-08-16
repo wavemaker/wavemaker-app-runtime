@@ -53,6 +53,7 @@ import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.MessageResourceHolder;
 import com.wavemaker.commons.UnAuthorizedResourceAccessException;
+import com.wavemaker.commons.WMCommonException;
 import com.wavemaker.commons.WMException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
@@ -222,7 +223,8 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         return getModelAndView(errorResponse);
     }
 
-    private ModelAndView handleWMExceptions(MessageResourceHolder messageResourceHolder, MessageResource defaultMessageResource, Object... defaultArgs) {
+    private ModelAndView handleWMExceptions(WMCommonException wmCommonException, MessageResource defaultMessageResource, Object... defaultArgs) {
+        MessageResourceHolder messageResourceHolder = wmCommonException.getMessageResourceHolder();
         MessageResource messageResource = messageResourceHolder.getMessageResource();
         Object[] args;
         if (messageResource != null) {
