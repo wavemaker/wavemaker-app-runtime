@@ -42,6 +42,14 @@ public class DownloadResponse implements Downloadable {
         this.fileName = fileName;
     }
 
+    public DownloadResponse(
+            final InputStream contents, final String contentType, final String fileName, final boolean inline) {
+        this.contents = contents;
+        this.contentType = contentType;
+        this.fileName = fileName;
+        this.inline = inline;
+    }
+
     @Override
     public InputStream getContents() {
         return this.contents;
