@@ -622,8 +622,8 @@ WM.module('wm.prefabs')
 
             /* loads the script, styles, variables, template of the prefab */
             function loadPrefabMinifiedPage(prefabName) {
-                var config = appPrefabNameConfigMap[prefabName], url, deferred = $q.defer();
-                url = config.templateUrl.substr(0, config.templateUrl.lastIndexOf('/') + 1) + 'page.min.json';
+                var deferred = $q.defer(),
+                    url = '/pages/Main/page.min.json';
                 /*read the file content*/
                 FileService.read({
                     path: CONSTANTS.isRunMode
