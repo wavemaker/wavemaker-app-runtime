@@ -43,7 +43,7 @@ import com.wavemaker.runtime.security.token.repository.PersistentAuthTokenReposi
  */
 public class WMAppRememberMeServices extends AbstractWMRememberMeServices {
 
-    public static final String REMEMBER_ME_PARAMETER = "remember-me";
+    public static final String REMEMBER_ME_PARAMETER = "j_rememberme";
 
     @Autowired
     private WMAppSecurityConfig securityConfig;
