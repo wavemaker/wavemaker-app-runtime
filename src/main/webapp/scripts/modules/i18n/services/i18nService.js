@@ -18,13 +18,11 @@ WM.module('i18n')
         '$locale',
         'CONSTANTS',
         '$q',
-        'BaseService',
 
-        function ($rs, Utils, $http, $locale, CONSTANTS, $q, BaseService) {
+        function ($rs, Utils, $http, $locale, CONSTANTS, $q) {
             'use strict';
 
-            var _supportedLocale      = [],
-                localeKey             = CONSTANTS.isStudioMode ? 'locale' : 'appLocale',
+            var localeKey             = CONSTANTS.isStudioMode ? 'locale' : 'appLocale',
                 _componentLocalePaths = [],
                 _initSuccess          = false,
                 localeCodesMap        = {},
@@ -421,10 +419,6 @@ WM.module('i18n')
                     return;
                 }
 
-                if (!_.includes(_supportedLocale, locale)) {
-                    return;
-                }
-
                 if (!locale || locale === _selectedLocale) {
                     return;
                 }
@@ -448,21 +442,14 @@ WM.module('i18n')
                 return _selectedLocale;
             }
 
-            function init(supportedLocale, defaultLocale, appLocaleRootPath, ngLocaleRootPath, momentLocaleRootPath) {
-                // supportedLocale must be a non empty array
-                if (!supportedLocale || !WM.isArray(supportedLocale) || !supportedLocale.length) {
-                    return;
-                }
-
-                _supportedLocale = supportedLocale;
-
+            function init(defaultLocale, appLocaleRootPath, ngLocaleRootPath, momentLocaleRootPath) {
                 // appLocaleRootPath must be a non empty strin
                 if (!appLocaleRootPath || !appLocaleRootPath.length) {
                     return;
                 }
 
                 _appLocaleRootPath = appLocaleRootPath;
-                _defaultLocale     = defaultLocale || supportedLocale[0];
+                _defaultLocale     = defaultLocale;
                 _ngLocaleRootPath  = ngLocaleRootPath;
                 _momentLocalePath  = momentLocaleRootPath;
                 _initSuccess       = true;
