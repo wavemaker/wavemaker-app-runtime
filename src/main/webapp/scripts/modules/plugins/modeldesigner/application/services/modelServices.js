@@ -52,7 +52,6 @@
  * - {@link wm.modeldesigner.$ModelService#methods_deleteAttribute deleteAttribute}
  * - {@link wm.modeldesigner.$ModelService#methods_updateAttribute updateAttribute}
  * - {@link wm.modeldesigner.$ModelService#methods_listDataModels listDataModels}
- * - {@link wm.modeldesigner.$ModelService#methods_getAllModels getAllModels}
  * - {@link wm.modeldesigner.$ModelService#methods_getModel getModel}
  * - {@link wm.modeldesigner.$ModelService#methods_listScopeTypes listScopeTypes}
  * - {@link wm.modeldesigner.$ModelService#methods_createDataModel createDataModel}
@@ -861,7 +860,7 @@ wm.plugins.modeldesigner.services.ModelService = [
                     action: "saveDataModel",
                     urlParams: {
                         projectID: params.projectID,
-                        dataModelName: params.dataModelName
+                        dataModelName: params.serviceID
                     }
                 }, successCallback, failureCallback);
             },
@@ -1244,7 +1243,6 @@ wm.plugins.modeldesigner.services.ModelService = [
                     action: "addAttributes",
                     urlParams: {
                         projectID: params.projectID,
-                        modelId: params.dataModelName,
                         serviceId: params.serviceID,
                         entityName: params.entityName,
                         attributeId: params.attributeName
@@ -1277,7 +1275,6 @@ wm.plugins.modeldesigner.services.ModelService = [
                     action: "deleteAttribute",
                     urlParams: {
                         projectID: params.projectID,
-                        modelId: params.dataModelName,
                         serviceId: params.serviceID,
                         entityName: params.entityName,
                         attributeId: params.attributeId
@@ -1309,7 +1306,6 @@ wm.plugins.modeldesigner.services.ModelService = [
                     action: "updateAttribute",
                     urlParams: {
                         projectID: params.projectID,
-                        modelId: params.dataModelName,
                         serviceId: params.serviceID,
                         entityName: params.entityName,
                         attributeId: params.attributeName
@@ -2635,36 +2631,9 @@ wm.plugins.modeldesigner.services.ModelService = [
                     target: "Database",
                     action: "listDataModels",
                     urlParams: {
-                        "projectID": params.projectID
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#getAllModels
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to get the list of models.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the Model.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            getAllModels: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "getAllModels",
-                    urlParams: {
                         "projectID": params.projectID,
-                        "serviceId": params.serviceID
+                        "regionId": params.regionId,
+                        "scope": params.scope
                     }
                 }, successCallback, failureCallback);
             },
@@ -2693,8 +2662,7 @@ wm.plugins.modeldesigner.services.ModelService = [
                     action: "getModel",
                     urlParams: {
                         "projectID": params.projectID,
-                        "serviceId": params.serviceID,
-                        "modelId": params.dataModelName
+                        "serviceId": params.serviceID
                     }
                 }, successCallback, failureCallback);
             },
@@ -2721,6 +2689,35 @@ wm.plugins.modeldesigner.services.ModelService = [
                 BaseService.execute({
                     target: "Database",
                     action: "listScopeTypes",
+                    urlParams: {
+                        "projectID": params.projectID,
+                        "regionId": params.regionId
+                    }
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.modeldesigner.$ModelService#listRegions
+             * @methodOf wm.modeldesigner.$ModelService
+             * @function
+             *
+             * @description
+             * Method to get the list of models.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the Model.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            listRegions: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "listRegions",
                     urlParams: {
                         "projectID": params.projectID
                     }
