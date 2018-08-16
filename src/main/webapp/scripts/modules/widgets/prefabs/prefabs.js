@@ -109,7 +109,8 @@ WM.module('wm.prefabs')
                     prefabEvents,
                     widgetProps = {},
                     userDefinedProps,
-                    methodsMap = {},
+                    userDefinedEvents,
+                    userDefinedMethods,
                     layoutProps,
                     behaviorProps;
 
@@ -153,14 +154,12 @@ WM.module('wm.prefabs')
                 }
 
                 userDefinedProps = config.properties || {};
+                userDefinedEvents = config.events || {};
+                userDefinedMethods = config.methods || {};
+
                 $is.prefabid     = config.id;
 
                 _.forEach(userDefinedProps, function (prop, key) {
-
-                    if (prop.type === 'method') {
-                        methodsMap[key] = prop;
-                        return;
-                    }
 
                     widgetProps[key] = prop;
 
@@ -170,13 +169,8 @@ WM.module('wm.prefabs')
                     }
 
                     if (CONSTANTS.isStudioMode) {
-
-                        if (prop.type === 'event') {
-                            prefabEvents.push(key);
-                        } else {
-                            if (!_.includes(propsSkipList, key)) {
-                                prefabProperties.push(key);
-                            }
+                        if (!_.includes(propsSkipList, key)) {
+                            prefabProperties.push(key);
                         }
 
                         if (!prop.hasOwnProperty('show')) {
@@ -197,12 +191,25 @@ WM.module('wm.prefabs')
                             prop.widget = 'list-number';
                         }
 
-                        if (prop.type === 'event') {
-                            prop.options = WIDGET_CONSTANTS.EVENTS_OPTIONS;
-                        } else {
-                            prop.label = Utils.initCaps(key);
-                        }
+                        prop.label = Utils.initCaps(key);
+
                     }
+                });
+
+                _.forEach(userDefinedEvents, function (prop, key) {
+                    widgetProps[key] = prop;
+
+                    if (!CONSTANTS.isStudioMode) {
+                        return;
+                    }
+
+                    prefabEvents.push(key);
+
+                    prop.show = true;
+                    prop.disabled = false;
+                    prop.type = 'event';
+                    prop.widget = 'eventlist';
+                    prop.options = WIDGET_CONSTANTS.EVENTS_OPTIONS;
                 });
 
                 _.forEach(prefabDefaultProps, function (prop, key) {
@@ -212,7 +219,7 @@ WM.module('wm.prefabs')
                 });
 
                 prefabWidgetPropsMap[$is.prefabname] = widgetProps;
-                prefabMethodsMap[$is.prefabname]     = methodsMap;
+                prefabMethodsMap[$is.prefabname]     = userDefinedMethods;
 
                 $is.widgetProps = Utils.getClonedObject(prefabWidgetPropsMap[$is.prefabname]);
                 $is._methodsMap = prefabMethodsMap[$is.prefabname];
