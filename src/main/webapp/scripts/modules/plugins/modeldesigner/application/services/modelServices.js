@@ -194,510 +194,6 @@ wm.plugins.modeldesigner.services.ModelService = [
         return {
 
             /**
-             * Internal function
-             * @name wm.modeldesigner.$ModelService#testConnection
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to test connection to the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            testConnection: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "testConnection",
-                    data: {
-                        "username": params.username,
-                        "password": params.password,
-                        "url": params.url,
-                        "driverClass": params.driverClass,
-                        "dialect": params.dialect
-                    },
-                    urlParams: {
-                        "projectID": params.projectID
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * Internal function
-             * @name wm.modeldesigner.$ModelService#testDatabase
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to test connection while creation of database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             */
-
-            testDatabase: function (params) {
-                var deferred = $q.defer();
-                BaseService.execute({
-                    target: "Database",
-                    action: "testDatabase",
-                    urlParams: {
-                        "projectID": params.projectID
-                    },
-                    data : params.data
-                }, deferred.resolve, deferred.reject);
-                return deferred.promise;
-            },
-
-            /**
-             * Internal function
-             * @name wm.modeldesigner.$ModelService#testJarRequired
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to test if jar is required for the selected database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & type of the database.
-             */
-
-            testJarRequired: function (params) {
-                var deferred = $q.defer();
-                BaseService.execute({
-                    target: "Database",
-                    action: "testJarRequired",
-                    urlParams: {
-                        'projectID': params.projectID,
-                        'dbType'   : params.dbType
-                    }
-                }, deferred.resolve, deferred.reject);
-                return deferred.promise;
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#read
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to read the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            read: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "read",
-                    data: {
-                        "serviceId": params.serviceId,
-                        "packageName": params.packageName,
-                        "username": params.username,
-                        "password": params.password,
-                        "url": params.url,
-                        "tableFilter": params.tableFilter,
-                        "schemaName": params.schemaName,
-                        "schemaFilter": params.schemaFilter,
-                        "driverClass": params.driverClass,
-                        "dialect": params.dialect,
-                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                        "impersonateUser": false,
-                        "activeDirectoryDomain": params.activeDirectoryDomain,
-                        "dbType": params.dbType,
-                        "host": params.host,
-                        "port": params.port,
-                        "dbName": params.dbName,
-                        "readOnly": params.readOnly
-                    },
-                    urlParams: {
-                        "projectID": params.projectID
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#create
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to create the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            create: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "create",
-                    data: {
-                        "dataModel": params.dataModel,
-                        "properties" : {
-                            "serviceId": params.serviceId,
-                            "packageName": params.packageName,
-                            "username": params.username,
-                            "password": params.password,
-                            "url": params.url,
-                            "tableFilter": params.tableFilter,
-                            "schemaName": params.schemaName,
-                            "schemaFilter": params.schemaFilter,
-                            "driverClass": params.driverClass,
-                            "dialect": params.dialect,
-                            "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                            "impersonateUser": false,
-                            "activeDirectoryDomain": params.activeDirectoryDomain,
-                            "dbType": params.dbType,
-                            "host": params.host,
-                            "port": params.port,
-                            "dbName": params.dbName,
-                            "readOnly": params.readOnly
-                        }
-                    },
-                    urlParams: {
-                        "projectID": params.projectID
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#readExistingDB
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to read the specified existing database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            readExistingDB: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "readExistingDB",
-                    data: params.data,
-                    urlParams: {
-                        "projectID"     : params.projectID,
-                        "serviceId"     : params.serviceId
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#reImportExistingDB
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to reImport the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            reImportExistingDB: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "reImportExistingDB",
-                    data: {
-                        "dataModel": params.dataModel,
-                        "properties" : params.data
-                    },
-                    urlParams: {
-                        "projectID": params.projectID,
-                        "serviceId": params.serviceId
-                    }
-                }, successCallback, failureCallback);
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#reImportCorruptDB
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to reImport the corrupt database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            reImportCorruptDB: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "reImportCorruptDB",
-                    data: {
-                        reInitialize: params.reInitialize || true
-                    },
-                    urlParams: {
-                        "projectID": params.projectID,
-                        "serviceId"     : params.serviceId
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#importDB
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to import the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            importDB: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "importDB",
-                    data: {
-                        "serviceId": params.serviceId,
-                        "packageName": params.packageName,
-                        "username": params.username,
-                        "password": params.password,
-                        "url": params.url,
-                        "tableFilter": params.tableFilter,
-                        "schemaName": params.schemaName,
-                        "schemaFilter": params.schemaFilter,
-                        "driverClass": params.driverClass,
-                        "dialect": params.dialect,
-                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                        "impersonateUser": false,
-                        "activeDirectoryDomain": params.activeDirectoryDomain,
-                        "dbType": params.dbType,
-                        "host": params.host,
-                        "port": params.port,
-                        "dbName": params.dbName,
-                        "readOnly": params.readOnly
-                    },
-                    urlParams: {
-                        "projectID": params.projectID
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#reimportDB
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to re-import the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            reImportDB: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "reImportDB",
-                    urlParams: {
-                        "projectID"     : params.projectID,
-                        "serviceId"     : params.serviceId,
-                        "retainDraft"   : params.retainDraft || false,
-                        "reInitialize"  : params.reInitialize || false
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#exportDB
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to export the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            exportDB: function (params, successCallback, failureCallback) {
-
-                return BaseService.execute({
-                    target: 'Database',
-                    action: 'exportDB',
-                    data: {
-                        'serviceId'                     : params.serviceId,
-                        'username'                      : params.username,
-                        'password'                      : params.password,
-                        'url'                           : params.url,
-                        'schemaName'                    : params.schemaName,
-                        'schemaFilter'                  : params.schemaFilter,
-                        'driverClass'                   : params.driverClass,
-                        'dialect'                       : params.dialect,
-                        'revengNamingStrategyClassName' : params.revengNamingStrategyClassName,
-                        'impersonateUser'               : false,
-                        'overwrite'                     : params.overwrite,
-                        'dbType'                        : params.dbType,
-                        'host'                          : params.host,
-                        'port'                          : params.port,
-                        'dbName'                        : params.dbName,
-                        'packageName'                   : params.packageName
-                    },
-                    urlParams: {
-                        'projectID'                     : params.projectID,
-                        'serviceId'                     : params.serviceId
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#listTables
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to load all the tables.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            listTables: function (params, successCallback, failureCallback) {
-                BaseService.execute({
-                    target: "Database",
-                    action: "listTables",
-                    data: params.data,
-                    urlParams: {
-                        "projectID": params.projectID
-                    }
-                }, successCallback, failureCallback);
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#getGeneratorTypes
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to load all the generator types.
-             *
-             * @param {object} params
-             *                 Object containing id of the project & type of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            getGeneratorTypes: function (params, successCallback, failureCallback) {
-                BaseService.execute({
-                    target: "Database",
-                    action: "getGeneratorTypes",
-                    urlParams: {
-                        "projectID": params.projectID,
-                        "dbType": params.dbType
-                    }
-                }, successCallback, failureCallback);
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#loadModelInfo
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to load all the datamodels and their info.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            loadModelInfo: function (params, successCallback, failureCallback) {
-                BaseService.execute({
-                    target: "Database",
-                    action: "loadModelInfo",
-                    data: {
-                        "serviceId": params.serviceId,
-                        "packageName": params.packageName,
-                        "username": params.username,
-                        "password": params.password,
-                        "url": params.url,
-                        "schemaFilter": params.schemaFilter,
-                        "tableFilter": params.tableFilter,
-                        "driverClass": params.driverClass,
-                        "dialect": params.dialect,
-                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                        "impersonateUser": false,
-                        "dbType": params.dbType,
-                        "host": params.host,
-                        "port": params.port,
-                        "dbName": params.dbName
-                    },
-                    urlParams: {
-                        "projectID": params.projectID
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
              * @ngdoc function
              * @name wm.modeldesigner.$ModelService#getAllDataModels
              * @methodOf wm.modeldesigner.$ModelService
@@ -716,123 +212,10 @@ wm.plugins.modeldesigner.services.ModelService = [
             getAllDataModels: function (projectID, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getAllDataModels",
                     urlParams: {
                         projectID: projectID
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#getDataModel
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to get complete meta data(i.e., tables, columns, relations etc.) of the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project and name of the datamodel.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-            getDataModel: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "getDataModel",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        isdraft: params.isdraft
-                    }
-                }, successCallback, failureCallback);
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#createDatabase
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to create a database with the specified name.
-             *
-             * @param {object} params
-             *                 Object containing name of the project, name of the database and connection settings.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            createDatabase: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "createDatabase",
-                    urlParams: {
-                        projectID: params.projectID
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#createService
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to create a datamodel with the specified name.
-             *
-             *@param {object} params
-             *                 Object containing name of the project, name of the database and connection settings.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            createService: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "createService",
-                    urlParams: {
-                        projectID: params.projectID
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#deleteDataModel
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to delete the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project and name of the database to be deleted.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            deleteDataModel: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "deleteService",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName
                     }
                 }, successCallback, failureCallback);
             },
@@ -856,7 +239,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             saveDataModel: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "saveDataModel",
                     urlParams: {
                         projectID: params.projectID,
@@ -864,35 +247,7 @@ wm.plugins.modeldesigner.services.ModelService = [
                     }
                 }, successCallback, failureCallback);
             },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#applyDataModel
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to apply(save & export) the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project and name of the datamodel.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
 
-            applyDataModel: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "applyDataModel",
-                    urlParams: {
-                        projectID: params.projectID,
-                        serviceId: params.dataModelName
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
             /**
              * @ngdoc function
              * @name wm.modeldesigner.$ModelService#revertDataModel
@@ -913,309 +268,12 @@ wm.plugins.modeldesigner.services.ModelService = [
             revertDataModel: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "revertDataModel",
                     urlParams: {
                         projectID: params.projectID,
                         dataModelName: params.dataModelName
                     }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#getDataModelDiff
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to get the datamodel diff i.e., diff of datamodel in external database and draftmodel.
-             *
-             * @param {object} params
-             *                 Object containing name of the project and name of the datamodel.
-             */
-
-            getDataModelDiff: function (params) {
-                var deferred = $q.defer();
-                BaseService.execute({
-                    target: "Database",
-                    action: "dataModelDiff",
-                    urlParams: {
-                        projectID: params.projectID,
-                        serviceId: params.dataModelName
-                    }
-                }, deferred.resolve, deferred.reject);
-                return deferred.promise;
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#getAllEntities
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to get all the tables in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            getAllEntities: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "getAllEntities",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#getEntity
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to get the details of the specified table from the database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project, database & table.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            getEntity: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "getEntity",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        tableName: params.tableName
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#createEntity
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to create a new entity in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the table to be created.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            createEntity: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "createEntity",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#updateEntity
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to update the specified entity in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the table to be created.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            updateEntity: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "updateEntity",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: encodeURIComponent(params.entityName)
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#deleteEntity
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to delete the specified entity in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the table to be created.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            deleteEntity: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "deleteEntity",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: encodeURIComponent(params.entityName)
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#addPrimaryKey
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to add columns to the specified table in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database, table, column to be created/updated.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            addPrimaryKey: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "addPrimaryKey",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: params.entityName
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#addUniqueKey
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to add unique key to the specified table in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database, table, column to be created/updated.
-             */
-
-            addUniqueKey: function (params) {
-
-                var deferred = $q.defer();
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "addUniqueKey",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: params.entityName
-                    },
-                    data: params.data
-                }, deferred.resolve, deferred.reject);
-
-                return deferred.promise;
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#deleteUniqueKey
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to delete a unique key to the specified table in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database, table, column to be created/updated.
-             */
-
-            deleteUniqueKey: function (params) {
-
-                var deferred = $q.defer();
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "deleteUniqueKey",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: encodeURIComponent(params.entityName),
-                        uniquekeyname : encodeURIComponent(params.uniquekeyname)
-                    }
-                }, deferred.resolve, deferred.reject);
-
-                return deferred.promise;
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#addColumns
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to add columns to the specified table in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database, table, column to be created/updated.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            addColumns: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "addColumns",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: params.entityName
-                    },
-                    data: params.data
                 }, successCallback, failureCallback);
             },
 
@@ -1239,7 +297,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             addAttributes: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "addAttributes",
                     urlParams: {
                         projectID: params.projectID,
@@ -1271,7 +329,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             deleteAttribute: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "deleteAttribute",
                     urlParams: {
                         projectID: params.projectID,
@@ -1302,7 +360,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             updateAttribute: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "updateAttribute",
                     urlParams: {
                         projectID: params.projectID,
@@ -1311,168 +369,6 @@ wm.plugins.modeldesigner.services.ModelService = [
                         attributeId: params.attributeName
                     },
                     data: params.data
-                }, successCallback, failureCallback);
-            },
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#updateColumn
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to update the columns of the specified table in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database, table, column to be created/updated.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            updateColumn: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "updateColumn",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: encodeURIComponent(params.entityName),
-                        columnName: encodeURIComponent(params.columnName),
-                        forceDataLoss: params.forceDataLoss || false
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#deleteColumn
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to delete the specified column of the specified table in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database, table, column to be created/updated.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            deleteColumn: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "deleteColumn",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: encodeURIComponent(params.entityName),
-                        columnName: encodeURIComponent(params.columnName)
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#addRelation
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to add a relation to the specified table in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project, name of the database, table and relations to be updated.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            addRelation: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "addRelation",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: params.entityName
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#updateRelation
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to update the specified relation of the specified table in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project, name of the database, table and relations to be updated.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            updateRelation: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "updateRelation",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: encodeURIComponent(params.entityName),
-                        relationName: encodeURIComponent(params.relationName)
-                    },
-                    data: {
-                        cascadeEnabled: params.data.cascadeEnabled,
-                        cascadeOptions: params.data.cascadeOptions,
-                        fetchOptions: params.data.fetchOptions,
-                        parentFetchOptions: params.data.parentFetchOptions
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#deleteRelation
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to delete the specified relation of the specified table in the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project, name of the database, table and relations to be updated.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            deleteRelation: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "deleteRelation",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        entityName: encodeURIComponent(params.entityName),
-                        relationName: encodeURIComponent(params.relationName)
-                    }
                 }, successCallback, failureCallback);
             },
 
@@ -1496,7 +392,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getAllQueries: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getAllQueries",
                     urlParams: {
                         projectID: params.projectID,
@@ -1525,7 +421,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getQuery: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getQuery",
                     urlParams: {
                         projectID: params.projectID,
@@ -1554,7 +450,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             createQuery: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "createQuery",
                     urlParams: {
                         projectID: params.projectID,
@@ -1583,7 +479,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             setQueryMetaData: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "setQueryMetaData",
                     urlParams: {
                         projectID: params.projectID,
@@ -1614,7 +510,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             updateQuery: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "updateQuery",
                     urlParams: {
                         projectID: params.projectID,
@@ -1644,7 +540,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             queryNameUsage: function (params) {
                 var deferred = $q.defer();
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "queryNameUsage",
                     urlParams: {
                         projectID: params.projectID,
@@ -1674,7 +570,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             deleteQuery: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "deleteQuery",
                     urlParams: {
                         projectID: params.projectID,
@@ -1704,7 +600,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             validateQuery: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "validateQuery",
                     urlParams: {
                         projectID: params.projectID,
@@ -1775,7 +671,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getAllProcedures: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getAllProcedures",
                     urlParams: {
                         projectID: params.projectID,
@@ -1804,7 +700,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             proceduresInDatabase: function (params) {
                 var deferred = $q.defer();
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "proceduresInDatabase",
                     urlParams: {
                         projectID: params.projectID,
@@ -1835,7 +731,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getProcedure: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getProcedure",
                     urlParams: {
                         projectID: params.projectID,
@@ -1864,7 +760,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             createProcedure: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "createProcedure",
                     urlParams: {
                         projectID: params.projectID,
@@ -1894,7 +790,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             updateProcedure: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "updateProcedure",
                     urlParams: {
                         projectID: params.projectID,
@@ -1925,7 +821,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             deleteProcedure: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "deleteProcedure",
                     urlParams: {
                         projectID: params.projectID,
@@ -1955,7 +851,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             validateProcedure: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "validateProcedure",
                     urlParams: {
                         projectID: params.projectID,
@@ -2004,7 +900,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getSampleDbConnectionProperties: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getSampleDbConnectionProperties",
                     urlParams: {
                         projectID: params.projectID,
@@ -2032,7 +928,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getConnectionProperties: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getConnectionProperties",
                     urlParams: {
                         projectID: params.projectID,
@@ -2061,7 +957,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             updateConnectionProperties: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "updateConnectionProperties",
                     urlParams: {
                         projectID: params.projectID,
@@ -2089,7 +985,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getTypesMap: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getTypesMap",
                     urlParams: {
                         projectID    : params.projectID,
@@ -2117,7 +1013,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getSequences: function (params) {
                 var deferred = $q.defer();
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getSequences",
                     urlParams: {
                         projectID    : params.projectID,
@@ -2571,7 +1467,7 @@ wm.plugins.modeldesigner.services.ModelService = [
 
             getOfflineConfig: function (params) {
                 return BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getOfflineConfig",
                     urlParams: {
                         projectID: params.projectID,
@@ -2595,7 +1491,7 @@ wm.plugins.modeldesigner.services.ModelService = [
 
             updateOfflineConfig: function (params) {
                 return BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "updateOfflineConfig",
                     urlParams: {
                         projectID: params.projectID,
@@ -2628,7 +1524,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             listDataModels: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "listDataModels",
                     urlParams: {
                         "projectID": params.projectID,
@@ -2658,7 +1554,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getModel: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getModel",
                     urlParams: {
                         "projectID": params.projectID,
@@ -2687,7 +1583,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             listScopeTypes: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "listScopeTypes",
                     urlParams: {
                         "projectID": params.projectID,
@@ -2716,7 +1612,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             listRegions: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "listRegions",
                     urlParams: {
                         "projectID": params.projectID
@@ -2744,7 +1640,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             createDataModel: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "createDataModel",
                     data: params.data,
                     urlParams: {
@@ -2773,7 +1669,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getAllSchemas: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getAllSchemas",
                     urlParams: {
                         "projectID": params.projectID
@@ -2801,7 +1697,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getServiceID: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getServiceID",
                     data: params.data,
                     urlParams: {
@@ -2830,7 +1726,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             importModel: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "importModel",
                     data: params.data,
                     urlParams: {
@@ -2862,7 +1758,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getPrimitiveTypes: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getPrimitiveTypes",
                     urlParams: {
                         "projectID": params.projectID
@@ -2890,7 +1786,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getAttributeCustomProperties: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getCustomProperties",
                     urlParams: {
                         "projectID": params.projectID
@@ -2918,7 +1814,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getlookUpEntries: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getlookUpEntries",
                     urlParams: {
                         "projectID": params.projectID
@@ -2945,7 +1841,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             publishModel: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "publishModel",
                     urlParams: {
                         projectID: params.projectID,
@@ -2973,7 +1869,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             revertModel: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "revertModel",
                     urlParams: {
                         projectID: params.projectID,
@@ -3001,7 +1897,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             getModelProperties: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "getModelProperties",
                     urlParams: {
                         projectID: params.projectID,
@@ -3029,7 +1925,7 @@ wm.plugins.modeldesigner.services.ModelService = [
             deleteModel: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
-                    target: "Database",
+                    target: "Datamodel",
                     action: "deleteModel",
                     urlParams: {
                         projectID: params.projectID,

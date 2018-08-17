@@ -17,63 +17,7 @@ wm.plugins.modeldesigner.factory(wm.plugins.modeldesigner.factories);
 
 /*defining urls as constants in the database services module*/
 wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
-    Database: {
-        testConnection: {
-            url: "services/projects/:projectID/database/testConnection",
-            method: "POST"
-        },
-        testDatabase: {
-            url: "services/projects/:projectID/database/testDatabase",
-            method: "POST"
-        },
-        testJarRequired : {
-            url: "services/projects/:projectID/database/testDriver?dbType=:dbType",
-            method: "GET"
-        },
-        read: {
-            url: "services/projects/:projectID/database/read",
-            method: "POST"
-        },
-        create: {
-            url: "services/projects/:projectID/database/services/create",
-            method: "POST"
-        },
-        readExistingDB: {
-            url: "services/projects/:projectID/database/services/:serviceId/read",
-            method: "POST"
-        },
-        reImportExistingDB: {
-            url: "services/projects/:projectID/database/services/:serviceId/sources",
-            method: "POST"
-        },
-        reImportCorruptDB: {
-            url: "services/projects/:projectID/database/services/:serviceId/sources/update",
-            method: "POST"
-        },
-        importDB: {
-            url: "services/projects/:projectID/database/services/import",
-            method: "POST"
-        },
-        reImportDB: {
-            url: "services/projects/:projectID/database/services/:serviceId/sources/update",
-            method: "POST"
-        },
-        exportDB: {
-            url: "services/projects/:projectID/database/services/:serviceId/export",
-            method: "POST"
-        },
-        loadModelInfo: {
-            url: "services/projects/:projectID/database/loadModelInfo",
-            method: "POST"
-        },
-        listTables: {
-            url: "services/projects/:projectID/database/listTables",
-            method: "POST"
-        },
-        getGeneratorTypes: {
-            url: "services/projects/:projectID/database/configuration/:dbType",
-            method: "GET"
-        },
+    Datamodel: {
         getServiceID: {
             url: "services/projects/:projectID/models/import",
             method: "POST"
@@ -84,41 +28,9 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
         },
 
         /*DataModel related services*/
-        getAllDataModels: {
-            url: "services/projects/:projectID/datamodels",
-            method: "GET"
-        },
-        getDataModel: {
-            url: "services/projects/:projectID/datamodels/:dataModelName?isdraft=:isdraft",
-            method: "GET"
-        },
-        createDatabase: {
-            url: "services/projects/:projectID/database",
-            method: "POST"
-        },
-        createService: {
-            url: "services/projects/:projectID/database/services",
-            method: "POST"
-        },
-        deleteService: {
-            url: "services/projects/:projectID/database/services/:dataModelName",
-            method: "DELETE"
-        },
         saveDataModel: {
             url: "services/projects/:projectID/models/:dataModelName/save",
             method: "POST"
-        },
-        applyDataModel: {
-            url: "services/projects/:projectID/database/services/:serviceId/update",
-            method: "POST"
-        },
-        revertDataModel: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/revert",
-            method: "POST"
-        },
-        dataModelDiff: {
-            url: "services/projects/:projectID/database/services/:serviceId/changes",
-            method: "GET"
         },
         listDataModels: {
             url: "services/projects/:projectID/models/schemas/:regionId/:scope",
@@ -152,30 +64,12 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             url: "services/projects/:projectID/models/:serviceId/delete",
             method: "POST"
         },
-
-        /*Entities related services*/
-
-        getAllEntities: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables",
+        getModelProperties: {
+            url: "services/projects/:projectID/models/:serviceId/properties",
             method: "GET"
         },
-        getEntity: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:tableName",
-            "method": "GET"
-        },
-        createEntity: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables",
-            method: "POST"
-        },
-        updateEntity: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName",
-            method: "POST"
-        },
-        deleteEntity: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName",
-            method: "DELETE"
-        },
 
+        /*Entities related services*/
         getPrimitiveTypes: {
             url: "services/projects/:projectID/models/attribute/dataTypes",
             method: "GET"
@@ -188,36 +82,8 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             url: "services/projects/:projectID/models/attribute/configurations",
             method: "GET"
         },
-        getModelProperties: {
-            url: "services/projects/:projectID/models/:serviceId/properties",
-            method: "GET"
-        },
 
-        /*Entity Columns related services*/
-        addUniqueKey: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/constraints",
-            method: "POST"
-        },
-        deleteUniqueKey: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/constraints/:uniquekeyname",
-            method: "DELETE"
-        },
-        addPrimaryKey: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/primaryKey",
-            method: "PUT"
-        },
-        addColumns: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns",
-            method: "POST"
-        },
-        updateColumn: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns/:columnName?forceDataLoss=:forceDataLoss",
-            method: "PUT"
-        },
-        deleteColumn: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns/:columnName",
-            method: "DELETE"
-        },
+        /*Entity Attribute related services*/
         addAttributes: {
             url: "services/projects/:projectID/models/:serviceId/:entityName/:attributeId",
             method: "POST"
@@ -231,28 +97,6 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             method: "PUT"
         },
 
-        /*Services related to relations*/
-
-        addRelation: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations",
-            method: "POST"
-        },
-        updateRelation: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName",
-            method: "PUT"
-        },
-        deleteRelation: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName",
-            method: "DELETE"
-        },
-        getTypesMap: {
-            url: "services/projects/:projectID/database/services/:dataModelName/configuration",
-            method: "GET"
-        },
-        getSequences: {
-            url: "services/projects/:projectID/database/services/:dataModelName/sequences",
-            method: "GET"
-        },
 
         /*Queries Related services*/
 
