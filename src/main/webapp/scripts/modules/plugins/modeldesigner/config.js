@@ -61,8 +61,8 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             method: "POST"
         },
         deleteModel: {
-            url: "services/projects/:projectID/models/:serviceId/delete",
-            method: "POST"
+            url: "services/projects/:projectID/models/:serviceId",
+            method: "DELETE"
         },
         getModelProperties: {
             url: "services/projects/:projectID/models/:serviceId/properties",
