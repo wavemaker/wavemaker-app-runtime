@@ -192,6 +192,7 @@ WM.module('wm.prefabs')
                         }
 
                         prop.label = Utils.initCaps(key);
+                        prop.helpText = prop.description;
 
                     }
                 });
@@ -210,6 +211,7 @@ WM.module('wm.prefabs')
                     prop.type = 'event';
                     prop.widget = 'eventlist';
                     prop.options = WIDGET_CONSTANTS.EVENTS_OPTIONS;
+                    prop.helpText = prop.description;
                 });
 
                 _.forEach(prefabDefaultProps, function (prop, key) {
