@@ -37,6 +37,8 @@ import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 
 /**
+ * Filter class to redirect the request to the OpenId authentication provider configured in the application.
+ *
  * Created by srujant on 6/8/18.
  */
 public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilter {
