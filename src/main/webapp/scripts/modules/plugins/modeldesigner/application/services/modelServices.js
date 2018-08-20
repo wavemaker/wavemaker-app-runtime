@@ -1929,7 +1929,8 @@ wm.plugins.modeldesigner.services.ModelService = [
                     action: "deleteModel",
                     urlParams: {
                         projectID: params.projectID,
-                        serviceId: params.dataModelName
+                        serviceId: params.dataModelName,
+                        deleteInRemote: params.deleteInRemote
                     }
                 }, successCallback, failureCallback);
             }
