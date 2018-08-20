@@ -156,7 +156,10 @@ wm.variables.services.$liveVariable = [
                 * writableVariable will be null in case of partial page variables.*/
                 if (writableVariable && !WM.equals(writableVariable[propertyName], propertyValue)) {
                     /*Set the "saveVariables" to true so that when "save"/"run" buttons are clicked, the variables could be saved into the file.*/
-                    $rootScope.saveVariables = true;
+                    //This flag has to be enabled for users with edit page permissions
+                    if($rootScope.preferences['project.pages.edit']) {
+                        $rootScope.saveVariables = true;
+                    }
                     writableVariable[propertyName] = propertyValue;
                     Variables.updateVariable(writableVariable.name, writableVariable);
                 }
