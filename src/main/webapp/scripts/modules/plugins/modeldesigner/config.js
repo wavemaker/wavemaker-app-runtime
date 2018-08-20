@@ -61,7 +61,7 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             method: "POST"
         },
         deleteModel: {
-            url: "services/projects/:projectID/models/:serviceId",
+            url: "services/projects/:projectID/models/:serviceId?deleteInRemote=:deleteInRemote",
             method: "DELETE"
         },
         getModelProperties: {
@@ -308,7 +308,7 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
 
 /*Defining the constants for the database service module*/
 wm.plugins.modeldesigner.constant('MODEL_CONSTANTS', {
-    "DATABASE_WORKSPACE_TYPE": "db",
+    "DATAMODEL_WORKSPACE_TYPE": "model",
     "WAVEMAKER_SAMPLE_DATABASES": ["hrdb", "salesdb"],
     "DEFAULT_DB_NAME": "MyTestDatabase",
     "MYSQL_CLOUD_HOST": "{WM_CLOUD_MYSQL_HOST}",
