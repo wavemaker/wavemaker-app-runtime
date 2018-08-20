@@ -169,13 +169,27 @@
 
     <bean id="appHostnameVerifier" class="com.wavemaker.runtime.ssl.HostnameVerifierFactoryBean"/>
 
+    <bean id="servletContext" class="com.wavemaker.runtime.web.ServletContextFactory"/>
+
     <bean id="messageFactory" class="com.wavemaker.commons.i18n.MessageFactory" factory-method="getInstance">
         <property name="localeProvider" ref="localeProvider"/>
         <property name="localeMessageProvider" ref="localeMessageProvider"/>
     </bean>
 
     <bean id="localeProvider" class="com.wavemaker.runtime.i18n.AcceptLanguageHeaderBasedLocaleProvider"/>
-    
-    <bean id="localeMessageProvider" class="com.wavemaker.commons.i18n.LocaleMessageProviderImpl"/>
+
+    <bean id="localeMessageProvider" class="com.wavemaker.commons.i18n.LocaleMessageProviderImpl">
+        <constructor-arg>
+            <list>
+                <value>classpath*:i18n/wm</value>
+                <value>/resources/i18n/</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.springframework.web.context.support.ServletContextResourcePatternResolver">
+                <constructor-arg ref="servletContext"/>
+            </bean>
+        </constructor-arg>
+    </bean>    
 
 </beans>
