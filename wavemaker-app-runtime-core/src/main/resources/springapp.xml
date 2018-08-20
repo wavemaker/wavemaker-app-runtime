@@ -169,4 +169,13 @@
 
     <bean id="appHostnameVerifier" class="com.wavemaker.runtime.ssl.HostnameVerifierFactoryBean"/>
 
+    <bean id="messageFactory" class="com.wavemaker.commons.i18n.MessageFactory" factory-method="getInstance">
+        <property name="localeProvider" ref="localeProvider"/>
+        <property name="localeMessageProvider" ref="localeMessageProvider"/>
+    </bean>
+
+    <bean id="localeProvider" class="com.wavemaker.runtime.i18n.AcceptLanguageHeaderBasedLocaleProvider"/>
+    
+    <bean id="localeMessageProvider" class="com.wavemaker.commons.i18n.LocaleMessageProviderImpl"/>
+
 </beans>
