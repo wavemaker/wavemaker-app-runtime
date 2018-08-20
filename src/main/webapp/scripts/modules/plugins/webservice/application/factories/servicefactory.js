@@ -214,7 +214,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
             //Check if variable/operation is a query type and of put/post type
             isBodyTypeQueryProcedure = function (variable) {
-                return (_.includes(['QueryExecution', 'ProcedureExecution'], variable.controller)) && (_.includes(['put', 'post'], variable.operationType));
+                return (_.includes(['QueryExecution', 'ProcedureExecution'], variable.controller)) && (_.includes(['put'], variable.operationType));
             },
 
             //Return params from swagger for post/put query types
