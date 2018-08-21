@@ -1933,7 +1933,36 @@ wm.plugins.modeldesigner.services.ModelService = [
                         deleteInRemote: params.deleteInRemote
                     }
                 }, successCallback, failureCallback);
-            }
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.modeldesigner.$ModelService#reimportModel
+             * @methodOf wm.modeldesigner.$ModelService
+             * @function
+             *
+             * @description
+             * Method to re-import the specified datamodel.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the datamodel.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            reimportModel: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Datamodel",
+                    action: "reimportModel",
+                    urlParams: {
+                        "projectID"     : params.projectID,
+                        "serviceId"     : params.serviceId,
+                    }
+                }, successCallback, failureCallback);
+            },
         };
     }
 ];
