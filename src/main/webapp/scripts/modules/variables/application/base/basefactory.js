@@ -133,7 +133,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.TimerVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
-                    "autoStart": {"type": "boolean", "value": false},
+                    "startUpdate": {"type": "boolean", "value": false},
                     "repeating": {"type": "boolean", "value": false},
                     "delay": {"type": "number", "value": 500},
                     "onTimerFire": {"type": "event", "options": variableEventOptions}
@@ -193,7 +193,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"properties": ["liveSource", "type", "isList"], "parent": "properties"},
                 {"name": "service", "properties": ["service", "operation"], "parent": "properties"},
                 {"name": "serveroptions", "properties": ["downloadFile", "matchMode", "maxResults", "designMaxResults", "orderBy", "ignoreCase"], "parent": "properties"},
-                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions", "showProgress"], "parent": "properties"},
+                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "delay", "repeating", "pageTransitions", "showProgress"], "parent": "properties"},
                 {"name": "dataset", "properties": ["dataUpdateStrategy", "dataLimit"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties", "propertyTarget": 'dataBinding'},
