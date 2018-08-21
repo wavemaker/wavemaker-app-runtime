@@ -60,6 +60,10 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             url: "services/projects/:projectID/models/:serviceId/revert",
             method: "POST"
         },
+        reimportModel: {
+            url: "services/projects/:projectID/models/:serviceId/reimport",
+            method: "GET"
+        },
         deleteModel: {
             url: "services/projects/:projectID/models/:serviceId?deleteInRemote=:deleteInRemote",
             method: "DELETE"
