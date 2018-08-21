@@ -158,6 +158,7 @@ WM.module('wm.widgets.live')
                 case 'LIVEFORM':
                     defaultButtons = [
                         {
+                            widgetType  :   'button',
                             key         :    'reset',
                             class       :    'form-reset btn-secondary',
                             iconclass   :    'wi wi-refresh',
@@ -170,6 +171,7 @@ WM.module('wm.widgets.live')
                             shortcutkey : ''
                         },
                         {
+                            widgetType  :   'button',
                             key         :   'cancel',
                             class       :   'form-cancel btn-secondary',
                             iconclass   :   'wi wi-cancel',
@@ -182,6 +184,7 @@ WM.module('wm.widgets.live')
                             shortcutkey : ''
                         },
                         {
+                            widgetType  :   'button',
                             key         :   'save',
                             class       :   'form-save btn-success',
                             iconclass   :   $rs.isMobileApplicationType ? 'wi wi-done' : 'wi wi-save',
@@ -194,6 +197,7 @@ WM.module('wm.widgets.live')
                             shortcutkey : ''
                         },
                         {
+                            widgetType  :   'button',
                             key         :   'delete',
                             class       :   'form-delete btn-secondary',
                             iconclass   :   'wi wi-trash',
@@ -206,6 +210,7 @@ WM.module('wm.widgets.live')
                             shortcutkey : ''
                         },
                         {
+                            widgetType  :   'button',
                             key         :   'edit',
                             class       :   'form-update btn-secondary',
                             iconclass   :   'wi wi-pencil',
@@ -218,6 +223,7 @@ WM.module('wm.widgets.live')
                             shortcutkey : ''
                         },
                         {
+                            widgetType  :   'button',
                             key         :   'new',
                             class       :   'form-new btn-success',
                             iconclass   :   'wi wi-plus',
@@ -234,6 +240,7 @@ WM.module('wm.widgets.live')
                 case 'LIVEFILTER':
                     defaultButtons = [
                         {
+                            widgetType  :   'button',
                             key         :   'filter',
                             class       :   'btn-primary',
                             iconclass   :   'wi wi-filter-list',
@@ -245,6 +252,7 @@ WM.module('wm.widgets.live')
                             shortcutkey : ''
                         },
                         {
+                            widgetType  :   'button',
                             key         :   'clear',
                             class       :   'btn-secondary',
                             iconclass   :   'wi wi-trash',
@@ -290,6 +298,36 @@ WM.module('wm.widgets.live')
                             'show'       : 'true',
                             'class'      : 'btn-transparent',
                             'action'     : 'deleteRow($event)'
+                        }
+                    ];
+                    break;
+                case 'FORM':
+                    defaultButtons = [
+                        {
+                            widgetType  : 'button',
+                            key         : 'reset',
+                            class       : 'form-reset btn-secondary',
+                            iconclass   : 'wi wi-refresh',
+                            action      : '',
+                            displayName : 'Reset',
+                            show        : 'true',
+                            type        : 'reset',
+                            position    : 'footer',
+                            updateMode  : true,
+                            shortcutkey : ''
+                        },
+                        {
+                            widgetType  : 'button',
+                            key         : 'save',
+                            class       : 'form-save btn-success',
+                            iconclass   : $rs.isMobileApplicationType ? 'wi wi-done' : 'wi wi-save',
+                            action      : '',
+                            displayName : 'Save',
+                            show        : 'true',
+                            type        : 'submit',
+                            position    : 'footer',
+                            updateMode  : true,
+                            shortcutkey : ''
                         }
                     ];
                     break;
@@ -456,7 +494,7 @@ WM.module('wm.widgets.live')
                 return {
                     'key'           :   attrs.key || attrs.binding,
                     'displayName'   :   attrs.displayName || attrs.label || attrs.caption || '',
-                    'show'          :   attrs.show || 'false',
+                    'show'          :   _.isUndefined(attrs.show) ? true : attrs.show === 'true',
                     'class'         :   attrs.class || '',
                     'iconclass'     :   attrs.iconclass,
                     'title'         :   _.isUndefined(attrs.title) ? (attrs.displayName || '') : attrs.title,

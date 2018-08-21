@@ -1417,14 +1417,21 @@ WM.module('wm.widgets.live')
         'use strict';
 
         var getTemplate = function (btnField, index) {
-            var template = '<wm-button name="' + btnField.key + '" caption="' + btnField.displayName + '" class="' + btnField.class + '" iconclass="' + btnField.iconclass + '"" on-click="' + btnField.action + '" type="' + btnField.type + '" ' +
-                'hint="' + btnField.title + '"  shortcutkey="' + btnField.shortcutkey + '" disabled="' + btnField.disabled + '"  tabindex="' + btnField.tabindex + '"';
+            var template, widgetType, disabledTl = '';
+            if (btnField.widgetType === 'button') {
+                widgetType =  'wm-button';
+                disabledTl =  ' disabled="' + btnField.disabled + '"';
+            } else {
+                widgetType =  'wm-anchor';
+            }
+            template = '<' + widgetType + ' name="' + btnField.key + '" caption="' + btnField.displayName + '" class="' + btnField.class + '" iconclass="' + btnField.iconclass + '"" on-click="' + btnField.action + '" type="' + btnField.type + '" ' +
+                'hint="' + btnField.title + '"  shortcutkey="' + btnField.shortcutkey + '"  ' + disabledTl + 'tabindex="' + btnField.tabindex + '"';
             if (btnField.updateMode) {
                 template  = template + ' show="{{isUpdateMode && buttonArray[' + index + '].show}}"';
             } else {
                 template  = template + ' show="{{!isUpdateMode && buttonArray[' + index + '].show}}"';
             }
-            template = template + '></wm-button>';
+            template = template + '></' + widgetType + '>';
             return template;
         };
 
@@ -1443,26 +1450,31 @@ WM.module('wm.widgets.live')
                             index,
                             $liveForm,
                             parentEle = element.parent(),
+                            externalForm = element.closest('form.app-form, form.app-liveform').is('form.app-form'), //Check if nearest parent form is wm-form
                             buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                                 /*iconame support for old projects*/
                                 'iconname': attrs.iconname,
                                 'type': attrs.type || 'button',
-                                'updateMode': attrs.updateMode === true || attrs.updateMode === 'true'
+                                'updateMode': WM.isDefined(attrs.updateMode) ?  (attrs.updateMode === true || attrs.updateMode === 'true') : true,
+                                'widgetType': attrs.widgetType || 'button',
+                                'hyperlink': attrs.hyperlink,
+                                'target': attrs.target
                             });
 
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentScope = scope;
                         } else {
-                            parentScope = scope.parentScope = (parentEle && parentEle.length > 0) ? parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
+                            parentScope = (parentEle && parentEle.length > 0) ?
+                                (externalForm ? parentEle.closest('form.app-form').isolateScope().elScope : (parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent)) : scope.$parent;
                         }
-
+                        scope.parentScope = parentScope;
                         buttonDef.position = attrs.position || 'footer';
                         parentScope.buttonArray = parentScope.buttonArray || [];
                         index = parentScope.buttonArray.push(buttonDef) - 1;
                         parentScope.formCreated = true;
                         parentScope.formFieldCompiled = true;
                         template = getTemplate(buttonDef, index);
-                        $liveForm = element.closest('[data-identifier="liveform"]');
+                        $liveForm = externalForm ? parentEle.closest('form.app-form') : element.closest('[data-identifier="liveform"]');
 
                         if (scope.formlayout === 'page') {
                             /* add actions to the buttonArray*/

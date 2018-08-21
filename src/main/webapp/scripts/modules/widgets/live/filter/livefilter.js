@@ -819,19 +819,29 @@ WM.module('wm.widgets.live')
                             $livefilter;
                         scope.parentIsolateScope = (parent && parent.length > 0) ? parent.closest('[data-identifier="livefilter"]').isolateScope() : scope.$parent;
 
-                        var buttonTemplate, index, buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
+                        var buttonTemplate, index, widgetType, disabledTl = '',
+                            buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                             /*iconame support for old projects*/
                             'iconname': attrs.iconname,
-                            'type': 'button'
+                            'type': 'button',
+                            'widgetType': attrs.widgetType || 'button',
+                            'hyperlink': attrs.hyperlink,
+                            'target': attrs.target
                         });
                         buttonDef.position = attrs.position || 'footer';
                         scope.parentIsolateScope.buttonArray = scope.parentIsolateScope.buttonArray || [];
                         index = scope.parentIsolateScope.buttonArray.push(buttonDef) - 1;
                         scope.parentIsolateScope.columnsDefCreated = true;
 
-                        buttonTemplate = '<wm-button caption="' + buttonDef.displayName + '" show="{{buttonArray[' + index + '].show}}" hint="' + buttonDef.title + '"' +
+                        if (buttonDef.widgetType === 'button') {
+                            widgetType =  'wm-button';
+                            disabledTl =  ' disabled="' + buttonDef.disabled + '"';
+                        } else {
+                            widgetType =  'wm-anchor';
+                        }
+                        buttonTemplate = '<'+ widgetType + ' caption="' + buttonDef.displayName + '" show="{{buttonArray[' + index + '].show}}" hint="' + buttonDef.title + '"' +
                             'class="' + buttonDef.class + '" iconclass="' + buttonDef.iconclass + '"' +
-                            'on-click="' + buttonDef.action + '" type="' + buttonDef.type + '" shortcutkey="' + buttonDef.shortcutkey + '" disabled="' + buttonDef.disabled + '" tabindex="' + buttonDef.tabindex + '"></wm-button>';
+                            'on-click="' + buttonDef.action + '" type="' + buttonDef.type + '" shortcutkey="' + buttonDef.shortcutkey + '" ' + disabledTl + ' tabindex="' + buttonDef.tabindex + '"></' + widgetType + '>';
 
                         $livefilter = element.closest('[data-identifier="livefilter"]');
                         if (_.includes(buttonDef.position, 'header')) {
