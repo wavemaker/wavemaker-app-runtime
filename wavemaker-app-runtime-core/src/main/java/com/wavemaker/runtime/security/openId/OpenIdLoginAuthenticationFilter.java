@@ -86,10 +86,18 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
         }
 
         OAuth2AuthorizationRequest authorizationRequest = this.authorizationRequestRepository.loadAuthorizationRequest(request);
+
         if (authorizationRequest == null) {
             OAuth2Error oauth2Error = new OAuth2Error(AUTHORIZATION_REQUEST_NOT_FOUND_ERROR_CODE);
             throw new OAuth2AuthenticationException(oauth2Error, oauth2Error.toString());
         }
+
+        String redirectURI = request.getParameter(OpenIdConstants.REDIRECT_URI);
+        if (StringUtils.isEmpty(redirectURI)) {
+            redirectURI = authorizationRequest.getRedirectUri();
+        }
+        request.setAttribute(OpenIdConstants.REDIRECT_URI, redirectURI);
+
         this.authorizationRequestRepository.removeAuthorizationRequest(request);
 
         String registrationId = (String) authorizationRequest.getAdditionalParameters().get(OpenIdConstants.REGISTRATION_ID);
@@ -142,7 +150,7 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
         String code = request.getParameter(OpenIdConstants.CODE);
         String errorCode = request.getParameter(OpenIdConstants.ERROR);
         String state = request.getParameter(OpenIdConstants.STATE);
-        String redirectUri = request.getParameter(OpenIdConstants.REDIRECT_URI);
+        String redirectUri = (String) request.getAttribute(OpenIdConstants.REDIRECT_URI);
 
         if (StringUtils.hasText(code)) {
             return OAuth2AuthorizationResponse.success(code)
