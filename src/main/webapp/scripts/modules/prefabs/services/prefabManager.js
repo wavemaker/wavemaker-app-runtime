@@ -534,6 +534,18 @@ WM.module('wm.prefabs')
                 }
             }
 
+            function deRegisterPrefab($event, projectId, prefabName) {
+                PrefabService.deRegister({
+                    projectId: projectId,
+                    data: {
+                        prefabName: prefabName
+                    }
+                }, function () {
+                    delete appPrefabNamePropertiesMap[prefabName];
+                });
+            }
+            $rs.$on('delete-prefab-widget', deRegisterPrefab);
+
             /* callback function when prefab resource is loaded */
             function OnPrefabResourceLoad(count) {
                 this.count = count;
