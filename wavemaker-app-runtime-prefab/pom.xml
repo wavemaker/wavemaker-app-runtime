@@ -12,10 +12,17 @@
     </parent>
 
     <artifactId>wavemaker-app-runtime-prefab</artifactId>
-
+    <name>wavemaker-app-runtime-prefab</name>
     <properties>
         <main.basedir>${basedir}/..</main.basedir>
     </properties>
+
+    <distributionManagement>
+        <site>
+            <id>${project.artifactId}-site</id>
+            <url>./${project.artifactId}</url>
+        </site>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
