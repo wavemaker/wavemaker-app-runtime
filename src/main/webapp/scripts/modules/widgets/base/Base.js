@@ -525,6 +525,25 @@ WM.module('wm.widgets.base', [])
                         "displayformat": {"type": "string", "options": ["999-99-9999", "(999) 999-9999", "(999) 999-9999 ext. 999", "(999) 999-9999 ext. ?9?9?9", "(?9?9?9) ?9?9?9-?9?9?9?9", "(999) 999-9999 ext. 999", "(**: AAA-999)", "9999 9999 9999 9999", "AA-9999"], "widget": "data-list", "bindable": "in-bound", "show": false}
                     },
 
+                    "wm.number": {
+                        "autofocus": {"type": "boolean"},
+                        "readonly": {"type": "boolean", "bindable": "in-bound"},
+                        "datavalue": {"type": "number", value: "", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('datavalue')"},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
+                        "backgroundcolor": {"type": "string", "widget": "color"},
+
+                        /* Properties: Validation */
+                        "regexp": {"type": "string", "value": ".*"},
+
+                        /* Properties: help */
+                        "placeholder": {"type": "string", "value": "Enter text", "bindable": "in-bound"},
+
+                        /* Number properties */
+                        "minvalue": {"type": "string", "bindable": "in-bound"},
+                        "maxvalue": {"type": "string", "bindable": "in-bound"},
+                        "shortcutkey": {"type": "string"}
+                    },
+
                     "wm.currency": {
                         "datavalue": {"type": "number", "bindable": "in-out-bound"},
                         "minvalue": {"type": "number", "bindable": "in-bound"},
