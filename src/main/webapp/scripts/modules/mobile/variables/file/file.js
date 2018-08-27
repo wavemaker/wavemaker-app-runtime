@@ -76,7 +76,7 @@ WM.module('wm.variables').run(['$rootScope',
                 model: {},
                 properties : [
                     {"target": "filePath", "type": "string", "value": "", "dataBinding": true},
-                    {"target": "fileType", "type": "list", "options": _.mapValues(defaultFileTypesToOpen, 'label'),  "value": "pdf", "dataBinding": true},
+                    {"target": "fileType", "type": "list", "options": _.mapValues(defaultFileTypesToOpen, 'label'),  "value": "pdf", "dataBinding": true, "hide": true},
                     {"target": "spinnerContext", "hide" : false},
                     {"target": "spinnerMessage", "hide" : false}
                 ],
