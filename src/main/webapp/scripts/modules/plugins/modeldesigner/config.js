@@ -34,19 +34,19 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
         },
         listDataModels: {
             url: "services/projects/:projectID/models/schemas/:regionId/:scope",
-            method: "GET"
+            method: "POST"
         },
         getModel: {
             url: "services/projects/:projectID/models/:serviceId",
             method: "GET"
         },
         listScopeTypes: {
-            url: "services/projects/:projectID/models/regions/:regionId/scopes",
-            method: "GET"
+            url: "services/projects/:projectID/models/regions/:regionId/scopes?created=:isCreated",
+            method: "POST"
         },
         listRegions: {
             url: "services/projects/:projectID/models/regions",
-            method: "GET"
+            method: "POST"
         },
         createDataModel: {
             url: "services/projects/:projectID/models",
@@ -72,18 +72,21 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             url: "services/projects/:projectID/models/:serviceId/properties",
             method: "GET"
         },
+        getMetaDataServiceUrl: {
+            url: "services/projects/:projectID/models/defaultRemoteHost "
+        },
 
         /*Entities related services*/
         getPrimitiveTypes: {
-            url: "services/projects/:projectID/models/attribute/dataTypes",
+            url: "services/projects/:projectID/models/:serviceId/attribute/dataTypes",
             method: "GET"
         },
         getlookUpEntries: {
-            url: "services/projects/:projectID/models/lookupTypes",
+            url: "services/projects/:projectID/models/:serviceId/attribute/lookupTypes",
             method: "GET"
         },
         getCustomProperties: {
-            url: "services/projects/:projectID/models/attribute/configurations",
+            url: "services/projects/:projectID/models/:serviceId/attribute/configurations",
             method: "GET"
         },
 

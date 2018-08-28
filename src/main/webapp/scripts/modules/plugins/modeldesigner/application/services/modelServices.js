@@ -1530,7 +1530,8 @@ wm.plugins.modeldesigner.services.ModelService = [
                         "projectID": params.projectID,
                         "regionId": params.regionId,
                         "scope": params.scope
-                    }
+                    },
+                    "data": params.data
                 }, successCallback, failureCallback);
             },
 
@@ -1587,8 +1588,10 @@ wm.plugins.modeldesigner.services.ModelService = [
                     action: "listScopeTypes",
                     urlParams: {
                         "projectID": params.projectID,
-                        "regionId": params.regionId
-                    }
+                        "regionId": params.regionId,
+                        "isCreated": params.isCreated
+                    },
+                    "data": params.data
                 }, successCallback, failureCallback);
             },
 
@@ -1616,7 +1619,8 @@ wm.plugins.modeldesigner.services.ModelService = [
                     action: "listRegions",
                     urlParams: {
                         "projectID": params.projectID
-                    }
+                    },
+                    "data": params.data
                 }, successCallback, failureCallback);
             },
 
@@ -1761,7 +1765,8 @@ wm.plugins.modeldesigner.services.ModelService = [
                     target: "Datamodel",
                     action: "getPrimitiveTypes",
                     urlParams: {
-                        "projectID": params.projectID
+                        "projectID": params.projectID,
+                        "serviceId": params.serviceId
                     }
                 }, successCallback, failureCallback);
             },
@@ -1789,7 +1794,8 @@ wm.plugins.modeldesigner.services.ModelService = [
                     target: "Datamodel",
                     action: "getCustomProperties",
                     urlParams: {
-                        "projectID": params.projectID
+                        "projectID": params.projectID,
+                        "serviceId": params.serviceId
                     }
                 }, successCallback, failureCallback);
             },
@@ -1817,7 +1823,8 @@ wm.plugins.modeldesigner.services.ModelService = [
                     target: "Datamodel",
                     action: "getlookUpEntries",
                     urlParams: {
-                        "projectID": params.projectID
+                        "projectID": params.projectID,
+                        "serviceId": params.serviceId
                     }
                 }, successCallback, failureCallback);
             },
@@ -1963,6 +1970,34 @@ wm.plugins.modeldesigner.services.ModelService = [
                     }
                 }, successCallback, failureCallback);
             },
+
+            /**
+             * @ngdoc function
+             * @name wm.modeldesigner.$ModelService#getMetaDataServiceUrl
+             * @methodOf wm.modeldesigner.$ModelService
+             * @function
+             *
+             * @description
+             * Method to get the Meta Data Service Url.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the datamodel.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            getMetaDataServiceUrl: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Datamodel",
+                    action: "getMetaDataServiceUrl",
+                    urlParams: {
+                        "projectID"     : params.projectID
+                    }
+                }, successCallback, failureCallback);
+            }
         };
     }
 ];
