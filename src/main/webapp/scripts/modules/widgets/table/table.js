@@ -2110,7 +2110,7 @@ WM.module('wm.widgets.table')
                     //Wait for the selected item to get updated
                     $timeout(function () {
                         row = evt || $is.selectedItems[0];
-                        deleteRecord(row);
+                        deleteRecord({row: row});
                     });
                 }
             }
