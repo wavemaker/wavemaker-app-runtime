@@ -756,6 +756,7 @@ wm.variables.services.$liveVariable = [
                     orderByFields,
                     orderByOptions,
                     query,
+                    matchModes = DB_CONSTANTS.DATABASE_MATCH_MODES,
                     clonedObj  = clonedFields || Utils.getClonedObject(variable.filterExpressions);
 
                 //if filterexpression from live filter is present use it to query
@@ -767,7 +768,8 @@ wm.variables.services.$liveVariable = [
                 if(!_.isEmpty(options.filterFields)) {
                     filterRules = {'condition': options.logicalOp || 'AND', 'rules': []};
                     _.forEach(options.filterFields, function (filterObj, filterName) {
-                        if(!_.isNil(filterObj.value) && filterObj.value !== "") {
+                        var filterCondition = matchModes[filterObj.matchMode] || matchModes[filterObj.filterCondition] || filterObj.filterCondition;
+                        if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition) || (!_.isNil(filterObj.value) && filterObj.value !== "")) {
                             var type = filterObj.type || getSqlType(variable, filterName);
                             var ruleObj = {
                                 'target': filterName,
