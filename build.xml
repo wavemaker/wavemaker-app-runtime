@@ -70,7 +70,7 @@
             <fileset dir="../wavemaker-ng-runtime/dist/bundles/wmmobile/scripts"/>
         </copy>
         <copy todir="src/main/webapp/tmp/merged/mobile/locales">
-            <fileset dir="../wavemaker-ng-runtime/dist/bundles/mobile/locales"/>
+            <fileset dir="../wavemaker-ng-runtime/dist/bundles/wmmobile/locales"/>
         </copy>
         <copy todir="src/main/webapp/tmp/merged/mobile/styles">
             <fileset dir="src/main/webapp/mobile/styles"/>
