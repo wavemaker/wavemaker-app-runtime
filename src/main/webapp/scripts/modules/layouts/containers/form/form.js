@@ -13,6 +13,7 @@ WM.module('wm.layouts.containers')
                                 '<div class="heading">{{title}}</div>' +
                                 '<div class="description">{{subheading}}</div>' +
                             '</div>' +
+                            '<div class="form-action panel-actions basic-btn-grp">' +
                         '</h3>' +
                     '</div>' +
                     '<div class="form-body panel-body" apply-styles="inner-shell">' +
@@ -23,7 +24,8 @@ WM.module('wm.layouts.containers')
                             '</div>' +
                         '</div>' +
                     '</div>' +
-                    '</form>'
+                    '<div class="basic-btn-grp form-action panel-footer clearfix" ng-show="showButtons(\'footer\')"></div>' +
+                '</form>'
             );
     }])
     .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', 'LiveWidgetUtils', "wmToaster", "FormWidgetUtils", function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout, LiveWidgetUtils, wmToaster, FormWidgetUtils) {
@@ -359,6 +361,12 @@ WM.module('wm.layouts.containers')
             $rootScope.$safeApply(scope);
         }
 
+        function showButtons(scope, position) {
+            return _.some(scope.elScope.buttonArray, function (btn) {
+                return _.includes(btn.position, position) && btn.updateMode === scope.elScope.isUpdateMode;
+            });
+        }
+
         return {
             'restrict': 'E',
             'replace': true,
@@ -409,23 +417,41 @@ WM.module('wm.layouts.containers')
                             }
                             //event emitted on building new markup from canvasDom
                             handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup) {
+                                var markupObj, fieldsObj, actionsObj;
                                 //as multiple form directives will be listening to the event, apply field-definitions only for current form
                                 if (!markup || scope.$id !== scopeId) {
                                     return;
                                 }
                                 scope.elScope.formFields = undefined;
+                                scope.elScope.buttonArray = undefined;
                                 element.find('.form-elements').empty();
-                                var markupObj = WM.element('<div>' + markup + '</div>');
+                                element.find('.basic-btn-grp').empty();
+                                markupObj = WM.element('<div>' + markup + '</div>');
+                                fieldsObj = markupObj.find('> :not(wm-form-action)'); // select nodes other than form-actions
+                                actionsObj = markupObj.find('> wm-form-action'); // select form-action nodes
                                 /* if layout grid template found, simulate canvas dom addition of the elements */
-                                $rootScope.$emit('prepare-element', markupObj, function () {
-                                    element.find('.form-elements').append(markupObj);
-                                    $compile(markupObj)(scope);
-                                });
+                                if (fieldsObj) {
+                                    $rootScope.$emit('prepare-element', fieldsObj, function () {
+                                        element.find('.form-elements').append(fieldsObj);
+                                        element.find('.basic-btn-grp').append(actionsObj);
+                                        $compile(fieldsObj)(scope);
+                                        $compile(actionsObj)(scope);
+                                    });
+                                } else {
+                                    /* else compile and add the form fields */
+                                    fieldsObj = markupObj.find('wm-form-field');
+                                    element.find('.form-elements').append(fieldsObj);
+                                    element.find('.basic-btn-grp').append(actionsObj);
+                                    $compile(fieldsObj)(scope);
+                                    $compile(actionsObj)(scope);
+                                }
                             }));
                         }
                         scope.clearMessage = clearMessage.bind(undefined, scope);
                         scope.elScope.ngform = scope[scope.name];
                         scope.highlightInvalidFields = LiveWidgetUtils.highlightInvalidFields.bind(undefined, scope.elScope.ngform);
+                        scope.showButtons = showButtons.bind(undefined, scope);
+
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
                         scope.$on('$destroy', function () {

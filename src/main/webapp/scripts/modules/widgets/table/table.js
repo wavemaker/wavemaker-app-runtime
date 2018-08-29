@@ -263,7 +263,7 @@ WM.module('wm.widgets.table')
                                 '<wm-button ng-repeat="btn in _actions.header | filter: {widgetType: \'button\'} track by $index" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\', \'disabled-new\': btn.key === \'addNewRow\' && (isGridEditMode || isLoading)}" iconclass="{{btn.iconclass}}"' +
                                     ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"  hint="{{btn.title}}" disabled="bind:btn.disabled"></wm-button>' +
                                 '<wm-anchor ng-repeat="btn in _actions.header | filter: {widgetType: \'anchor\'} track by $index" hyperlink="{{btn.hyperlink}}" target="{{btn.target}}" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'disabled-new\': btn.key === \'addNewRow\' && (isGridEditMode || isLoading)}" iconclass="{{btn.iconclass}}"' +
-                                    ' on-click="{{btn.action}}" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"  hint="{{btn.title}}" disabled="bind:btn.disabled"></wm-anchor>' +
+                                    ' on-click="{{btn.action}}" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"  hint="{{btn.title}}"></wm-anchor>' +
                                 '<wm-menu autoclose="always" caption="{{$root.appLocale.LABEL_EXPORT}}" ng-if="exportOptions.length" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
                             '</div>' +
                         '</h3>' +
@@ -277,7 +277,7 @@ WM.module('wm.widgets.table')
                             '<wm-button ng-repeat="btn in _actions.footer | filter: {widgetType: \'button\'} track by $index" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\', \'disabled-new\': btn.key === \'addNewRow\' && (isGridEditMode || isLoading)}" iconclass="{{btn.iconclass}}"' +
                                 ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"  hint="{{btn.title}}" disabled="bind:btn.disabled"></wm-button>' +
                             '<wm-anchor ng-repeat="btn in _actions.footer | filter: {widgetType: \'anchor\'} track by $index" hyperlink="{{btn.hyperlink}}" target="{{btn.target}}" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'disabled-new\': btn.key === \'addNewRow\' && (isGridEditMode || isLoading)}" iconclass="{{btn.iconclass}}"' +
-                                ' on-click="{{btn.action}}" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"  hint="{{btn.title}}" disabled="bind:btn.disabled"></wm-anchor>' +
+                                ' on-click="{{btn.action}}" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"  hint="{{btn.title}}"></wm-anchor>' +
                         '</div>' +
                     '</div></div>';
             },
