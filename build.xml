@@ -59,12 +59,18 @@
         <copy todir="src/main/webapp/tmp/merged/application/scripts">
             <fileset dir="../wavemaker-ng-runtime/dist/bundles/wmapp/scripts"/>
         </copy>
+        <copy todir="src/main/webapp/tmp/merged/application/locales">
+            <fileset dir="../wavemaker-ng-runtime/dist/bundles/wmapp/locales"/>
+        </copy>
         <copy todir="src/main/webapp/tmp/merged/application/styles">
             <fileset dir="src/main/webapp/application/styles"/>
         </copy>
 
         <copy todir="src/main/webapp/tmp/merged/mobile/scripts">
             <fileset dir="../wavemaker-ng-runtime/dist/bundles/wmmobile/scripts"/>
+        </copy>
+        <copy todir="src/main/webapp/tmp/merged/mobile/locales">
+            <fileset dir="../wavemaker-ng-runtime/dist/bundles/mobile/locales"/>
         </copy>
         <copy todir="src/main/webapp/tmp/merged/mobile/styles">
             <fileset dir="src/main/webapp/mobile/styles"/>
