@@ -528,15 +528,16 @@ WM.module('wm.widgets.base', [])
                     "wm.number": {
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
-                        "datavalue": {"type": "number", value: "", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('datavalue')"},
+                        "datavalue": {"type": "number", "bindable": "in-out-bound"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
                         "backgroundcolor": {"type": "string", "widget": "color"},
+                        "updateon": {"type": "list", "value": "blur", "widget": "update-on"},
+                        "step": {"type": "number"},
 
                         /* Properties: Validation */
                         "regexp": {"type": "string", "value": ".*"},
-
                         /* Properties: help */
-                        "placeholder": {"type": "string", "value": "Enter text", "bindable": "in-bound"},
+                        "placeholder": {"type": "string", "value": "Enter Number", "bindable": "in-bound"},
 
                         /* Number properties */
                         "minvalue": {"type": "string", "bindable": "in-bound"},
