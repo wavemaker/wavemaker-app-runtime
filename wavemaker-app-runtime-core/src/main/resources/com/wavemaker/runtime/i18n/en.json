@@ -68,5 +68,7 @@
   "LABEL_DATA_PUSH_PROGRESS": "Pushing offline changes",
   "LABEL_DATA_PUSH_PROGRESS_STOP_BTN": "Stop",
   "MESSAGE_LOGIN_REDIRECTION": "Redirecting to SSO login...",
-  "LABEL_ICON": "Icon"
+  "LABEL_ICON": "Icon",
+  "LABEL_MINDATE_VALIDATION_MESSAGE": "Please choose a date greater than or equal to",
+  "LABEL_MAXDATE_VALIDATION_MESSAGE": "Please choose a date less than or equal to"
 }
