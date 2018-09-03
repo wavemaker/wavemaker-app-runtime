@@ -2440,6 +2440,7 @@ WM.module('wm.utils', [])
                     "wm-time",
                     "wm-datetime",
                     "wm-currency",
+                    "wm-number",
                     "wm-colorpicker",
                     "wm-slider",
                     "wm-fileupload",

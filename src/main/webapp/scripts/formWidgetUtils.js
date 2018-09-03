@@ -1293,7 +1293,7 @@ WM.module('wm.widgets.form')
     })
     .constant('FIELD_TO_WM_WIDGET_MAP', {
         'text'         : 'wm-text',
-        'number'       : 'wm-text',
+        'number'       : 'wm-number',
         'textarea'     : 'wm-textarea',
         'password'     : 'wm-text',
         'checkbox'     : 'wm-checkbox',
