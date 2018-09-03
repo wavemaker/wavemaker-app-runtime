@@ -72,9 +72,6 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
             url: "services/projects/:projectID/models/:serviceId/properties",
             method: "GET"
         },
-        getMetaDataServiceUrl: {
-            url: "services/projects/:projectID/models/defaultRemoteHost "
-        },
 
         /*Entities related services*/
         getPrimitiveTypes: {
