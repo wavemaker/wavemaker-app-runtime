@@ -178,11 +178,10 @@
 
     <bean id="localeProvider" class="com.wavemaker.runtime.i18n.AcceptLanguageHeaderBasedLocaleProvider"/>
 
-    <bean id="localeMessageProvider" class="com.wavemaker.commons.i18n.LocaleMessageProviderImpl">
+    <bean id="localeMessageProvider" class="com.wavemaker.runtime.i18n.WMAppLocaleMessageProviderImpl">
         <constructor-arg>
             <list>
                 <value>classpath*:i18n/wm</value>
-                <value>/resources/i18n/</value>
             </list>
         </constructor-arg>
         <constructor-arg>
@@ -190,6 +189,6 @@
                 <constructor-arg ref="servletContext"/>
             </bean>
         </constructor-arg>
-    </bean>    
+    </bean>
 
 </beans>
