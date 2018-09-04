@@ -47,19 +47,19 @@ WM.module('wm.widgets.base', [])
 
         var widgetEventOptions = Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), /*A copy of the variable to preserve the actual value.*/
             showInDeviceOptions = [{
-                'name': 'All',
+                'name': $rs.locale.LABEL_ALL,
                 'value': 'all'
             }, {
-                'name': 'Mobile',
+                'name': $rs.locale.LABEL_PROPERTY_MOBILE,
                 'value': 'xs'
             }, {
-                'name': 'Tablet Portrait',
+                'name': $rs.locale.LABEL_TABLET_PORTRAIT,
                 'value': 'sm'
             }, {
-                'name': 'Laptop\\Tablet Landscape',
+                'name': $rs.locale.LABEL_LAPTOP_TABLET_LANDSCAPE,
                 'value': 'md'
             }, {
-                'name': 'Large Screen',
+                'name': $rs.locale.LABEL_LARGE_SCREEN,
                 'value': 'lg'
             }],
             columnWidths   = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
