@@ -61,9 +61,14 @@
   "MESSAGE_SERVICE_AVAILABLE": "Service ist verfügbar.",
   "MESSAGE_SERVICE_CONNECTING": "Verbindung zum Dienst",
   "MESSAGE_SERVICE_CONNECTED": "Du bist online.",
+  "MESSAGE_FILE_UPLOAD_SUCCESS": "Datei erfolgreich hochgeladen",
+  "MESSAGE_FILE_UPLOAD_ERROR": "Der Datei-Upload ist fehlgeschlagen",
   "LABEL_DATA_PULL_PROGRESS": "Daten für offline ziehen",
   "LABEL_DATA_PULL_PROGRESS_STOP_BTN": "Halt",
   "LABEL_DATA_PUSH_PROGRESS": "Push offline Änderungen",
   "LABEL_DATA_PUSH_PROGRESS_STOP_BTN": "Halt",
-  "MESSAGE_LOGIN_REDIRECTION": "Umleitung auf SSO Login ..."
+  "MESSAGE_LOGIN_REDIRECTION": "Umleitung auf SSO Login ...",
+  "LABEL_ICON": "Symbol",
+  "LABEL_MINDATE_VALIDATION_MESSAGE": "Bitte wählen Sie ein Datum, das größer oder gleich ist",
+  "LABEL_MAXDATE_VALIDATION_MESSAGE": "Bitte wählen Sie ein Datum, das kleiner oder gleich ist"
 }
