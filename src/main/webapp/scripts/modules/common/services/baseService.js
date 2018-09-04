@@ -224,8 +224,8 @@ wm.modules.wmCommon.services.BaseService = [
             failureHandler = function (config, successCallback, failureCallback, error) {
                 var errTitle, errMsg, errorDetails = error, appManager,
                     HTTP_STATUS_MSG = {
-                        404: "Requested resource not found",
-                        401: "Requested resource requires authentication"
+                        404: getLocaleObject()["MESSAGE_404_ERROR"] || "Requested resource not found",
+                        401: getLocaleObject()["MESSAGE_401_ERROR"] || "Requested resource requires authentication"
                     };
                 /*if user is unauthorized, then show login dialog*/
                 if (isPlatformSessionTimeout(error) && !config.isDirectCall) {
