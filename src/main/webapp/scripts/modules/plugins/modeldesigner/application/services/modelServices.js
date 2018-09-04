@@ -1966,35 +1966,7 @@ wm.plugins.modeldesigner.services.ModelService = [
                     action: "reimportModel",
                     urlParams: {
                         "projectID"     : params.projectID,
-                        "serviceId"     : params.serviceId,
-                    }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.modeldesigner.$ModelService#getMetaDataServiceUrl
-             * @methodOf wm.modeldesigner.$ModelService
-             * @function
-             *
-             * @description
-             * Method to get the Meta Data Service Url.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the datamodel.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            getMetaDataServiceUrl: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Datamodel",
-                    action: "getMetaDataServiceUrl",
-                    urlParams: {
-                        "projectID"     : params.projectID
+                        "serviceId"     : params.serviceId
                     }
                 }, successCallback, failureCallback);
             }
