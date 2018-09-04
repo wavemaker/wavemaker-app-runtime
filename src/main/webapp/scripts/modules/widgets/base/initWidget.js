@@ -281,7 +281,7 @@ WM.module('wm.widgets.base')
                             if (CONSTANTS.isRunMode) {
                                 propValue = './app/prefabs/' + $s.prefabname + '/' + propValue;
                             } else {
-                                propValue = 'services/prefabs/' + $s.prefabid + '/files/webapp/' + propValue;
+                                propValue = 'WEB-INF/prefabs/' + $s.prefabname + '/webapp/' + propValue;
                             }
                             setInitProp($is, attrName, propValue);
                         } else {
