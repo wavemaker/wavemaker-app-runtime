@@ -3155,6 +3155,16 @@ WM.module('wm.utils', [])
             return locationObj.origin + (locationObj.host.indexOf(':8080') > -1 ? '/wavemaker' : '/studio');
         }
 
+        function escapeHtml(unsafe) {
+            unsafe = unsafe || '';
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3319,4 +3329,5 @@ WM.module('wm.utils', [])
         this.prepareDocLinks            = prepareDocLinks;
         this.getDecodedData             = getDecodedData;
         this.getStudioUrl               = getStudioUrl;
+        this.escapeHtml                 = escapeHtml;
     }]);
