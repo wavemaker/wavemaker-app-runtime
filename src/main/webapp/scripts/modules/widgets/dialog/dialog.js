@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
         "use strict";
         var dialogContentTemplate = '<div class="modal-content">' +
                                         '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
-                                            '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="Close">' +
+                                            '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="{{$root.locale.LABEL_CLOSE | capitalize}}">' +
                                                 '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '<h4 class="app-dialog-title modal-title">' +
@@ -15,7 +15,7 @@ WM.module('wm.widgets.dialog')
                                             '</h4>' +
                                             '<div class="wm-dialog-header-action" ng-if="actiontitle || actionlink">' +
                                                 '<i title="{{actiontitle}}" class="wm-icon wms wms-help"></i>' +
-                                                '<a ng-href="{{actionlink}}" target="_blank">Help</a>' +
+                                                '<a ng-href="{{actionlink}}" target="_blank">{{$root.locale.LABEL_HELP}}</a>' +
                                             '</div>' +
                                         '</div>' +
                                         '<div class="app-dialog-body modal-body {{contentclass}}" wmtransclude apply-styles="scrollable-container" name="wm-{{dialogid}}-content">' +
@@ -42,7 +42,7 @@ WM.module('wm.widgets.dialog')
             );
         $templateCache.put("template/widget/dialog/dialog-header.html",
             '<div data-identifier="dialog-header" class="app-dialog-header modal-header" init-widget title="{{hint}}">' +
-                '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="hideDialog()" title="Close">' +
+                '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="hideDialog()" title="{{$root.locale.LABEL_CLOSE | capitalize}}">' +
                     '<span aria-hidden="true">&times;</span>' +
                 '</button>' +
                 '<h4 class="app-dialog-title modal-title">' +
