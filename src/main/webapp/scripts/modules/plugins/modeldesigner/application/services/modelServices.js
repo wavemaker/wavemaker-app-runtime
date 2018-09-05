@@ -279,6 +279,37 @@ wm.plugins.modeldesigner.services.ModelService = [
 
             /**
              * @ngdoc function
+             * @name wm.modeldesigner.$ModelService#updateEntity
+             * @methodOf wm.modeldesigner.$ModelService
+             * @function
+             *
+             * @description
+             * Method to update entity in the specified datamodel.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the datamodel, entity to be updated.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            updateEntity: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Datamodel",
+                    action: "updateEntity",
+                    urlParams: {
+                        projectID: params.projectID,
+                        serviceId: params.serviceID,
+                        entityName: params.entityName
+                    },
+                    data: params.data
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
              * @name wm.modeldesigner.$ModelService#addAttributes
              * @methodOf wm.modeldesigner.$ModelService
              * @function
