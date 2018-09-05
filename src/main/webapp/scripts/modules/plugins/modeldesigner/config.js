@@ -88,6 +88,10 @@ wm.plugins.modeldesigner.constant('MODEL_SERVICE_URLS', {
         },
 
         /*Entity Attribute related services*/
+        updateEntity: {
+            url: "services/projects/:projectID/models/:serviceId/entity/:entityName",
+            method: "PUT"
+        },
         addAttributes: {
             url: "services/projects/:projectID/models/:serviceId/:entityName/:attributeId",
             method: "POST"
