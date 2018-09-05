@@ -73,6 +73,7 @@ WM.module('wm.widgets.base', [])
             roles = [],
             numberFormatOptions = [
                 {
+                    "namekey": "LABEL_DECIMAL_DIGITS",
                     "name" : "Decimal Digits",
                     "groupOptions" : {
                         ".0f" :  "9",
@@ -82,6 +83,7 @@ WM.module('wm.widgets.base', [])
                     }
                 },
                 {
+                    "namekey": "LABEL_PRECISION",
                     "name" : "Precision",
                     "groupOptions" : {
                         ".1g" : "9e+7",
@@ -90,12 +92,14 @@ WM.module('wm.widgets.base', [])
                     }
                 },
                 {
+                    "namekey": "LABEL_PERCENTAGE",
                     "name" : "Percentage",
                     "groupOptions" : {
                         "%" : "99%"
                     }
                 },
                 {
+                    "namekey": "LABEL_ROUND_OPTIONS",
                     "name" : "Round Options",
                     "groupOptions" : {
                         ",r"    : "99,999,999",
@@ -119,7 +123,7 @@ WM.module('wm.widgets.base', [])
                         "%X" : "Time(%H:%M:%S)",
                         "%H" : "In 24 hours [00-23]",
                         "%I" : "In 12 hours [01-12]",
-                        "%M" : "Mintues [00-59]",
+                        "%M" : "Minutes [00-59]",
                         "%S" : "Seconds [00-59]",
                         "%L" : "MilliSeconds [000, 999]",
                         "%p" : "either AM or PM",
@@ -160,6 +164,8 @@ WM.module('wm.widgets.base', [])
                     }
                 }
             ],
+            timeGroupOptions = [{"name": "TIME", "groupOptions": {"hour": "hour", "day": "day", "week": "week", "month": "month", "year": "year"}}],
+            timeNonGroupOptions = [{"labelkey":"LABEL_ALPHABET", "value": "alphabet"}, {"labelkey":"LABEL_WORD", "value": "word"}],
             PLATFORM_TYPE = {
                 WEB      :   'WEB',
                 MOBILE   :   'MOBILE',
@@ -811,7 +817,7 @@ WM.module('wm.widgets.base', [])
                         "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "media-list"]},
                         "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"]},
                         "groupby": {"type": "list", "show": true, "widget": "list-typeahead", "datasetfilter": "terminals"},
-                        "match": {"type": "list-group", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour": "hour", "day": "day", "week": "week", "month": "month", "year": "year"}}], "show": false, "value": "word", "datasetfilter": "none"},
+                        "match": {"type": "list-group", "nonGroupOptions": timeNonGroupOptions, "options": timeGroupOptions, "show": false, "value": "word", "datasetfilter": "none"},
                         "collapsible": {"type": "boolean", "show": false},
                         "showcount": {"type": "boolean", "show": false},
                         "dateformat": {"type": "list", "options": [], "widget": "date-time-patterns", "show": false},
@@ -1566,7 +1572,7 @@ WM.module('wm.widgets.base', [])
                         "gridsearch": {"type": "boolean", "show": false, "showindesigner": false},
                         "rowclass": {"type": "string", "value": "", "showindesigner": true},
                         "rowngclass": {"showindesigner": "true", "widget": "conditional-expression"},
-                        "filtermode": {"type": "select-by-object", "options": [{"label": "No Filter", "value": ""}, {"label": "Search", "value": "search"}, {"label": "Multi-column", "value": "multicolumn"}], "value": "", "displayfield": "label", "datafield": "value", "showindesigner": true},
+                        "filtermode": {"type": "select-by-object", "options": [{"labelkey": "LABEL_NO_FILTER", "value": ""}, {"labelkey": "LABEL_SEARCH", "value": "search"}, {"labelkey": "LABEL_MULTI_COLUMN", "value": "multicolumn"}], "value": "", "displayfield": "label", "datafield": "value", "showindesigner": true},
                         "searchlabel": {"type": "string", "value": "Search", "bindable": "in-bound", "show": false, "showindesigner": false, "alignright": true},
                         "enablesort": {"type": "boolean", "value": true, "showindesigner": true},
                         "enablecolumnselection": {"type": "boolean", "value": false, "showindesigner": true},
@@ -1864,7 +1870,7 @@ WM.module('wm.widgets.base', [])
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "groupby": {"type": "list", "show": true, "widget": "list-typeahead", "datasetfilter": "terminals"},
-                        "match": {"type": "list-group", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour": "hour", "day": "day", "week": "week", "month": "month", "year": "year"}}], "show": false, "value": "word", "datasetfilter": "none"},
+                        "match": {"type": "list-group", "nonGroupOptions": timeNonGroupOptions, "options": timeGroupOptions, "show": false, "value": "word", "datasetfilter": "none"},
                         "dateformat": {"type": "list", "options": [], "widget": "date-time-patterns", "show": false},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "nodatamessage": {"type": "string", "value": "No data found", "bindable": "in-bound"},
@@ -1997,7 +2003,7 @@ WM.module('wm.widgets.base', [])
                         "areaviewtype": {"type": "list", "options":  ['stack', 'stream', 'expand'], "value": "stack"},
                         "staggerlabels": {"type": "boolean", "value": false},
                         "reducexticks": {"type": "boolean", "value": true},
-                        "labeltype": {"type": "select-by-object", "value": "percent", "options" : [{"label": "key", "value": "key"}, {"label": "value", "value": "value"}, {"label": "percent", "value": "percent"}, {"label": "key, value", "value": "key-value"}]},
+                        "labeltype": {"type": "select-by-object", "value": "percent", "options" : [{"labelkey": "LABEL_KEY", "value": "key"}, {"labelkey": "LABEL_VALUE", "value": "value"}, {"labelkey": "LABEL_PERCENTAGE", "value": "percent"}, {"labelkey": "LABEL_KEY_VALUE", "value": "key-value"}]},
                         "labelthreshold": {"type": "number", "value": 0.01, "show": false},
                         "offset": {"type": "string", "widget": "box"},
                         "offsettop": {"type": "number", "value": 25, "pattern": numberRegex},
