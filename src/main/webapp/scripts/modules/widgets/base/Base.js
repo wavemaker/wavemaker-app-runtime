@@ -540,8 +540,8 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "Enter Number", "bindable": "in-bound"},
 
                         /* Number properties */
-                        "minvalue": {"type": "string", "bindable": "in-bound"},
-                        "maxvalue": {"type": "string", "bindable": "in-bound"},
+                        "minvalue": {"type": "number", "bindable": "in-bound"},
+                        "maxvalue": {"type": "number", "bindable": "in-bound"},
                         "shortcutkey": {"type": "string"}
                     },
 
