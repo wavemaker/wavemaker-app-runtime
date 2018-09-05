@@ -54,7 +54,9 @@ public class WMAppAccessDeniedHandler extends AccessDeniedHandlerImpl {
             String exceptionMessage = accessDeniedException.getMessage();
             Map<String, Object> errorMap = new HashMap(1);
             ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.setMessageKey(MessageResource.ACCESS_DENIED.getMessageKey());
+            MessageResource messageResource = MessageResource.ACCESS_DENIED;
+            errorResponse.setMessageKey(messageResource.getMessageKey());
+            errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
             errorResponse.setParameters(Arrays.asList(exceptionMessage));
             List<ErrorResponse> errorResponseList = new ArrayList<>(1);
             errorResponseList.add(errorResponse);
