@@ -275,6 +275,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         }
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessageKey(messageResource.getMessageKey());
+        errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
         errorResponse.setParameters(parameters);
         return errorResponse;
     }

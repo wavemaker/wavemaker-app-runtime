@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import com.wavemaker.runtime.WMObjectMapper;
@@ -48,7 +49,9 @@ public class WMAuthenticationFailureHandler implements AuthenticationFailureHand
         response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, msg);
         Map<String, Object> errorMap = new HashMap(1);
         ErrorResponse errorResponse = new ErrorResponse();
-		errorResponse.setMessageKey("AUTHENTICATION_FAILED");
+        MessageResource messageResource = MessageResource.create("AUTHENTICATION_FAILED");
+		errorResponse.setMessageKey(messageResource.getMessageKey());
+		errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
 		errorResponse.setParameters(Arrays.asList(exceptionMessage));
         List<ErrorResponse> errorResponseList = new ArrayList<>(1);
         errorResponseList.add(errorResponse);
