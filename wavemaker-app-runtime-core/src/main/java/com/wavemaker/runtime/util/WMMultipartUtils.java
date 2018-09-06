@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.Tika;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -256,13 +257,21 @@ public class WMMultipartUtils {
             T instance, String fieldName, HttpServletRequest httpServletRequest, boolean download) {
         DownloadResponse downloadResponse = new DownloadResponse();
         try {
+            byte[] bytes = getBlobBytes(instance, fieldName);
+
+            String contentType = null;
             String filename = httpServletRequest.getParameter("filename");
             if (StringUtils.isBlank(filename)) {
                 filename = fieldName + new Random().nextInt(99);
+            } else {
+                contentType = new Tika().detect(filename);
             }
-            byte[] bytes = getBlobBytes(instance, fieldName);
+
+            if (contentType == null)
+                contentType = getMatchingContentType(bytes, httpServletRequest);
+
             downloadResponse.setContents(new ByteArrayInputStream(bytes));
-            downloadResponse.setContentType(getMatchingContentType(bytes, httpServletRequest));
+            downloadResponse.setContentType(contentType);
             downloadResponse.setFileName(filename);
             downloadResponse.setInline(!download);
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
