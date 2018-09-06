@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
         "use strict";
         var dialogContentTemplate = '<div class="modal-content">' +
                                         '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
-                                            '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="{{$root.locale.LABEL_CLOSE | capitalize}}">' +
+                                            '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="{{$root.locale.LABEL_DIALOG_CLOSE}}">' +
                                                 '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '<h4 class="app-dialog-title modal-title">' +
@@ -42,7 +42,7 @@ WM.module('wm.widgets.dialog')
             );
         $templateCache.put("template/widget/dialog/dialog-header.html",
             '<div data-identifier="dialog-header" class="app-dialog-header modal-header" init-widget title="{{hint}}">' +
-                '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="hideDialog()" title="{{$root.locale.LABEL_CLOSE | capitalize}}">' +
+                '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="hideDialog()" title="{{$root.locale.LABEL_DIALOG_CLOSE}}">' +
                     '<span aria-hidden="true">&times;</span>' +
                 '</button>' +
                 '<h4 class="app-dialog-title modal-title">' +
