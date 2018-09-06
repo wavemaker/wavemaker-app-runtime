@@ -70,6 +70,13 @@ WM.module('wm.prefabs')
                 }
             }
 
+            function overrideResourcePath(scope, value) {
+                if (_.startsWith(value, 'resources/')) {
+                    return 'WEB-INF/prefabs/' + scope.prefabname + '/webapp/' + value;
+                }
+                return value;
+            }
+
             if (CONSTANTS.isStudioMode) {
                 (function () {
                     var groups = PropertiesFactory.getPropertyGroups(),
@@ -169,6 +176,9 @@ WM.module('wm.prefabs')
                     }
 
                     if (CONSTANTS.isStudioMode) {
+
+                        prop.value = overrideResourcePath($is, prop.value);
+
                         if (!_.includes(propsSkipList, key)) {
                             prefabProperties.push(key);
                         }
@@ -339,7 +349,7 @@ WM.module('wm.prefabs')
                                     var key = propDetails.__value.replace('bind:', '');
                                     $is._watchers[propName] = $is.pfScope.$watch(key, function (nv) {
                                         $is[propName + '__updateFromWatcher'] = true;
-                                        $is[propName] = nv;
+                                        $is[propName] = overrideResourcePath($is, nv);
                                     });
                                 }
                                 if (propDetails.__show) {
