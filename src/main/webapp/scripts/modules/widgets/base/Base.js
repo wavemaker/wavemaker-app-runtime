@@ -432,7 +432,7 @@ WM.module('wm.widgets.base', [])
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align"},
                         "padding": {"type": "string", "widget": "box-model"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["btn-group-lg", "btn-group-sm", "btn-group-xs", "btn-group-raised", "btn-toolbar", "btn-group-vertical"]},
-                        "addchild": {"hidelabel": true, "options": [{"label": "Add Button", "widgettype": "wm-button", "defaults": {"margin": ""}}], "widget": "add-widget"}
+                        "addchild": {"hidelabel": true, "options": [{"labelKey": "LABEL_ADD_BUTTON", "label": "Add Button", "widgettype": "wm-button", "defaults": {"margin": ""}}], "widget": "add-widget"}
                     },
                     "wm.switch": {
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -1717,7 +1717,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.accordion": {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Add Accordion Pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"labelKey": "LABEL_ADD_ACCORDION_PANE", "label": "Add Accordion Pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
                         "closeothers": { "type": "boolean", "value": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "tabindex": {"type": "number", "value": "0"},
@@ -1757,7 +1757,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.tabs": {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Add Tab Pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"labelKey": "LABEL_ADD_TAB_PANE", "label": "Add Tab Pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
                         "gestures": {"type": "string", "value": "on", "bindable": "in-bound"},
                         "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"], "value": "top"},
                         "taborder": {"type": "list", "widget": "tab-order", "dataset": []},
@@ -1788,7 +1788,7 @@ WM.module('wm.widgets.base', [])
                         "badgetype": {"type": "string", "widget": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"}
                     },
                     "wm.wizard": {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Add Step", "widgettype": "wm-wizardstep"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"labelKey": "LABEL_ADD_STEP", "label": "Add Step", "widgettype": "wm-wizardstep"}], "widget": "add-widget"},
                         "nextbtnlabel": {"type": "string", "value": "Next", "bindable": "in-bound"},
                         "cancelbtnlabel": {"type": "string", "value": "Cancel", "bindable": "in-bound"},
                         "previousbtnlabel": {"type": "string", "value": "Previous", "bindable": "in-bound"},
@@ -1815,7 +1815,7 @@ WM.module('wm.widgets.base', [])
                         "loadmode" : {"type" : "list", "show": false, "value" : "after-select"}
                     },
                     "wm.carousel" : {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Add Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"labelKey":"LABEL_ADD_CAROUSEL", "label": "Add Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
                         "gestures": {"type": "string", "value": "on", "bindable": "in-bound"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "show": false},
                         "animationinterval" : {"type" : "number", "value" : "3"},
