@@ -433,7 +433,7 @@ WM.module('wm.prefabs')
                         prefabWorkspaceVersion  = parseFloat(prefab.workspaceVersion);
                     //if the prefab version is in draft condition show the message
                     if (prefab.status === 'DEV') {
-                        messageMap[prefabName] = $rs.locale.MESSAGE_PREFAB_VERSION_DEVELOPMENT_STATE;
+                        messageMap[prefabName] = $rs.locale.MESSAGE_ARTIFACT_NOT_PUBLISHED;
                     } //@TODO:Implement these versions older, future, conflict
                     /*else if (_.isNumber(prefabProjectVersion) && _.isNumber(prefabWorkspaceVersion)) { //compare the version if they can be parsed
                         if (prefabProjectVersion > prefabWorkspaceVersion) {
