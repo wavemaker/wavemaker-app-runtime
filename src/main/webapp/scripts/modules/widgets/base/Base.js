@@ -594,7 +594,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "number", "value": "0"},
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
-                        "showbuttonbar": {"type": "boolean", "value": true}
+                        "showbuttonbar": {"type": "boolean", "value": true, "show": false}
                     },
                     "wm.date.mobile": {
                         "datepattern": {"show": false},
@@ -689,7 +689,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "number", "value": "0"},
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
-                        "showbuttonbar": {"type": "boolean", "value": true}
+                        "showbuttonbar": {"type": "boolean", "value": true, "show": false}
                     },
                     "wm.datetime.mobile": {
                         "datepattern": {"value": "yyyy-MM-dd hh:mm:ss a", "type": "list", "show": false},
