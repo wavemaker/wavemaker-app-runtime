@@ -1295,6 +1295,7 @@ html, body {
   .model-holder[bsdatepicker] {
     visibility: hidden;
     width: 0;
+    height: 0;
   }
 }
 //Bs datepicker
@@ -3655,6 +3656,27 @@ If the height and width are not specified the video takes the height of the post
     }
 
     .app-datetime {
+      .form-group {
+        input {
+           min-width: 45px;
+        }
+      }
+      tbody {
+        .btn.btn-link {
+           padding-left: 15px;
+           padding-right: 15px;
+        }
+      }
+      tr {
+        td {
+      	  &:first-child {
+      		 padding-left: 15px;
+      	  }
+      	  &:last-child {
+      		 padding-right: 15px;
+      	  }
+        }
+      }
       &.input-group {
         .app-dateinput {
           &.form-control {
