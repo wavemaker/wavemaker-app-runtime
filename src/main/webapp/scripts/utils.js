@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', 'WIDGET_CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', 'wmToaster', function ($rootScope, $location, $window, CONSTANTS, WIDGET_CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies, wmToaster) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', 'WIDGET_CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', 'wmToaster', '$locale', function ($rootScope, $location, $window, CONSTANTS, WIDGET_CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies, wmToaster, $locale) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -1732,6 +1732,20 @@ WM.module('wm.utils', [])
             return DEFAULT_FORMATS[_.toUpper(type)];
         }
 
+        // This function returns the default format of the selected type from the DEFAULT_FORMATS obj
+        function getLocaleDateTimeFormatForType(type) {
+            var FORMATS = {
+                'DATE'           : $locale.DATETIME_FORMATS.mediumDate,
+                'TIME'           : $locale.DATETIME_FORMATS.mediumTime,
+                'TIMESTAMP'      : $locale.DATETIME_FORMATS.medium,
+                'DATETIME'       : $locale.DATETIME_FORMATS.medium,
+                'LOCALDATETIME'  : $locale.DATETIME_FORMATS.medium,
+                'DATETIME_ORACLE': $locale.DATETIME_FORMATS.medium,
+                'DATE_TIME'      : $locale.DATETIME_FORMATS.medium
+            };
+            return FORMATS[_.toUpper(type)];
+        }
+
         /*Function that checks if the dataset is valid or not*/
         function isValidDataSet(dataset) {
             return ((WM.isArray(dataset) && dataset.length > 0) || (WM.isObject(dataset) && Object.keys(dataset).length > 0));
@@ -3268,6 +3282,7 @@ WM.module('wm.utils', [])
         this.getDaysOptions             = getDaysOptions;
         this.getDateTimeDefaultFormats  = getDateTimeDefaultFormats;
         this.getDateTimeFormatForType   = getDateTimeFormatForType;
+        this.getLocaleDateTimeFormatForType = getLocaleDateTimeFormatForType;
         this.isValidDataSet             = isValidDataSet;
         this.parseCombinedPageContent   = parseCombinedPageContent;
         this.extractType                = extractType;

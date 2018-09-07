@@ -135,8 +135,8 @@ WM.module('wm.widgets.form')
                     $is.proxyExcludeDates = FormWidgetUtils.getProxyExcludeDates(nv);
                     break;
                 case 'datepattern':
-                    $is.showseconds = _.includes(nv, 'ss');
-                    $is.ismeridian  = _.includes(nv, 'hh');
+                    $is.showseconds = _.includes(nv, 's');
+                    $is.ismeridian  = _.includes(nv, 'h');
                     _formatDateTime($is);
                     break;
                 case 'showweeks':
