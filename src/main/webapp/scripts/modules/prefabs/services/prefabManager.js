@@ -459,18 +459,20 @@ WM.module('wm.prefabs')
             /*
              * Register the prefab in a synchronous way and trigger the callback on success.
              */
-            function doRegistration(prefabName, callback) {
+            function doRegistration(prefabName, callback, forceRegister) {
 
                 /* register the prefab & then add the widget to canvas */
                 PrefabService.register({
                     projectId: getProjectId(),
-                    prefabId: studioPrefabNamePropertiesMap[prefabName].id
+                    prefabId: studioPrefabNamePropertiesMap[prefabName].id,
+                    forceRegister: forceRegister ? true : false
                 }, function () {
                     appPrefabNamePropertiesMap[prefabName] = Utils.getClonedObject(studioPrefabNamePropertiesMap[prefabName]);
                     appPrefabNameConfigMap[prefabName] = studioPrefabNameConfigMap[prefabName];
                     Utils.triggerFn(callback);
-                }, function () {
+                }, function (err) {
                     wmToaster.show('error', $rs.locale.MESSAGE_ERROR_TITLE, $rs.locale.MESSAGE_ERROR_PREFAB_REGISTER_FAILED_DESC);
+                    Utils.triggerFn(callback, err);
                 });
             }
 
@@ -508,10 +510,10 @@ WM.module('wm.prefabs')
              * If a legacy version of the prefab is found, show upgrade dialog.
              * Trigger the callback if the registration is not required.
              */
-            function validateAndRegister(prefabName, callback) {
+            function validateAndRegister(prefabName, callback, forceRegister) {
                 if (!appPrefabNamePropertiesMap[prefabName]) {
                     // prefab never registered.
-                    doRegistration(prefabName, callback);
+                    doRegistration(prefabName, callback, forceRegister);
                 } else if (isPrefabVersionMismatch(prefabName)) {
                     // prefab is registered but the version of studio-prefab is not same as app-prefab
                     showPrefabUpgradeDialog(prefabName);
@@ -525,12 +527,12 @@ WM.module('wm.prefabs')
             /*
              * If the app-prefab properties are not available then load them and check for version mismatch
              */
-            function registerPrefab(prefabName, callback) {
+            function registerPrefab(prefabName, callback, forceRegister) {
 
                 if (appPrefabNamePropertiesMap === undefined) {
-                    listAppPrefabs(validateAndRegister.bind(undefined, prefabName, callback));
+                    listAppPrefabs(validateAndRegister.bind(undefined, prefabName, callback, forceRegister));
                 } else {
-                    validateAndRegister(prefabName, callback);
+                    validateAndRegister(prefabName, callback, forceRegister);
                 }
             }
 
@@ -838,13 +840,13 @@ WM.module('wm.prefabs')
                 return PrefabService.publishPrefabToProject(payload);
             }
 
-            function register(prefabId, successHandler, errorHandler) {
+            function register(prefabId, forceRegister, successHandler, errorHandler) {
                 PrefabService.register({
                     'projectId': $rs.project.studioProjectId || $rs.project.id,
-                    'prefabId': prefabId
+                    'prefabId': prefabId,
+                    'forceRegister': forceRegister
                 }, successHandler, errorHandler);
             }
-
 
             /**
              *
