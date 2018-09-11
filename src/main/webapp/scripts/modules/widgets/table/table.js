@@ -2825,7 +2825,7 @@ WM.module('wm.widgets.table')
 
                 var columnProperties = ['generator', 'widgetType', 'datepattern', 'currencypattern', 'fractionsize', 'suffix', 'prefix', 'accessroles', 'dataset', 'datafield',
                     'placeholder', 'displaylabel', 'searchkey', 'displayfield', 'rowactionsposition', 'filterplaceholder', 'relatedEntityName', 'checkedvalue', 'uncheckedvalue', 'showdropdownon',
-                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey', 'filteronfilter', 'editdatepattern', 'exportexpression', 'filterexpressions'];
+                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey', 'filteronfilter', 'editdatepattern', 'exportexpression', 'filterexpressions', 'regexp'];
 
                 return {
                     'pre': function (scope, element, attrs) {
@@ -2932,7 +2932,10 @@ WM.module('wm.widgets.table')
                             'show'              : attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
                             'limit'             : attrs.limit ? +attrs.limit : undefined,
                             'filterwidget'      : attrs.filterwidget || LiveWidgetUtils.getDataTableFilterWidget(attrs.type || 'string'),
-                            'filterexpressions' : attrs.filterexpressions || '{}'
+                            'filterexpressions' : attrs.filterexpressions || '{}',
+                            'minvalue'          : isNaN(+attrs.minvalue) ? attrs.minvalue : +attrs.minvalue,
+                            'maxvalue'          : isNaN(+attrs.maxvalue) ? attrs.maxvalue : +attrs.maxvalue,
+                            'maxchars'          : isNaN(+attrs.maxchars) ? attrs.maxchars : +attrs.maxchars,
                         };
 
                         _.forEach(columnProperties, function (key) {
