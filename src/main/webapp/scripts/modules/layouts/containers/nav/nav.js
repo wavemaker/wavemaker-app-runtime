@@ -63,9 +63,6 @@ WM.module('wm.layouts.containers')
                         'itemlink'    : $is.itemlink
                     });
                 }
-                if ($is.widgetid && nv) { // when the widget is inside canvas
-                    $is.keys = WidgetUtilService.updatePropertyPanelOptions($is).terminals;
-                }
                 return nodes;
             }
             function constructNav($el, $is, attrs) {
@@ -214,7 +211,7 @@ WM.module('wm.layouts.containers')
                         }
                         cls +=  '"';
                     } else {
-                        cls = 'class="nav app-nav" ng-class="{\'nav-pills\': type === \'pills\',' +
+                        cls = 'listen-property="dataset" class="nav app-nav" ng-class="{\'nav-pills\': type === \'pills\',' +
                                     '\'nav-tabs\': type === \'tabs\',' +
                                     '\'navbar-nav\': type === \'navbar\',' +
                                     '\'nav-stacked\': layout === \'stacked\',' +
@@ -307,7 +304,7 @@ WM.module('wm.layouts.containers')
                 'replace'   : true,
                 'scope'     : {},
                 'transclude': true,
-                'template'  : '<li init-widget listen-property="dataset" class="app-nav-item" apply-styles="container" wmtransclude></li>',
+                'template'  : '<li init-widget class="app-nav-item" apply-styles="container" wmtransclude></li>',
                 'link'      : {
                     'pre': function ($is, $el, attrs) {
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
