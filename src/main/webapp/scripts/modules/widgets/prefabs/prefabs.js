@@ -413,7 +413,7 @@ WM.module('wm.prefabs')
 
                         function compileTemplate(prefabContent) {
                             var versionMsg    = PrefabManager.getVersionMismatchMessage(prefabName),
-                                versionMsgEle = '<div class="badge prefab-version" ng-if="showVersionMismatch"><i class="fa fa-flask" title="'  + versionMsg + '"></i></div>',
+                                versionMsgEle = '<div class="badge prefab-version" ng-if="showVersionMismatch"><i class="wms wms-flask" title="'  + versionMsg + '"></i></div>',
                                 prefabEle     = ($is.widgetid ? versionMsgEle : '') + '<div class="full-width full-height">' + prefabContent + '</div>',
                                 $prefabEle    = WM.element(prefabEle);
 
