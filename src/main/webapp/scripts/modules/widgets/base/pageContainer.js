@@ -238,13 +238,12 @@ WM.module('wm.widgets.base')
                                 path: CONSTANTS.isStudioMode ? "../../../" + page + 'page.min.json' : page + 'page.min.json',
                                 projectID : $rootScope.project.id
                             }, function (pageContent) {
-                                var variableContext = '_' + newVal + 'Page_Variables_',
-                                    $styles = Utils.getDecodedData(pageContent.styles),
-                                    pageContetObj = {};
+                                var $styles = Utils.getDecodedData(pageContent.styles),
+                                    pageContetObj;
                                 WM.element(document.head).append('<style>'+ $styles +'</style>');
                                 pageContetObj = {
                                     html: Utils.getDecodedData(pageContent.markup),
-                                    variables: window[variableContext] || {},
+                                    variables: Utils.getValidJSON(Utils.getDecodedData(pageContent.variables)) || {},
                                     css: $styles
                                 };
 
