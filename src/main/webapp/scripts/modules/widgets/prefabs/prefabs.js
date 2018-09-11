@@ -287,7 +287,7 @@ WM.module('wm.prefabs')
                                 return;
                             }
                             var errResp = JSON.parse(response.responseText);
-                            if (errResp.errors && errResp.errors.error[0].messageKey === 'com.wavemaker.platform.project$DepedentPrefabExistWithDifferentVersion') {
+                            if (errResp.errors && errResp.errors.error[0].messageKey === 'com.wavemaker.platform.project$DependentPrefabExistWithDifferentVersion') {
                                 var content = Utils.replace(errResp.errors.error[0].message, errResp.errors.error[0].parameters, true);
 
                                 DialogService.showConfirmDialog({
