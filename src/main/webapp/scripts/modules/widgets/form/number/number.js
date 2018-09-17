@@ -6,7 +6,8 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/number.html',
             '<input class="form-control app-textbox" init-widget has-model apply-styles role="input" focus-target' +
-            ' title="{{hint}}" ' +
+            ' title="{{hint}}" '+
+            ' type="number"'+
             ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
             ' ng-readonly="readonly" ' +
             ' ng-required="required" ' +

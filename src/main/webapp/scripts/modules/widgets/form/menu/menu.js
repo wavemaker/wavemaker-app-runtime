@@ -132,10 +132,12 @@ WM.module('wm.widgets.form')
                 case POSITION.DOWN_RIGHT:
                     element.removeClass('dropup');
                     scope.menualign = 'pull-left';
+                    scope.menuCaret = "fa-caret-down";
                     break;
                 case POSITION.DOWN_LEFT:
                     element.removeClass('dropup');
                     scope.menualign = 'pull-right';
+                    scope.menuCaret = "fa-caret-down";
                     break;
                 case POSITION.UP_LEFT:
                     element.addClass('dropup');
