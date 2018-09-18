@@ -434,6 +434,9 @@ html, body {
     }
     .app-partial {
       overflow: auto;
+      > button {
+        margin-top: 0.9em;
+      }
     }
   }
 
@@ -816,7 +819,7 @@ html, body {
 .select-locale.form-control.app-select {
   width: auto;
 }
-/*select wrapper*/
+/*Editable field wrapper*/
 .app-select-wrapper, .app-input-wrapper {
   display: inherit;
 }
@@ -1296,6 +1299,7 @@ html, body {
     visibility: hidden;
     width: 0;
     height: 0;
+    min-height: 35px;
   }
 }
 //Bs datepicker
@@ -2399,7 +2403,7 @@ If the height and width are not specified the video takes the height of the post
       &.cell-editing {
         overflow: unset;
         vertical-align: middle;
-        .app-select-wrapper {
+        .app-select-wrapper, .app-input-wrapper {
           display: block;
         }
         &:not(.checkbox-widget) {
