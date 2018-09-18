@@ -12,12 +12,20 @@
     </parent>
 
     <artifactId>wavemaker-app-runtime-core</artifactId>
+    <name>wavemaker-app-runtime-core</name>
     <packaging>jar</packaging>
 
     <properties>
         <main.basedir>${basedir}/..</main.basedir>
     </properties>
 
+    <distributionManagement>
+        <site>
+            <id>${project.artifactId}-site</id>
+            <url>./${project.artifactId}</url>
+        </site>
+    </distributionManagement>
+    
     <dependencies>
         <dependency>
             <groupId>org.springframework.security</groupId>
