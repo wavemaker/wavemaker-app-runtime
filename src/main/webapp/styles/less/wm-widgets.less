@@ -2397,6 +2397,8 @@ If the height and width are not specified the video takes the height of the post
         overflow-x: hidden;
       }
       &.cell-editing {
+        overflow: unset;
+        vertical-align: middle;
         .app-select-wrapper {
           display: block;
         }
@@ -2408,6 +2410,14 @@ If the height and width are not specified the video takes the height of the post
           form {
             margin: 7px 0 0 0;
           }
+        }
+        .wi-error {
+          position: absolute;
+          .calc('top', ~"calc(50% - 8px)");
+          right: 0;
+          font-size: 16px;
+          cursor: pointer;
+          z-index: 3;//setting higher than that of form-control's
         }
       }
       &.required-field:before {
