@@ -1411,9 +1411,21 @@ bs-datepicker-container, bs-daterangepicker-container {
         &.selected, &.selected span {
           color: rgb(255, 255, 255);
         }
-      }
-      &:not(.disabled) {
-        span {
+        &:focus {
+          background-color: #bbb;
+          color: #333;
+        }
+        &.current-date:focus {
+          color: #fff !important;
+        }
+        &.disabled {
+          color: #ccc;
+          cursor: not-allowed;
+          &:focus {
+            color: #fff;
+          }
+        }
+        &:not(.is-other-month):not(.disabled):hover {
           cursor: pointer;
         }
       }
@@ -2401,7 +2413,6 @@ If the height and width are not specified the video takes the height of the post
         overflow-x: hidden;
       }
       &.cell-editing {
-        overflow: unset;
         vertical-align: middle;
         .app-select-wrapper, .app-input-wrapper {
           display: block;
@@ -2778,6 +2789,9 @@ If the height and width are not specified the video takes the height of the post
   .locked.note-statusbar {
     display: none;
   }
+  .note-status-output:empty {
+    padding: 0;
+  }
 }
 //Richtexteditor modals
   .note-modal {
@@ -2787,8 +2801,11 @@ If the height and width are not specified the video takes the height of the post
         margin: 0;
       }
     }
-    .note-modal-body label {
-      color: inherit;
+    .note-modal-body {
+      padding: 10px;
+      label {
+        color: inherit;
+      }
     }
     .note-modal-footer {
       height: auto;
@@ -3722,15 +3739,6 @@ If the height and width are not specified the video takes the height of the post
       }
     }
 
-    .bs-datepicker {
-      .bs-datepicker-body {
-        .disabled {
-          color: #ccc;
-          cursor: not-allowed;
-        }
-      }
-    }
-
     .app-form {
       .overlay {
         background: rgba(255, 255, 255, 0.5);
@@ -3756,16 +3764,6 @@ If the height and width are not specified the video takes the height of the post
     border-color: transparent;
     background-image: none;
     border-bottom: 2px solid #F44336;
-  }
-}
-//date picker styles
-.bs-datepicker-body table td span {
-  &:focus {
-    background-color: #bbb !important;
-    color: #333 !important;
-  }
-  &.current-date:focus {
-    color: #fff !important;
   }
 }
 
