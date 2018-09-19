@@ -138,7 +138,9 @@ WM.module('wm.widgets.form')
 
             function onDateChange(scope, evt) {
                 //after selecting the date, setting the focus back to input and triggering the _onChange
-                scope._onChange({$event: evt, $scope: scope});
+                if (!_.isEmpty(scope.datavalue) || !_.isEmpty(scope._ngModelOldVal)) {
+                    scope._onChange({$event: evt, $scope: scope});
+                }
                 //element will not be available in studio mode
                 if (CONSTANTS.isRunMode) {
                     //if the model(date value) is removed, on input click the focus should set on the datepicker popup
