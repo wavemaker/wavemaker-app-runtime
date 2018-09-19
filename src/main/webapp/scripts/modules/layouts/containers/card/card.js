@@ -34,6 +34,7 @@ WM.module('wm.layouts.containers')
     .directive('wmCard', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events', 'wm.menu.dataProps']),
+            menuDataProps = _.keys(PropertiesFactory.getPropertiesOf('', ['wm.menu.dataProps'])),
             notifyFor   = {
                 'title'     : true,
                 'subheading': true,
@@ -45,11 +46,12 @@ WM.module('wm.layouts.containers')
         // Define the property change handler. This function will be triggered when there is a change in the widget property
         function propertyChangeHandler($is, key) {
             switch (key) {
-            case 'title':
+            case 'actions':
+                WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.bindactions);
             case 'subheading':
             case 'iconclass':
             case 'iconurl':
-            case 'actions':
+            case 'title':
                 $is.showHeader = $is.title || $is.subheading || $is.iconclass || $is.iconurl || $is.actions;
                 break;
             }
@@ -85,6 +87,7 @@ WM.module('wm.layouts.containers')
 
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.bindactions);
                 }
             }
         };

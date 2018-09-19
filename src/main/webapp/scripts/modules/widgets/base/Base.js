@@ -467,7 +467,8 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "class": {"type": "string", "pattern": classRegex, "show": false},
-                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"}
+                        "autoclose": {"type": "list", "widget": "select-by-object", "value": "never", "options": [{"label": "Outside Click", "value": "outsideClick"}, {"label": "Always", "value": "always"}, {"label": "Disabled", "value": "disabled"}]},
+                        "autoopen": {"type": "list", "widget": "select-by-object", "value": "never", "options": [{"label": "Never", "value": "never"}, {"label": "Always", "value": "always"}, {"label": "Active Page", "value": "activepage"}]}
                     },
 
                     "wm.menu.dataProps": {
@@ -1180,7 +1181,8 @@ WM.module('wm.widgets.base', [])
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
                         "margin": {"type": "string", "widget": "box-model"},
-                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"}
+                        "autoclose": {"type": "list", "widget": "select-by-object", "value": "never", "options": [{"label": "Outside Click", "value": "outsideClick"}, {"label": "Always", "value": "always"}, {"label": "Disabled", "value": "disabled"}]},
+                        "autoopen": {"type": "list", "widget": "select-by-object", "value": "never", "options": [{"label": "Never", "value": "never"}, {"label": "Always", "value": "always"}, {"label": "Active Page", "value": "activepage"}]}
                     },
                     'wm.layouts.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -2164,7 +2166,7 @@ WM.module('wm.widgets.base', [])
                     "multiple", "maxsize", "inputposition", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "disableprevious", "disabledone", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
-                    "xpadding", "ypadding", "interaction", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
+                    "xpadding", "ypadding", "interaction", "autoopen", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "selectionlimit", "formposition", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard", "barcodeformat", "minchars"], "parent": "properties"},
                 {"name": "popoverbehavior", "properties": ["popoverplacement", "contentanimation", "popoverarrow", "popoverautoclose"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign", "ondemandmessage"], "parent": "properties"},
@@ -3315,6 +3317,23 @@ WM.module('wm.widgets.base', [])
                 return routeRegex.test(link);
             }
 
+            /**
+             * Updates the widgets show value.
+             * @param scope Scope of the widget
+             * @param menuDataProps List of widget properties.
+             * @param show {boolean} true to show and false to hide.
+             */
+            function updateWidgetProps(scope, menuDataProps, show) {
+                var wProps = scope.widgetProps;
+                _.forEach(menuDataProps, function (value) {
+                    if (wProps[value]) {
+                        wProps[value].show = show;
+                    }
+                });
+                // to refresh the properties panel.
+                scope.$emit('wms:refresh-properties-panel');
+            }
+
             return {
 
                 /**
@@ -3411,7 +3430,18 @@ WM.module('wm.widgets.base', [])
                  * @description
                  * This function returns true if given link is matched with route params url
                  */
-                isActiveNavItem: isActiveNavItem
+                isActiveNavItem: isActiveNavItem,
+
+                /**
+                 * @ngdoc function
+                 * @name wm.widgets.$WidgetUtilService#updateWidgetProps
+                 * @methodOf wm.widgets.$WidgetUtilService
+                 * @function
+                 *
+                 * @description
+                 * This function updates show value for the list of widget properties passed.
+                 */
+                updateWidgetProps: updateWidgetProps
         }
         }])
     .directive('applyStyles', [

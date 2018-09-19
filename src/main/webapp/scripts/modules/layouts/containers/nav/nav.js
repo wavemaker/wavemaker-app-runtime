@@ -18,6 +18,7 @@ WM.module('wm.layouts.containers')
         function (Utils, PropertiesFactory, WidgetUtilService, $rs, $compile, $routeParams, CONSTANTS, FormWidgetUtils, $window) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.containers', 'wm.menu.dataProps']),
+                menuDataProps = _.keys(PropertiesFactory.getPropertiesOf('', ['wm.menu.dataProps'])),
                 notifyFor = {
                     'dataset'      : true,
                     'scopedataset' : true,
@@ -28,6 +29,8 @@ WM.module('wm.layouts.containers')
                     'itemchildren' : true,
                     'orderby'      : true
                 };
+
+            menuDataProps.push('orderby', 'autoclose', 'itembadge');
 
             function getNodes($is, nv) {
                 var nodes = [];
@@ -166,6 +169,7 @@ WM.module('wm.layouts.containers')
                     if (variable && variable.category === 'wm.LiveVariable') {
                         nv = nv.data;
                     }
+                    WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.binddataset);
                     // do not break here. continue with the next steps.
                 case 'scopedataset':
                     $is.nodes = getNodes($is, nv);
@@ -231,6 +235,7 @@ WM.module('wm.layouts.containers')
 
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                        WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.binddataset);
 
                         $is.$on('$destroy', $rs.$on('page-transition-end', function () {
                             $el.find('li.app-nav-item.active').removeClass('active');

@@ -45,6 +45,7 @@ WM.module('wm.layouts.containers')
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps', 'wm.layouts.panel.defaults', 'wm.scrollablecontainer']),
+                menuDataProps = _.keys(PropertiesFactory.getPropertiesOf('', ['wm.menu.dataProps'])),
                 notifyFor   = {
                     'actions' : true,
                     'iconurl' : true,
@@ -77,6 +78,7 @@ WM.module('wm.layouts.containers')
                 switch (key) {
                 case 'actions':
                     scope.itemlabel = scope.itemlabel || scope.displayfield;
+                    WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.bindactions);
                     break;
                 case 'iconurl':
                     scope.iconsrc = Utils.getImageUrl(newVal);
@@ -196,6 +198,7 @@ WM.module('wm.layouts.containers')
                             /* register the property change handler */
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
                             WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                            WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.bindactions);
 
                             if (!$is.widgetid) {
                                 $is.onKeypress = function (args) {
