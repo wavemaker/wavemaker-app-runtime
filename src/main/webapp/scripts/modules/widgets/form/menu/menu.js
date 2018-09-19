@@ -44,6 +44,7 @@ WM.module('wm.widgets.form')
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base','wm.base.advancedformwidgets', 'wm.menu.dataProps']),
+            menuDataProps = _.keys(PropertiesFactory.getPropertiesOf('', ['wm.menu.dataProps'])),
             notifyFor = {
                 'iconname'      : true,
                 'scopedataset'  : true,
@@ -59,6 +60,8 @@ WM.module('wm.widgets.form')
                 UP_LEFT     : 'up,left',
                 INLINE      : 'inline'
             };
+
+        menuDataProps.push('orderby');
 
         function getMenuItems(newVal, scope) {
             var menuItems = [],
@@ -123,6 +126,7 @@ WM.module('wm.widgets.form')
                 if (CONSTANTS.isRunMode && newVal) {
                     scope.menuItems = getMenuItems(newVal.data || newVal, scope);
                 }
+                WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.binddataset);
                 break;
             case 'linktarget':
                 scope.linktarget = newVal;
@@ -255,6 +259,7 @@ WM.module('wm.widgets.form')
                         }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.binddataset);
                         if (!scope.widgetid && attrs.scopedataset) {
                             $timeout(function () {
                                 scope.$watch('scopedataset', function (newVal) {

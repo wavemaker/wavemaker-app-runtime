@@ -5,6 +5,7 @@ WM.module('wm.layouts.containers')
     .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', 'Utils', '$location', 'CONSTANTS', '$rootScope', '$timeout', function (PropertiesFactory, WidgetUtilService, Utils, $location, CONSTANTS, $rs, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.containers', 'wm.menu.dataProps']),
+            menuDataProps = _.keys(PropertiesFactory.getPropertiesOf('', ['wm.menu.dataProps'])),
             notifyFor = {
                 'dataset': true,
                 'scopedataset': true,
@@ -127,6 +128,7 @@ WM.module('wm.layouts.containers')
             case 'scopedataset':
             case 'dataset':
                 dataset = newVal;
+                WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.binddataset);
                 //break statement is intentionally removed for the flow
             case 'itemicon':
             case 'itemclass':
@@ -167,6 +169,7 @@ WM.module('wm.layouts.containers')
 
                     WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, $el, attrs);
+                    WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.binddataset);
 
                     //Set hasOnBeforeNavigate only when there is onBeforenavigate event on the widget
                     scope.hasOnBeforeNavigate = !!attrs.onBeforenavigate;
