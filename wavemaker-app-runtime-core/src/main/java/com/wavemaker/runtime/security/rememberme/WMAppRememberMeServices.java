@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  */
 package com.wavemaker.runtime.security.rememberme;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
@@ -30,9 +28,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
 
+import com.wavemaker.runtime.util.MessageDigestUtil;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.security.token.repository.PersistentAuthTokenRepository;
@@ -95,14 +93,7 @@ public class WMAppRememberMeServices extends AbstractWMRememberMeServices {
      */
     protected String makeTokenSignature(long tokenExpiryTime, String username) {
         String data = username + ":" + tokenExpiryTime + ":" + UUID.randomUUID() + ":" + getKey();
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("No MD5 algorithm available!");
-        }
-
-        return new String(Hex.encode(digest.digest(data.getBytes())));
+        return MessageDigestUtil.getDigestedData(data);
     }
 
     @Override
