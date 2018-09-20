@@ -23,12 +23,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLConnection;
+import java.security.SecureRandom;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -244,7 +244,7 @@ public class WMMultipartUtils {
             byte[] bytes = getBlobBytes((T) instance, fieldName);
             httpServletResponse.setContentType(getMatchingContentType(bytes, httpServletRequest));
             httpServletResponse.setHeader("Content-Disposition",
-                    "filename=" + fieldName + new Random().nextInt(99) + ";size=" + bytes.length);
+                    "filename=" + fieldName + new SecureRandom().nextInt(99) + ";size=" + bytes.length);
             int contentLength = IOUtils.copy(new ByteArrayInputStream(bytes), httpServletResponse.getOutputStream());
             httpServletResponse.setContentLength(contentLength);
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -262,7 +262,7 @@ public class WMMultipartUtils {
             String contentType = null;
             String filename = httpServletRequest.getParameter("filename");
             if (StringUtils.isBlank(filename)) {
-                filename = fieldName + new Random().nextInt(99);
+                filename = fieldName + new SecureRandom().nextInt(99);
             } else {
                 contentType = new Tika().detect(filename);
             }
