@@ -201,7 +201,9 @@ WM.module('wm.prefabs')
                             delete prop.options;
                         }
 
-                        if (!prop.hasOwnProperty('show')) {
+                        if (prop.bindable === 'out-bound') {
+                            prop.show = false;
+                        } else if (!prop.hasOwnProperty('show')) {
                             prop.show = true;
                         } else if (Utils.stringStartsWith(prop.show, 'bind:')) {
                             prop.__show = prop.show;
