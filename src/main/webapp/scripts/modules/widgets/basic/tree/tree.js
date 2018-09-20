@@ -54,6 +54,7 @@ WM.module('wm.widgets.basic')
                         'collapsed': 'wi-plus'
                     }
                 },
+                treeDataProps = ['nodeid', 'nodelabel', 'nodeicon', 'nodechildren', 'nodeaction', 'nodeclick', 'orderby'],
                 TypeUtils;
 
             function constructNodes($is, nodes, parent, levels, deep, _evalDataValue) {
@@ -266,6 +267,7 @@ WM.module('wm.widgets.basic')
                     $is.nodes = getNodes($is, $el, newVal.data || newVal);
                     $is._selectNode = undefined;
                     $is.renderTree($el, $is, attrs);
+                    WidgetUtilService.updateWidgetProps($is, treeDataProps, !!$is.binddataset);
                     break;
                 case 'nodeicon':
                 case 'nodelabel':
@@ -405,6 +407,7 @@ WM.module('wm.widgets.basic')
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
 
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                        WidgetUtilService.updateWidgetProps($is, treeDataProps, !!$is.binddataset);
 
                         if (!attrs.widgetid && attrs.scopedataset) {
                             $is.$watch('scopedataset', function (newVal) {
