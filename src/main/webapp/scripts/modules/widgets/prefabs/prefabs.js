@@ -291,40 +291,7 @@ WM.module('wm.prefabs')
                             PrefabManager.loadAppPrefabConfig($is.prefabname, onConfigLoad.bind(undefined, $is, serverProps));
                         }
 
-                        function checkAndRegisterPrefab (forceRegister) {
-                            if (CONSTANTS.isStudioMode && attrs.registrationRequired !== undefined) {
-                                PrefabManager.registerPrefab($is.prefabname, cbRegisterPrefab, forceRegister);
-                            } else {
-                                loadDependencies();
-                            }
-                        }
-                        $is.checkAndRegisterPrefab = checkAndRegisterPrefab;
-                        checkAndRegisterPrefab(false);
-
-                        function cbRegisterPrefab(response) {
-                            if (!response) {
-                                loadDependencies();
-                                return;
-                            }
-                            var errResp = JSON.parse(response.responseText);
-                            if (errResp.errors && errResp.errors.error[0].messageKey === 'com.wavemaker.platform.project$DependentPrefabExistWithDifferentVersion') {
-                                var content = Utils.replace(errResp.errors.error[0].message, errResp.errors.error[0].parameters, true);
-
-                                DialogService.showConfirmDialog({
-                                    'caption'    : $rs.locale.LABEL_PREFAB_VERSION_MISMATCH_TITLE,
-                                    'controller' : 'WM.noop',
-                                    'onOk'       : 'checkAndRegisterPrefab',
-                                    'okParams'   : true,
-                                    'content'    : content,
-                                    'oktext'     : $rs.locale.LABEL_PREFAB_VERSION_MISMATCH_OK_LABEL,
-                                    'canceltext' : $rs.locale.LABEL_PREFAB_VERSION_MISMATCH_CANCEL_LABEL,
-                                    'backdrop'   : true,
-                                    'scope'      : $is
-                                });
-                            } else {
-                                loadDependencies();
-                            }
-                        }
+                        loadDependencies();
                     },
 
                     'post': function ($is, $el, attrs) {

@@ -475,7 +475,6 @@ WM.module('wm.prefabs')
                     appPrefabNameConfigMap[prefabName] = studioPrefabNameConfigMap[prefabName];
                     Utils.triggerFn(callback);
                 }, function (err) {
-                    wmToaster.show('error', $rs.locale.MESSAGE_ERROR_TITLE, $rs.locale.MESSAGE_ERROR_PREFAB_REGISTER_FAILED_DESC);
                     Utils.triggerFn(callback, err);
                 });
             }
@@ -852,6 +851,11 @@ WM.module('wm.prefabs')
                 }, successHandler, errorHandler);
             }
 
+            function isPrefabVersionConflictError(errObj) {
+                var errKey = _.get(errObj, 'errors.error[0].messageKey');
+                return errKey === 'com.wavemaker.platform.project$DependentPrefabExistWithDifferentVersion';
+            }
+
             /**
              *
              * publishes the prefab to the workspace
@@ -1086,5 +1090,14 @@ WM.module('wm.prefabs')
              * @param {prefabName} name of the prefab
              */
             this.getScriptOf = getScriptOf;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#isPrefabVersionConflictError
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * returns true if the error message is related to the prefab conflicts.
+             * @param {prefabName} name of the prefab
+             */
+            this.isPrefabVersionConflictError = isPrefabVersionConflictError;
         }
     ]);
