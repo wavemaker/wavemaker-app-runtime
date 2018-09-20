@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  */
 package com.wavemaker.runtime.security.token;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -31,9 +29,9 @@ import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.codec.Hex;
 import org.springframework.util.StringUtils;
 
+import com.wavemaker.runtime.util.MessageDigestUtil;
 import com.wavemaker.commons.model.security.TokenAuthConfig;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.token.exception.TokenGenerationException;
@@ -121,7 +119,7 @@ public class WMTokenBasedAuthenticationService {
         this.tokenValiditySeconds = tokenValiditySeconds;
     }
 
-    public String getParameter(){
+    public String getParameter() {
         return tokenAuthConfig.getParameter();
     }
 
@@ -144,7 +142,7 @@ public class WMTokenBasedAuthenticationService {
                 return toWMUser(userDetails.getUsername(), password, userDetails.getAuthorities());
             } else {
                 String username = (String) usernamePasswordAuthenticationToken.getPrincipal();
-                return toWMUser(username, "" , authentication.getAuthorities());
+                return toWMUser(username, "", authentication.getAuthorities());
             }
 
         } else if (authentication instanceof CasAuthenticationToken) {
@@ -190,14 +188,7 @@ public class WMTokenBasedAuthenticationService {
      */
     protected String makeTokenSignature(long tokenExpiryTime, String username) {
         String data = username + ":" + tokenExpiryTime + ":" + UUID.randomUUID() + ":" + key;
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("No MD5 algorithm available!");
-        }
-
-        return new String(Hex.encode(digest.digest(data.getBytes())));
+        return MessageDigestUtil.getDigestedData(data);
     }
 
     private boolean isInstanceOfUserDetails(Authentication authentication) {
