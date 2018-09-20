@@ -7,7 +7,7 @@
         "jquery-ui": "1.11.4",
         "angular": "1.6.9",
         "angular-animate": "1.6.9",
-        "bootstrap": "3.3.6",
+        "bootstrap": "3.3.7",
         "font-awesome": "4.7.0",
         "angular-sanitize": "1.6.9",
         "angular-bootstrap-colorpicker": "https://github.com/buberdds/angular-bootstrap-colorpicker.git#v3.0.31",
