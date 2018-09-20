@@ -467,7 +467,7 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "class": {"type": "string", "pattern": classRegex, "show": false},
-                        "autoclose": {"type": "list", "widget": "select-by-object", "value": "never", "options": [{"label": "Outside Click", "value": "outsideClick"}, {"label": "Always", "value": "always"}, {"label": "Disabled", "value": "disabled"}]},
+                        "autoclose": {"type": "list", "widget": "select-by-object", "value": "outsideClick", "options": [{"label": "Outside Click", "value": "outsideClick"}, {"label": "Always", "value": "always"}, {"label": "Disabled", "value": "disabled"}]},
                         "autoopen": {"type": "list", "widget": "select-by-object", "value": "never", "options": [{"label": "Never", "value": "never"}, {"label": "Always", "value": "always"}, {"label": "Active Page", "value": "activepage"}]}
                     },
 
@@ -1181,7 +1181,7 @@ WM.module('wm.widgets.base', [])
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
                         "margin": {"type": "string", "widget": "box-model"},
-                        "autoclose": {"type": "list", "widget": "select-by-object", "value": "never", "options": [{"label": "Outside Click", "value": "outsideClick"}, {"label": "Always", "value": "always"}, {"label": "Disabled", "value": "disabled"}]},
+                        "autoclose": {"type": "list", "widget": "select-by-object", "value": "outsideClick", "options": [{"label": "Outside Click", "value": "outsideClick"}, {"label": "Always", "value": "always"}, {"label": "Disabled", "value": "disabled"}]},
                         "autoopen": {"type": "list", "widget": "select-by-object", "value": "never", "options": [{"label": "Never", "value": "never"}, {"label": "Always", "value": "always"}, {"label": "Active Page", "value": "activepage"}]}
                     },
                     'wm.layouts.navbar': {

@@ -17,6 +17,8 @@ WM.module('wm.layouts.containers')
                 'itemid': true
             };
 
+        menuDataProps.push('itemid');
+
         /**
          * Gets the first path found based on the key provided inside info Object.
          * @param scope : isolateScope of widget.
