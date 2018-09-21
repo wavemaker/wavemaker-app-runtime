@@ -21,6 +21,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -152,7 +153,7 @@ public class CSVConverterUtil {
                 if (cell == null) {
                     csvLine.add("");
                 } else {
-                    if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
+                    if (cell.getCellType() != CellType.FORMULA) {
                         csvLine.add(this.formatter.formatCellValue(cell));
                     } else {
                         csvLine.add(this.formatter.formatCellValue(cell, this.evaluator));
