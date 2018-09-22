@@ -108,11 +108,7 @@ public class HttpRequestUtils {
         }
         Message message = new Message();
         message.setHttpHeaders(new HttpHeaders());
-        try {
-            message.setInputStream(org.apache.commons.io.IOUtils.toInputStream(JSONUtils.toJSON(body)));
-        } catch (IOException e) {
-            throw new WMRuntimeException(e);
-        }
+        message.setInputStream(org.apache.commons.io.IOUtils.toInputStream(JSONUtils.toJSON(body)));
         return message;
     }
 
