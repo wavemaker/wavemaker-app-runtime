@@ -20,7 +20,7 @@ WM.module('wm.widgets.dialog')
     }])
     .directive('wmPagedialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf("wm.pagedialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk"]),
+        var widgetProps = PropertiesFactory.getPropertiesOf("wm.pagedialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk","wm.pagecontainer"]),
             notifyFor = {
                 'height': true,
                 'width' : true
