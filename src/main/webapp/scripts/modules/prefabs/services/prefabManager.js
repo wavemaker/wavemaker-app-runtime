@@ -830,10 +830,13 @@ WM.module('wm.prefabs')
                 return PrefabService.publishPrefabToWorkSpace(payload);
             }
 
-            function publishPrefabToProject(targetProjectId) {
+            function publishPrefabToProject(targetProjectId, forceRegister) {
                 projectDetails = ProjectService.getDetails();
                 var payload = {
-                    'projectID' : projectDetails.studioProjectId || projectDetails.id,
+                    'urlParams' : {
+                        'forceRegister' : !!forceRegister,
+                        'projectID'     : projectDetails.studioProjectId || projectDetails.id
+                    },
                     'data'      : {
                         'targetProjectId' : targetProjectId,
                         'prefabName'      : projectDetails.name,
