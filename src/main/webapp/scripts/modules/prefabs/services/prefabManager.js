@@ -480,47 +480,15 @@ WM.module('wm.prefabs')
             }
 
             /*
-             * Show the prefab upgradation dialog.
-             */
-            function showPrefabUpgradeDialog(prefabName) {
-                var prefab = getProjectPrefab(prefabName);
-                DialogService
-                    .showDialog('upgradePrefabDialog', {
-                        'resolve': {
-                            'upgradeFn': function () {
-                                return function () {
-                                    // register the prefab and reload the page
-                                    doRegistration(prefabName, function () {
-                                        Utils.getService('StudioActions')
-                                            .saveProject()
-                                            .then(function () {
-                                                window.location.reload();
-                                            });
-                                    });
-                                };
-                            },
-                            'prefab': function() {
-                                prefab.conflictMessage = constructPrefabConflictMessage(prefab);
-                                return prefab;
-                            }
-                        }
-                    });
-            }
-
-            /*
              * Check whether registration is required or not.
              * Register the prefab if it is never registered with the app.
              * If a legacy version of the prefab is found, show upgrade dialog.
              * Trigger the callback if the registration is not required.
              */
             function validateAndRegister(prefabName, callback, forceRegister) {
-                if (!appPrefabNamePropertiesMap[prefabName]) {
+                if (!appPrefabNamePropertiesMap[prefabName] || isPrefabVersionMismatch(prefabName)) {
                     // prefab never registered.
                     doRegistration(prefabName, callback, forceRegister);
-                } else if (isPrefabVersionMismatch(prefabName)) {
-                    // prefab is registered but the version of studio-prefab is not same as app-prefab
-                    showPrefabUpgradeDialog(prefabName);
-                    Utils.triggerFn(callback);
                 } else {
                     // registration is not required
                     Utils.triggerFn(callback);
