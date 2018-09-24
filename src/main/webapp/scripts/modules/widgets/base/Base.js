@@ -1631,6 +1631,7 @@ WM.module('wm.widgets.base', [])
                         "onDatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforedatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforeexport": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onBeforefilter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         /* Styles */
                         "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "list-picker", "options": ["table-hover", "table-bordered", "table-striped"]},
@@ -2191,7 +2192,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onAdd", "onBeforeremove", "onRemove", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onBeforeselect", "onSelect", "onChipclick", "onChipselect", "onDeselect", "onViewrender", "onBeforerender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onBeforeformrender", "onFormrender", "onBeforerowdelete", "onRowdelete", "onBeforerowinsert", "onRowinsert", "onBeforerowupdate", "onRowupdate", "onResult",  "onSuccess", "onError", "onBeforeservicecall", "onActionsclick",
-                    "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onBeforereorder", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onSetrecord", "onBeforenavigate","onBeforeexport"], "parent": "events"},
+                    "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onBeforereorder", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onSetrecord", "onBeforenavigate","onBeforeexport", "onBeforefilter"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
                 {"name": "devicesize", "properties": ["showindevice", "itemsperrow"], "parent": "device"},
                 {"name": "gridstyles", "properties": ['rowclass', 'rowngclass'], "parent": "properties"},
