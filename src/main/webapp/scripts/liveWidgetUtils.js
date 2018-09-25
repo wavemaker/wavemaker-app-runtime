@@ -366,7 +366,7 @@ WM.module('wm.widgets.live')
                     'clob'       : ['text', 'textarea', 'richtext'],
                     'blob'       : ['upload'],
                     'file'       : ['upload'],
-                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'toggle', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'rating', 'datetime', 'autocomplete', 'chips', 'colorpicker']
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'toggle', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'rating', 'datetime', 'autocomplete', 'chips', 'colorpicker', 'upload']
                 };
                 return fieldTypeWidgetTypeMap;
             }
@@ -494,7 +494,7 @@ WM.module('wm.widgets.live')
                 return {
                     'key'           :   attrs.key || attrs.binding,
                     'displayName'   :   attrs.displayName || attrs.label || attrs.caption || '',
-                    'show'          :   _.isUndefined(attrs.show) ? true : attrs.show === 'true',
+                    'show'          :   _.isUndefined(attrs.show) ? 'true' : (attrs.show || 'false'),
                     'class'         :   attrs.class || '',
                     'iconclass'     :   attrs.iconclass,
                     'title'         :   _.isUndefined(attrs.title) ? (attrs.displayName || '') : attrs.title,
