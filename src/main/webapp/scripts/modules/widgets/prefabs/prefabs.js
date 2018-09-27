@@ -60,9 +60,23 @@ WM.module('wm.prefabs')
             // Define the property change handler. This function will be triggered when there is a change in the widget property
             function propertyChangeHandler(scope, key, newVal, oldVal) {
                 switch (key) {
-                case 'height':
-                    scope.overflow = newVal ? 'auto' : '';
-                    break;
+                    case 'height':
+                        scope.pfStyles.overflow = newVal ? 'auto' : '';
+                        break;
+                    case 'margin':
+                        var marginArr = newVal.split(' ');
+                        if (marginArr.length === 1) {
+                            marginArr.push(marginArr[0], marginArr[0], marginArr[0]);
+                        } else if(marginArr.length === 2) {
+                            marginArr.push(marginArr[0], marginArr[1]);
+                        }
+                        ['top', 'right', 'bottom', 'left'].forEach(function (dir, index) {
+                            if (marginArr[index] === 'unset') {
+                                return;
+                            }
+                            scope.pfStyles['margin-'+dir] = marginArr[index];
+                        });
+                        break;
                 }
                 // Getting meta data from the bind string for those properties which are bindable of type "in-bound", "in-out-bound",
                 if (CONSTANTS.isStudioMode && ['in-bound', 'in-out-bound'].indexOf(scope.widgetProps[key].bindable) > -1) {
@@ -273,7 +287,7 @@ WM.module('wm.prefabs')
                 'replace' : true,
                 'template':
                     '<section data-role="prefab" init-widget class="app-prefab" ' +
-                        'ng-style="{width:width, height:height, margin: margin, overflow: overflow}">' +
+                        'ng-style="pfStyles">' +
                     '</section>',
                 'link': {
                     'pre': function ($is, $el, attrs) {
@@ -298,6 +312,10 @@ WM.module('wm.prefabs')
                         var prefabName = $is.prefabname;
 
                         $is.__compileWithIScope = true;
+                        $is.pfStyles = {
+                            width: $is.width,
+                            height: $is.height
+                        };
 
                         Object.defineProperty($is, 'appLocale', {
                             get: function () {
