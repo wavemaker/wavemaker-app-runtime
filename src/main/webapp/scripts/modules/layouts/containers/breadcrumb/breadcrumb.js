@@ -124,12 +124,11 @@ WM.module('wm.layouts.containers')
             return nodes;
         }
 
-        function propertyChangeHandler(scope, key, newVal) {
+        function propertyChangeHandler(scope, key) {
             var dataset = scope.dataset || {};
             switch (key) {
             case 'scopedataset':
             case 'dataset':
-                dataset = newVal;
                 WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.binddataset);
                 //break statement is intentionally removed for the flow
             case 'itemicon':
