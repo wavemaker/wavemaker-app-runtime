@@ -44,8 +44,7 @@
 
         <guava.version>26.0-jre</guava.version>
 
-        <fasterxml.json.version>2.6.3</fasterxml.json.version>
-        <wm.jackson.databind.version>2.6.3.wm-1</wm.jackson.databind.version>
+        <fasterxml.json.version>2.9.7</fasterxml.json.version>
         <mimemagic.version>0.1.5</mimemagic.version>
 
         <hikaricp.version>2.7.7</hikaricp.version>
@@ -574,7 +573,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${wm.jackson.databind.version}</version>
+                <version>${fasterxml.json.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
