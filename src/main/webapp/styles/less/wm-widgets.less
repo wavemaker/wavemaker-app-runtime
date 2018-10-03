@@ -1304,6 +1304,25 @@ html, body {
     height: 0;
     min-height: 35px;
   }
+  .app-date, .app-calendar .well.well-sm {
+    tr:nth-child(2) th, .bs-datepicker-body thead tr th {
+      padding: 10px 12px;
+      &:first-child {
+        padding-left: 20px;
+      }
+      &:last-child {
+        padding-right: 20px;
+      }
+    }
+    tr td {
+      &:first-child {
+        padding-left: 10px;
+      }
+      &:last-child {
+        padding-right: 10px;
+      }
+    }
+  }
 }
 //Bs datepicker
 bs-datepicker-container, bs-daterangepicker-container {
@@ -1337,7 +1356,7 @@ bs-datepicker-container, bs-daterangepicker-container {
     }
   }
   .previous, .next {
-    padding: 0 10px;
+    padding: 0 25px;
     vertical-align: middle;
     span {
       font-size: 25px;
@@ -1357,7 +1376,7 @@ bs-datepicker-container, bs-daterangepicker-container {
 }
 .bs-datepicker-body {
   background-color: #fff;
-  padding: 10px;
+  padding: 0 5px;
   border-radius: 0 0 3px 3px;
   min-height: 220px;
   min-width: 230px;
@@ -1417,9 +1436,6 @@ bs-datepicker-container, bs-daterangepicker-container {
         &:focus {
           background-color: #bbb;
           color: #333;
-        }
-        &.current-date:focus {
-          color: #fff !important;
         }
         &.disabled {
           color: #ccc;
