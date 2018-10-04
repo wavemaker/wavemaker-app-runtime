@@ -598,6 +598,13 @@ body {
       &.nav-tabs {
         border-color: transparent;
       }
+      &.nav-pills.nav-stacked > li {
+        display: inline-block;
+        width: 100%;
+        > .dropdown.open > .dropdown-menu {
+          margin: 0;
+        }
+      }
     }
   }
   /*********************application right panel********************/
