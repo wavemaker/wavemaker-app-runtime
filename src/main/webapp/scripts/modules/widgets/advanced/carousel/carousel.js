@@ -147,6 +147,7 @@ WM.module('wm.widgets.advanced')
                 case 'type':
                     widgetProperties.addchild.show = newVal !== CAROUSEL_TYPE.DYNAMIC;
                     widgetProperties.nodatamessage.show = widgetProperties.dataset.show  = newVal === CAROUSEL_TYPE.DYNAMIC;
+                    widgetProperties.currentItem.bindable = widgetProperties.currentslide.bindable = newVal === CAROUSEL_TYPE.DYNAMIC ? 'out-bound': 'in-bound';
                     break;
                 case 'animation':
                     if (CONSTANTS.isStudioMode) {

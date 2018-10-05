@@ -1823,7 +1823,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "show": false},
                         "animationinterval" : {"type" : "number", "value" : "3"},
                         "type" : {"type" : "string", "show" : false},
-                        "currentslide": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
+                        "currentslide": {"type": "object", "bindable": "in-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "animation": {"type": "list", "options": ["auto", "none"], "value": "auto"},
                         "controls": {"type": "list", "options": ["navs", "indicators", "both", "none"], "value": "both"},
 
@@ -1834,7 +1834,7 @@ WM.module('wm.widgets.base', [])
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "currentItem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
+                        "currentItem": {"type": "object", "bindable": "in-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "nodatamessage": {"type": "string", "value": "No data found", "bindable": "in-bound"}
                     },
                     "wm.tabbar" : {
