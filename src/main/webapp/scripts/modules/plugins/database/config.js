@@ -409,6 +409,9 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "MYSQL_CLOUD_DB_TYPE": "MySQL-Cloud",
         "OTHER": 'Other'
     },
+    "WIDGET_TYPES": {
+        "VIEW": "view"
+    },
     "SEQUENCE_SUPPORTED_DB_TYPES": ["HSQLDB", "PostgreSQL", "Oracle", "SQLServer", "DB2", 'Other'],
     "GENERATOR_TYPES" : {
         "ASSIGNED": "assigned",
