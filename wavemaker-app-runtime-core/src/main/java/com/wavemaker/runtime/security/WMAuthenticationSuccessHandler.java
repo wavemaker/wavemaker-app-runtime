@@ -87,6 +87,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                 contextPath = "/";
             }
             cookie.setPath(contextPath);
+            cookie.setSecure(request.isSecure());
             response.addCookie(cookie);
         }
     }
