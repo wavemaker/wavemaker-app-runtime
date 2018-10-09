@@ -1713,8 +1713,8 @@ WM.module('wm.widgets.base', [])
                         "debugurl": {"type": "string", "show": false},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onDestroy": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "displayName" : "On Load"},
+                        "onDestroy": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "displayName" : "On Destroy"},
                         "animation": {"type": "list", "options": animationOptions},
                         "tabindex": {"type": "number", "value": "0"}
                     },
