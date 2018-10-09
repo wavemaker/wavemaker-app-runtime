@@ -44,7 +44,9 @@ public class LanguagePreferenceFilter extends GenericFilterBean {
 
         String header = httpServletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
         if(StringUtils.isNotEmpty(header)) {
-            httpServletResponse.addCookie(new Cookie("X-" + HttpHeaders.ACCEPT_LANGUAGE, URLEncoder.encode(header, "UTF-8")));
+            Cookie cookie = new Cookie("X-" + HttpHeaders.ACCEPT_LANGUAGE, URLEncoder.encode(header, "UTF-8"));
+            cookie.setSecure(httpServletRequest.isSecure());
+            httpServletResponse.addCookie(cookie);
         }
 
         filterChain.doFilter(servletRequest, servletResponse);
