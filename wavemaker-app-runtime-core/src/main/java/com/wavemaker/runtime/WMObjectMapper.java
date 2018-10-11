@@ -55,6 +55,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.wavemaker.commons.json.deserializer.HttpHeadersDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
+import com.wavemaker.commons.json.module.WMJacksonModule;
 import com.wavemaker.commons.json.serializer.NoOpByteArraySerializer;
 import com.wavemaker.commons.json.serializer.WMLocalDateTimeSerializer;
 import com.wavemaker.runtime.json.SortJsonSerializer;
@@ -332,8 +333,7 @@ public class WMObjectMapper extends ObjectMapper {
             javaTimeModule.addSerializer(LocalDateTime.class, new WMLocalDateTimeSerializer());
             registerModule(javaTimeModule);
 
-            // will add once anyGetter issue fixed.
-//            registerModule(new WMJacksonModule(false));
+            registerModule(new WMJacksonModule(false));
 
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
