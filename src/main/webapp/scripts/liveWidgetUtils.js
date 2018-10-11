@@ -30,7 +30,7 @@ WM.module('wm.widgets.live')
                 allEventTypes          = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup'),
                 defaultNgClassesConfig = {'className': '', 'condition': ''},
                 isDataSetWidgets       = Utils.getDataSetWidgets(),
-                resetDataSetProps      = ['datafield', 'searchkey', 'displaylabel', 'displayfield', 'displayexpression'],
+                resetDataSetProps      = ['datafield', 'searchkey', 'displaylabel', 'displayfield', 'displayexpression', 'orderby', 'displayimagesrc'],
                 LIVE_CONSTANTS         = {
                     'EMPTY_KEY'     : 'EMPTY_NULL_FILTER',
                     'EMPTY_VALUE'   : $rs.appLocale && $rs.appLocale.LABEL_NO_VALUE,
