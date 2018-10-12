@@ -1573,13 +1573,16 @@ body {
   .btn[icon-position = "top"], a[icon-position = "top"] {
     height: auto;
     text-align: center;
-    > .btn-caption, > .anchor-caption {
+    i.app-icon {
       display: block;
     }
   }
   /********for buttons, anchors with icon on right****/
   .btn[icon-position = "right"], a[icon-position = "right"] {
     direction: rtl;
+    i.app-icon {
+      margin: 0 0 0 0.5em;
+    }
   }
   /****Badge****/
   .btn .badge, a .badge {
