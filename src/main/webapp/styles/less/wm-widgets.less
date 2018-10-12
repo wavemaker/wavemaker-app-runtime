@@ -542,6 +542,26 @@ html, body {
         }
       }
     }
+    &.icon-position-right {
+      li > a {
+        direction: rtl;
+        .app-icon {
+          margin: 0 0 0 0.5em;
+        }
+      }
+    }
+    &.icon-position-top {
+      li > a {
+        text-align: center;
+        .app-icon {
+          display: block;
+          margin: 0;
+        }
+        .caret {
+          margin-top: 0.75em;
+        }
+      }
+    }
   }
   ul > li > a {
     cursor: pointer;
