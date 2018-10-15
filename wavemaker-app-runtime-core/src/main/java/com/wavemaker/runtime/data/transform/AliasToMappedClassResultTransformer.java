@@ -166,11 +166,11 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
         for (final Field field : fields) {
             final PropertyDescriptor descriptor = BeanUtils.getPropertyDescriptor(resultClass, field.getName());
             Optional<String> columnName = findResultSetColumnName(field);
-            if (!columnName.isPresent()) {
+            if (!columnName.isPresent() && descriptor.getReadMethod() != null) {
                 columnName = findResultSetColumnName(descriptor.getReadMethod());
             }
 
-            if (!columnName.isPresent()) {
+            if (!columnName.isPresent() && descriptor.getWriteMethod() != null) {
                 columnName = findResultSetColumnName(descriptor.getWriteMethod());
             }
 
