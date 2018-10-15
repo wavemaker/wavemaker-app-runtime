@@ -30,7 +30,6 @@ import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -60,7 +59,6 @@ import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
 import com.wavemaker.commons.json.module.WMJacksonModule;
 import com.wavemaker.commons.json.serializer.NoOpByteArraySerializer;
 import com.wavemaker.commons.json.serializer.WMLocalDateTimeSerializer;
-import com.wavemaker.runtime.json.SortJsonSerializer;
 import com.wavemaker.runtime.mixins.SliceMixin;
 
 public class WMObjectMapper extends ObjectMapper {
@@ -333,7 +331,7 @@ public class WMObjectMapper extends ObjectMapper {
 
             SimpleModule module = new SimpleModule("WMDefaultSerializer");
             module.addSerializer(byte[].class, new NoOpByteArraySerializer());
-            module.addSerializer(Sort.class, new SortJsonSerializer());
+//            module.addSerializer(Sort.class, new SortJsonSerializer());
             registerModule(module);
 
             JavaTimeModule javaTimeModule = new JavaTimeModule();
