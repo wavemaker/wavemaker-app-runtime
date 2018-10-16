@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -49,6 +50,7 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.std.SqlDateSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -280,6 +282,11 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     @Override
+    public ObjectWriter writerWithDefaultPrettyPrinter() {
+        return writeMapper.writerWithDefaultPrettyPrinter();
+    }
+
+    @Override
     public ObjectReader reader() {
         return readMapper.reader();
     }
@@ -334,6 +341,12 @@ public class WMObjectMapper extends ObjectMapper {
             registerModule(javaTimeModule);
 
             registerModule(new WMJacksonModule(false));
+
+            SimpleModule dateModule = new SimpleModule();
+            dateModule.addSerializer(java.sql.Date.class,
+                    new SqlDateSerializer().withFormat(false, new SimpleDateFormat("yyyy-MM-dd")));
+
+            registerModule(dateModule);
 
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
