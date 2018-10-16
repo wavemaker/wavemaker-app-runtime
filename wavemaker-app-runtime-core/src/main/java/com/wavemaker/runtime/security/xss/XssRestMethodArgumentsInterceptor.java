@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,14 +41,15 @@ public class XssRestMethodArgumentsInterceptor implements RestMethodArgumentsInt
 
         if (XSSSecurityHandler.getInstance().isXSSEnabled()) {
             final RequestMapping requestMapping = getAnnotation(method, RequestMapping.class);
-
-            supports = Arrays.stream(requestMapping.method()).anyMatch(SUPPORTED_METHODS::contains);
-
-            if (supports) {
-                supports = getAnnotation(method.getDeclaringClass(), XssDisable.class) == null;
+            if (Objects.nonNull(requestMapping)) {
+                supports = Arrays.stream(requestMapping.method()).anyMatch(SUPPORTED_METHODS::contains);
 
                 if (supports) {
-                    supports = getAnnotation(method, XssDisable.class) == null;
+                    supports = getAnnotation(method.getDeclaringClass(), XssDisable.class) == null;
+
+                    if (supports) {
+                        supports = getAnnotation(method, XssDisable.class) == null;
+                    }
                 }
             }
         }
