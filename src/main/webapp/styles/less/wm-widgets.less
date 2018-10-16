@@ -487,6 +487,11 @@ html, body {
   }
   .dropdown-toggle {
     /**hiding the caret if there is only icon and no caption***/
+    .btn-caption:empty, .anchor-caption:empty {
+      + span.caret {
+        display: none;
+      }
+    }
     .caption:empty + span + span.caret {
       display: none;
     }

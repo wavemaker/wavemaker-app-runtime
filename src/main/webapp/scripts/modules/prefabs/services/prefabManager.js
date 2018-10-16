@@ -814,11 +814,12 @@ WM.module('wm.prefabs')
                 return PrefabService.publishPrefabToProject(payload);
             }
 
-            function register(prefabId, forceRegister, successHandler, errorHandler) {
+            function register(prefabId, options, successHandler, errorHandler) {
                 PrefabService.register({
                     'projectId': $rs.project.studioProjectId || $rs.project.id,
                     'prefabId': prefabId,
-                    'forceRegister': forceRegister
+                    'forceRegister': options.forceRegister,
+                    'upgrade': !!options.upgrade,
                 }, successHandler, errorHandler);
             }
 
