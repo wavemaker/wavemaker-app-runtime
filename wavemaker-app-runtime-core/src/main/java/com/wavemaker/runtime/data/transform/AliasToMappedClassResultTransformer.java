@@ -165,21 +165,25 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
         fieldVsAliasMap = new HashMap<>();
         for (final Field field : fields) {
             final PropertyDescriptor descriptor = BeanUtils.getPropertyDescriptor(resultClass, field.getName());
-            Optional<String> columnName = findResultSetColumnName(field);
-            if (!columnName.isPresent() && descriptor.getReadMethod() != null) {
-                columnName = findResultSetColumnName(descriptor.getReadMethod());
-            }
+            if (descriptor != null) {
+                Optional<String> columnName = findResultSetColumnName(field);
+                if (!columnName.isPresent() && descriptor.getReadMethod() != null) {
+                    columnName = findResultSetColumnName(descriptor.getReadMethod());
+                }
 
-            if (!columnName.isPresent() && descriptor.getWriteMethod() != null) {
-                columnName = findResultSetColumnName(descriptor.getWriteMethod());
-            }
+                if (!columnName.isPresent() && descriptor.getWriteMethod() != null) {
+                    columnName = findResultSetColumnName(descriptor.getWriteMethod());
+                }
 
-            if (!columnName.isPresent()) {
-                columnName = Optional.of(field.getName());
-            }
+                if (!columnName.isPresent()) {
+                    columnName = Optional.of(field.getName());
+                }
 
-            aliasVsDescriptorMap.put(columnName.get(), descriptor);
-            fieldVsAliasMap.put(descriptor.getName(), columnName.get());
+                aliasVsDescriptorMap.put(columnName.get(), descriptor);
+                fieldVsAliasMap.put(descriptor.getName(), columnName.get());
+            } else {
+                LOGGER.warn("Property descriptor not found for field:{}", field.getName());
+            }
         }
     }
 
