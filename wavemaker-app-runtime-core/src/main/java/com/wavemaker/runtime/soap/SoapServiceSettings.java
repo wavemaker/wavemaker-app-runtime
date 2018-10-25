@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,6 +40,7 @@ public class SoapServiceSettings {
     private String wsdlFile;
 
     private Map<String, String> httpHeaders;
+    private Map<String, Object> requestContextProperties;
 
     /**
      * Returns the target service endpoint address.
@@ -226,5 +227,13 @@ public class SoapServiceSettings {
 
     public void setWsdlFile(String wsdlFile) {
         this.wsdlFile = wsdlFile;
+    }
+
+    public Map<String, Object> getRequestContextProperties() {
+        return requestContextProperties;
+    }
+
+    public void setRequestContextProperties(Map<String, Object> requestContextProperties) {
+        this.requestContextProperties = requestContextProperties;
     }
 }
