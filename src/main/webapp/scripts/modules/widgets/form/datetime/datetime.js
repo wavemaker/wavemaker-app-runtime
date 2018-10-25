@@ -502,6 +502,7 @@ WM.module('wm.widgets.form')
                             $is.$watch('isTimeOpen', function (nv) {
                                 if (nv) {
                                     document.addEventListener('click', docClickListenerForTime, true);
+                                    DateTimeWidgetUtils.setTimePickerDropdownPosition();
                                     //Add app-datetime class to the wrapper that are appended to body
                                     if (!isClassAdded) {
                                         DateTimeWidgetUtils.setTimePickerKeyboardEvents($is);
