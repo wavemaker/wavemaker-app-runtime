@@ -2055,7 +2055,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.login": {
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
-                        "errormessage": {"type": "string"},
+                        "errormessage": {"type": "string", "bindable": "in-bound"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.pagecontainer": {
