@@ -8,7 +8,7 @@ WM.module('wm.widgets.dialog')
             '<div init-widget class="app-view dialog-view clearfix"  wm-navigable-element="true">' +
                 '<div class="app-dialog modal-dialog app-page-dialog" dialogclass page-container>' +
                     '<div class="modal-content">' +
-                        '<wm-dialogheader iconclass={{iconclass}} closable="{{closable}}" caption={{title}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
+                        '<wm-dialogheader iconclass={{iconclass}} iconurl="{{iconurl}}" closable="{{closable}}" caption={{title}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target wmtransclude></div>' +
                         '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
                             '<wm-button  class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +

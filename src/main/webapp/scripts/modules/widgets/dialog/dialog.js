@@ -9,7 +9,8 @@ WM.module('wm.widgets.dialog')
                                                 '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '<h4 class="app-dialog-title modal-title">' +
-                                                '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
+                                                '<img data-identifier="img" ng-src="{{iconurl}}" ng-if="iconurl" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                                                '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" ng-if="iconclass && !iconurl"></i> ' +
                                                 '<span class="dialog-heading" name="wm-{{dialogid}}-title" title="{{title}}">{{title}}</span>' +
                                                 '<span class="dialog-sub-heading" name="wm-{{dialogid}}-sub-heading" ng-if="subheading" title="{{subheading}}">{{subheading}}</span>' +
                                             '</h4>' +
@@ -46,7 +47,8 @@ WM.module('wm.widgets.dialog')
                     '<span aria-hidden="true">&times;</span>' +
                 '</button>' +
                 '<h4 class="app-dialog-title modal-title">' +
-                    '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
+                    '<img data-identifier="img" ng-src="{{iconurl}}" ng-if="iconurl" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                    '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" ng-if="iconclass && !iconurl"></i> ' +
                     '<span name="wm-{{dialogid}}-title">{{caption}}</span>' +
                 '</h4>' +
                 '<div class="dialog-header-action" wmtransclude></div>' +
@@ -286,28 +288,7 @@ WM.module('wm.widgets.dialog')
         };
     }]).directive('wmDialogheader', ["PropertiesFactory", "WidgetUtilService", "$templateCache", "CONSTANTS", 'Utils', function (PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS, Utils) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogheader", ["wm.base"]),
-            notifyFor = {
-                'iconclass': true,
-                'caption': true
-            };
-
-        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, key, newVal) {
-            var defaultHeight = "21px";
-            switch (key) {
-            case "iconclass":
-                if (scope.iconurl && newVal !== '' && newVal !== '_none_') {
-                    scope.iconurl = '';
-                    scope.iconwidth = scope.iconheight = defaultHeight;
-                } else if (!scope.iconurl && newVal !== '' && newVal !== '_none_') {
-                    scope.iconwidth = scope.iconheight = defaultHeight;
-                } else {
-                    scope.iconwidth = scope.iconheight = '';
-                }
-                break;
-            }
-        }
+        var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogheader", ["wm.base"]);
 
         return {
             "restrict": 'E',
@@ -351,9 +332,6 @@ WM.module('wm.widgets.dialog')
                                 dialogCtrl._OnOpenedHandler(onOpenedEventName);
                             }
                         }
-
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
