@@ -55,9 +55,12 @@ WM.module('wm.prefabs')
              * update the studio-prefab properties in studioPrefabNamePropertiesMap
              */
             function onStudioPrefabsLoad(prefabs) {
+                var deferred    = $q.defer();
                 prefabs.forEach(function (prefab) {
                     studioPrefabNamePropertiesMap[prefab.name] = prefab;
                 });
+                deferred.resolve(studioPrefabNamePropertiesMap);
+                return deferred.promise;
             }
 
             /*@TODO: Deprecated. to be removed
@@ -792,7 +795,8 @@ WM.module('wm.prefabs')
                     'projectID' : projectDetails.studioProjectId || projectDetails.id,
                     'data'      : {
                         'prefabName' : projectDetails.name,
-                        'version'    : projectDetails.version
+                        'version'    : projectDetails.version,
+                        'category'   : projectDetails.category
                     }
                 };
                 return PrefabService.publishPrefabToWorkSpace(payload);
