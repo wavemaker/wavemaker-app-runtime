@@ -38,6 +38,7 @@ public class WMCsrfLogoutHandler extends AbstractLogoutHandler {
         Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
+        cookie.setSecure(request.isSecure());
         response.addCookie(cookie);
     }
 }
