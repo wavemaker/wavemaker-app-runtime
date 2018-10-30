@@ -1901,7 +1901,7 @@ body.modal-open {
     list-style: none;
     outline: none;
     .app-list-item-value {
-     word-break: break-all;
+     word-break: break-word;
     }
     &.active {
       z-index: auto !important;/***fix for popover in the list item getting hidden***/
@@ -2019,7 +2019,7 @@ body.modal-open {
   .app-label {
     overflow: hidden;
     text-overflow: ellipsis;
-    word-break: break-all;
+    word-break: break-word;
   }
   .media {
     margin-top: 0;
@@ -2120,7 +2120,7 @@ body.modal-open {
 .app-message {
   position: relative;
   &.alert {
-    word-break: break-all;
+    word-break: break-word;
   }
   .icon {
     display: inline-block;
@@ -3735,7 +3735,7 @@ If the height and width are not specified the video takes the height of the post
       position: relative;
       overflow : auto;
       .app-message {
-        word-break: break-all;
+        word-break: break-word;
         padding: 4px;
         margin: 1em 1.5em 0;
         /*To overcome specificity issue*/
