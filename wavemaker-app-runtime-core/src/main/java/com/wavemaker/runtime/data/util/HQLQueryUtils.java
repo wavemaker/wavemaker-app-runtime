@@ -16,69 +16,17 @@
 package com.wavemaker.runtime.data.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.type.AbstractStandardBasicType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.orm.hibernate5.HibernateCallback;
-import org.springframework.orm.hibernate5.HibernateTemplate;
 
-import com.wavemaker.commons.util.Tuple;
-import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
-import com.wavemaker.runtime.data.dao.util.QueryHelper;
-import com.wavemaker.runtime.data.filter.LegacyQueryFilterInterceptor;
-import com.wavemaker.runtime.data.filter.QueryInterceptor;
-import com.wavemaker.runtime.data.filter.WMQueryFunctionInterceptor;
-import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
-import com.wavemaker.runtime.data.spring.WMPageImpl;
 import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 public class HQLQueryUtils {
-
-    private static final String FROM = " from ";
-    private static final String WHERE = " where ";
-
-    private static final List<QueryInterceptor> interceptors = Arrays.asList(
-            new LegacyQueryFilterInterceptor(),
-            new WMQueryFunctionInterceptor());
-
-    public static Tuple.Two<Query, Map<String, Object>> createHQLQuery(
-            String entityClass, String query, Pageable pageable, Session
-            session) {
-        final WMQueryInfo queryInfo = buildHQL(entityClass, query, pageable);
-
-        Query hqlQuery = session.createQuery(queryInfo.getQuery());
-
-        if (pageable != null) {
-            hqlQuery.setFirstResult((int) pageable.getOffset());
-            hqlQuery.setMaxResults(pageable.getPageSize());
-        }
-        return new Tuple.Two<>(hqlQuery, queryInfo.getParameters());
-    }
-
-    public static Page executeHQLQuery(
-            final Query hqlQuery, final Map<String, Object> params, final Pageable pageable,
-            final HibernateTemplate template) {
-
-        return template.execute((HibernateCallback<Page<Object>>) session -> {
-            QueryHelper.setResultTransformer(hqlQuery, Object.class);
-            ParametersConfigurator.configure(hqlQuery, params);
-            if (pageable != null) {
-                Long count = QueryHelper.getQueryResultCount(hqlQuery.getQueryString(), params, false, template);
-                return new WMPageImpl(hqlQuery.list(), pageable, count);
-            }
-            return new WMPageImpl(hqlQuery.list());
-        });
-    }
 
     public static List<ReturnProperty> extractMetaForHql(final Query query) {
         final org.hibernate.type.Type[] returnTypes = query.getReturnTypes();
@@ -121,25 +69,4 @@ public class HQLQueryUtils {
     }
 
 
-    private static WMQueryInfo buildHQL(String entityClass, String filter, Pageable pageable) {
-        WMQueryInfo queryInfo = new WMQueryInfo(filter);
-
-        String queryFilter = StringUtils.EMPTY;
-        if (StringUtils.isNotBlank(queryInfo.getQuery())) {
-            for (final QueryInterceptor interceptor : interceptors) {
-                interceptor.intercept(queryInfo);
-            }
-            queryFilter = WHERE + queryInfo.getQuery();
-        }
-
-        String queryString = FROM + entityClass + queryFilter;
-
-        if (pageable != null) {
-            queryString = QueryHelper.applySortingForHqlQuery(queryString, pageable.getSort());
-        }
-
-        queryInfo.setQuery(queryString);
-
-        return queryInfo;
-    }
 }
