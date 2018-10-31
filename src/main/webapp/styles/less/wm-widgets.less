@@ -1078,6 +1078,7 @@ html, body {
         float: left;
         .app-textbox {
           height: 28px;
+          padding: 4px 12px 8px;
         }
         &.app-search {
           width: auto;
@@ -1099,6 +1100,14 @@ html, body {
       font-weight: bold;
       height: 2.4em;
       cursor: default;
+      .app-chip-title{
+        max-width: 100px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        display: inline-block;
+        vertical-align: top;
+      }
       .btn {
         color: inherit;
         padding: 0;
@@ -1107,7 +1116,7 @@ html, body {
         margin-top: -5px;
         cursor: pointer;
         &:hover {
-          background-color: initial !important;
+          background-color: transparent !important;
           opacity: 1;
         }
       }
@@ -1117,12 +1126,12 @@ html, body {
       }
       &.chip-picture {
         img {
-          width: 31px;
-          height: 31px;
-          margin-top: -6.5px;
-          margin-left: -13px;
+          width: 29px;
+          height: 29px;
+          margin-top: -5.5px;
+          margin-left: -12px;
           border-radius: 16px;
-          padding-right: 3px;
+          margin-right: 6px;
         }
       }
     }
