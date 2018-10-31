@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.app;
 
 import java.io.InputStream;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -39,4 +40,11 @@ public class AppFileSystem implements ServletContextAware {
         return resourceStream;
     }
 
+    public Set<String> getWebappI18nLocaleFileNames() {
+        Set<String> resourcePaths = context.getResourcePaths("/resources/i18n");
+        if (resourcePaths == null) {
+            throw new ResourceNotFoundException(MessageResource.create("com.wavemaker.runtime.requested.resource.not.found"));
+        }
+        return resourcePaths;
+    }
 }
