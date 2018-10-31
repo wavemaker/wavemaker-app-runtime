@@ -25,7 +25,7 @@
             <url>./${project.artifactId}</url>
         </site>
     </distributionManagement>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -271,6 +271,12 @@
             <scope>provided</scope>
         </dependency>
         <!-- End: Quartz framework -->
+
+        <!--Required for the Grammar classes-->
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+        </dependency>
 
     </dependencies>
 

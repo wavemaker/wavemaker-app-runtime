@@ -1,0 +1,77 @@
+{
+  "java.lang.Byte": [
+    "wmByte = 12 and wmByte < 34 or wmByte > 70 and wmByte <= 122 or wmByte >= 12",
+    "level2.wmByte = 34 and level2.wmByte < 70 or level2.wmByte > 122 and level2.wmByte <= 12 or level2.wmByte >= 34",
+    "level2.level3.wmByte = 70 and level2.level3.wmByte < 122 or level2.level3.wmByte > 12 and level2.level3.wmByte <= 34 or level2.level3.wmByte >= 70"
+  ],
+  "java.lang.Short": [
+    "wmShort = 1242 and wmShort < 232 or wmShort > 1 and wmShort <= 2311 or wmShort >= 1242",
+    "level2.wmShort = 232 and level2.wmShort < 1 or level2.wmShort > 2311 and level2.wmShort <= 1242 or level2.wmShort >= 232",
+    "level2.level3.wmShort = 1 and level2.level3.wmShort < 2311 or level2.level3.wmShort > 1242 and level2.level3.wmShort <= 232 or level2.level3.wmShort >= 1"
+  ],
+  "java.lang.Integer": [
+    "wmInteger = 11 and wmInteger < 231231 or wmInteger > 112411 and wmInteger <= 1222 or wmInteger >= 11",
+    "level2.wmInteger = 231231 and level2.wmInteger < 112411 or level2.wmInteger > 1222 and level2.wmInteger <= 11 or level2.wmInteger >= 231231",
+    "level2.level3.wmInteger = 112411 and level2.level3.wmInteger < 1222 or level2.level3.wmInteger > 11 and level2.level3.wmInteger <= 231231 or level2.level3.wmInteger >= 112411"
+  ],
+  "java.lang.Long": [
+    "wmLong = 12312311231 and wmLong < 34543212133 or wmLong > 7232134523 and wmLong <= 7643211232 or wmLong >= 12312311231",
+    "level2.wmLong = 34543212133 and level2.wmLong < 7232134523 or level2.wmLong > 7643211232 and level2.wmLong <= 12312311231 or level2.wmLong >= 34543212133",
+    "level2.level3.wmLong = 7232134523 and level2.level3.wmLong < 7643211232 or level2.level3.wmLong > 12312311231 and level2.level3.wmLong <= 34543212133 or level2.level3.wmLong >= 7232134523"
+  ],
+  "java.math.BigInteger": [
+    "wmBigInteger = 1234123 and wmBigInteger < 123412341234123 or wmBigInteger > 12342134 and wmBigInteger <= 123412342134 or wmBigInteger >= 1234123",
+    "level2.wmBigInteger = 123412341234123 and level2.wmBigInteger < 12342134 or level2.wmBigInteger > 123412342134 and level2.wmBigInteger <= 1234123 or level2.wmBigInteger >= 123412341234123",
+    "level2.level3.wmBigInteger = 12342134 and level2.level3.wmBigInteger < 123412342134 or level2.level3.wmBigInteger > 1234123 and level2.level3.wmBigInteger <= 123412341234123 or level2.level3.wmBigInteger >= 12342134"
+  ],
+  "java.lang.Float": [
+    "wmFloat = 23423.23 and wmFloat < 23.2 or wmFloat > 1234.2134 and wmFloat <= 1234.1234 or wmFloat >= 23423.23",
+    "level2.wmFloat = 23.2 and level2.wmFloat < 1234.2134 or level2.wmFloat > 1234.1234 and level2.wmFloat <= 23423.23 or level2.wmFloat >= 23.2",
+    "level2.level3.wmFloat = 1234.2134 and level2.level3.wmFloat < 1234.1234 or level2.level3.wmFloat > 23423.23 and level2.level3.wmFloat <= 23.2 or level2.level3.wmFloat >= 1234.2134"
+  ],
+  "java.lang.Double": [
+    "wmDouble = 1123 and wmDouble < 123.21 or wmDouble > 0.23 and wmDouble <= 112.2 or wmDouble >= 1123",
+    "level2.wmDouble = 123.21 and level2.wmDouble < 0.23 or level2.wmDouble > 112.2 and level2.wmDouble <= 1123 or level2.wmDouble >= 123.21",
+    "level2.level3.wmDouble = 0.23 and level2.level3.wmDouble < 112.2 or level2.level3.wmDouble > 1123 and level2.level3.wmDouble <= 123.21 or level2.level3.wmDouble >= 0.23"
+  ],
+  "java.math.BigDecimal": [
+    "wmBigDecimal = 123123123 and wmBigDecimal < 54634563 or wmBigDecimal > 344365356 and wmBigDecimal <= 4456 or wmBigDecimal >= 123123123",
+    "level2.wmBigDecimal = 54634563 and level2.wmBigDecimal < 344365356 or level2.wmBigDecimal > 4456 and level2.wmBigDecimal <= 123123123 or level2.wmBigDecimal >= 54634563",
+    "level2.level3.wmBigDecimal = 344365356 and level2.level3.wmBigDecimal < 4456 or level2.level3.wmBigDecimal > 123123123 and level2.level3.wmBigDecimal <= 54634563 or level2.level3.wmBigDecimal >= 344365356"
+  ],
+  "java.lang.Boolean": [
+    "wmBoolean = true and wmBoolean != false",
+    "level2.wmBoolean = 'T' or level2.wmBoolean != 'Y'",
+    "level2.level3.wmBoolean = true and level2.level3.wmBoolean != false"
+  ],
+  "java.lang.Character": [
+    "wmCharacter = '2' or wmCharacter != 'e'",
+    "level2.wmCharacter = 'd' and level2.wmCharacter != 'f'",
+    "level2.level3.wmCharacter = '2' or level2.level3.wmCharacter != 'e'"
+  ],
+  "java.lang.String": [
+    "wmString = 'string' and wmString != 'string'",
+    "level2.wmString = 'string' or level2.wmString != 'string'",
+    "level2.level3.wmString = 'string' and level2.level3.wmString != 'string'"
+  ],
+  "java.sql.Date": [
+    "wmDate = '2015-03-02' or wmDate < 12312312312 and wmDate > '11231231287' or wmDate <= '2011-08-01' and wmDate >= '2015-03-02'",
+    "level2.wmDate = 12312312312 or level2.wmDate < '11231231287' and level2.wmDate > '2011-08-01' or level2.wmDate <= '2015-03-02' and level2.wmDate >= 12312312312",
+    "level2.level3.wmDate = '11231231287' or level2.level3.wmDate < '2011-08-01' and level2.level3.wmDate > '2015-03-02' or level2.level3.wmDate <= 12312312312 and level2.level3.wmDate >= '11231231287'"
+  ],
+  "java.sql.Time": [
+    "wmTime = 123123123 or wmTime < 1231235643 and wmTime > 343465533 or wmTime <= 245734657 and wmTime >= 123123123",
+    "level2.wmTime = 1231235643 or level2.wmTime < 343465533 and level2.wmTime > 245734657 or level2.wmTime <= 123123123 and level2.wmTime >= 1231235643",
+    "level2.level3.wmTime = 343465533 or level2.level3.wmTime < 245734657 and level2.level3.wmTime > 123123123 or level2.level3.wmTime <= 1231235643 and level2.level3.wmTime >= 343465533"
+  ],
+  "java.time.LocalDateTime": [
+    "wmLocalDateTime = '2016-11-05T15:10:37.995' or wmLocalDateTime < '1992-05-22T22:11:17.012' and wmLocalDateTime > '1892-10-18T22:11:59.332' or wmLocalDateTime <= '2015-01-26T00:00:00.000' and wmLocalDateTime >= '2016-11-05T15:10:37.995'",
+    "level2.wmLocalDateTime = '1992-05-22T22:11:17.012' or level2.wmLocalDateTime < '1892-10-18T22:11:59.332' and level2.wmLocalDateTime > '2015-01-26T00:00:00.000' or level2.wmLocalDateTime <= '2016-11-05T15:10:37.995' and level2.wmLocalDateTime >= '1992-05-22T22:11:17.012'",
+    "level2.level3.wmLocalDateTime = '1892-10-18T22:11:59.332' or level2.level3.wmLocalDateTime < '2015-01-26T00:00:00.000' and level2.level3.wmLocalDateTime > '2016-11-05T15:10:37.995' or level2.level3.wmLocalDateTime <= '1992-05-22T22:11:17.012' and level2.level3.wmLocalDateTime >= '1892-10-18T22:11:59.332'"
+  ],
+  "java.sql.Timestamp": [
+    "wmTimestamp = 7584324635243 or wmTimestamp < 7265117836 and wmTimestamp > 8346528726352 or wmTimestamp <= 7263526352 and wmTimestamp >= 7584324635243",
+    "level2.wmTimestamp = 7265117836 or level2.wmTimestamp < 8346528726352 and level2.wmTimestamp > 7263526352 or level2.wmTimestamp <= 7584324635243 and level2.wmTimestamp >= 7265117836",
+    "level2.level3.wmTimestamp = 8346528726352 or level2.level3.wmTimestamp < 7263526352 and level2.level3.wmTimestamp > 7584324635243 or level2.level3.wmTimestamp <= 7265117836 and level2.level3.wmTimestamp >= 8346528726352"
+  ]
+}

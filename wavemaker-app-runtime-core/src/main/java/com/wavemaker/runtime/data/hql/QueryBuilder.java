@@ -13,6 +13,7 @@ import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.filter.LegacyQueryFilterInterceptor;
 import com.wavemaker.runtime.data.filter.QueryInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryFunctionInterceptor;
+import com.wavemaker.runtime.data.filter.WMQueryGrammarInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.periods.PeriodClause;
 
@@ -24,7 +25,9 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
 
     private static final List<QueryInterceptor> interceptors = Arrays.asList(
             new LegacyQueryFilterInterceptor(),
-            new WMQueryFunctionInterceptor());
+            new WMQueryFunctionInterceptor(),
+            new WMQueryGrammarInterceptor()
+    );
 
 
     private List<PeriodClause> periodClauses = new ArrayList<>(2);
@@ -124,7 +127,7 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
         WMQueryInfo queryInfo = new WMQueryInfo(filter);
 
         for (final QueryInterceptor interceptor : interceptors) {
-            interceptor.intercept(queryInfo);
+            interceptor.intercept(queryInfo, entityClass);
         }
 
         return queryInfo;

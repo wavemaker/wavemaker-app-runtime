@@ -17,3 +17,6 @@ src/main/webapp/editor
 src/main/webapp/mobile
 src/main/webapp/tp
 src/main/webapp/tmp
+
+#Antlr4 generated grammer files.
+wavemaker-app-runtime-core/src/main/java/com/wavemaker/runtime/data/filter/parser/antlr4

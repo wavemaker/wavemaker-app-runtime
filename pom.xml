@@ -56,6 +56,7 @@
         <antisamy.version>1.4</antisamy.version>
         <jasperreports.version>6.5.1</jasperreports.version>
         <freemarker.version>2.3.23</freemarker.version>
+        <antlr.version>4.7</antlr.version>
 
     </properties>
 
@@ -245,6 +246,23 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>${antlr.version}</version>
+                <configuration>
+                    <outputDirectory>${project.build.sourceDirectory}/com/wavemaker/runtime/data/filter/parser/antlr4</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
         <pluginManagement>
             <plugins>
@@ -863,6 +881,13 @@
                 <version>${project.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
+            </dependency>
+
+            <!--Required for the Grammar classes-->
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>${antlr.version}</version>
             </dependency>
 
         </dependencies>

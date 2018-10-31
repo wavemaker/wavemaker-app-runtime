@@ -1,10 +1,7 @@
 package com.wavemaker.runtime.data.dao.validators;
 
-import java.lang.reflect.Field;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.util.ReflectionUtils;
 
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.MessageResource;
@@ -21,20 +18,12 @@ public class SortValidator {
             final Sort sort = pageable.getSort();
             for (final Sort.Order order : sort) {
                 final String propertyName = order.getProperty();
-                checkPropertyName(propertyName, entityClass);
+                if (!HqlPropertyResolver.findField(propertyName, entityClass).isPresent()) {
+                    throw new InvalidInputException(MessageResource.UNKNOWN_FIELD_NAME, propertyName);
+                }
             }
         }
     }
 
-    private void checkPropertyName(String propertyName, Class<?> entityClass) {
-        String[] properties = propertyName.split("\\.");
-        Class<?> aClass = entityClass;
-        for (String property : properties) {
-            Field field = ReflectionUtils.findField(aClass, property);
-            if (field == null) {
-                throw new InvalidInputException(MessageResource.UNKNOWN_FIELD_NAME, propertyName);
-            }
-            aClass = field.getType();
-        }
-    }
+
 }

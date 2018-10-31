@@ -36,7 +36,7 @@ public class LegacyQueryFilterInterceptor implements QueryInterceptor {
     private static final byte VALUE = 3;
 
     @Override
-    public void intercept(final WMQueryInfo queryInfo) {
+    public void intercept(final WMQueryInfo queryInfo, Class<?> entity) {
         queryInfo.setQuery(replaceExpressionWithHQL(queryInfo.getQuery()));
     }
 
