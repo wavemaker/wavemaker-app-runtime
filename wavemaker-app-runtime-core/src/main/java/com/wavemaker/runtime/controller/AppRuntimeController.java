@@ -17,6 +17,7 @@ package com.wavemaker.runtime.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.validations.DbValidationsConstants;
 import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
@@ -59,6 +61,14 @@ public class AppRuntimeController {
     public StringWrapper getApplicationType() {
         String applicationType = appRuntimeService.getApplicationType();
         return new StringWrapper(applicationType);
+    }
+
+    @RequestMapping(value = "/application/wmProperties.js", method = RequestMethod.GET)
+    public void getApplicationProperties(HttpServletResponse response) throws IOException {
+        response.setContentType("application/javascript;charset=UTF-8");
+        Map<String, Object> applicationProperties = appRuntimeService.getApplicationProperties();
+        response.getWriter().write("var _WM_APP_PROPERTIES = " + JSONUtils.toJSON(applicationProperties, true) + ";");
+        response.getWriter().flush();
     }
 
     // XXX restrict this method in app runtime.
