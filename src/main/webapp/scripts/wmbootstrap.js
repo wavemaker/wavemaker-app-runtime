@@ -104,7 +104,6 @@ Application
                 $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|javascript):/);
 
                 $httpProvider.useApplyAsync(true);
-                $controllerProvider.allowGlobals();
 
                 $locationProvider.hashPrefix('');
                 $qProvider.errorOnUnhandledRejections(false);
