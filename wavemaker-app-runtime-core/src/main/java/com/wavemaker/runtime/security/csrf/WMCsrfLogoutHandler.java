@@ -19,6 +19,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
@@ -37,7 +38,11 @@ public class WMCsrfLogoutHandler extends AbstractLogoutHandler {
     protected void postLogout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, null);
         cookie.setMaxAge(0);
-        cookie.setPath("/");
+        String contextPath = request.getContextPath();
+        if (StringUtils.isBlank(contextPath)) {
+            contextPath = "/";
+        }
+        cookie.setPath(contextPath);
         cookie.setSecure(request.isSecure());
         response.addCookie(cookie);
     }

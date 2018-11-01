@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.security;
+package com.wavemaker.runtime.security.authenticationSuccessHandler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,8 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.json.JSONUtils;
@@ -43,18 +44,24 @@ import static com.wavemaker.runtime.security.SecurityConstants.NO_CACHE;
 import static com.wavemaker.runtime.security.SecurityConstants.PRAGMA;
 import static com.wavemaker.runtime.security.SecurityConstants.TEXT_PLAIN_CHARSET_UTF_8;
 
-public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+/**
+ * Created by srujant on 31/10/18.
+ */
+public class WMCsrfAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    public WMAuthenticationSuccessHandler() {
-        super();
+    private CsrfTokenRepository csrfTokenRepository;
+
+    public WMCsrfAuthenticationSuccessHandler(CsrfTokenRepository csrfTokenRepository) {
+        this.csrfTokenRepository = csrfTokenRepository;
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response, Authentication authentication) throws IOException,
-            ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         Optional<CsrfToken> csrfTokenOptional = getCsrfToken(request);
-        addCsrfCookie(csrfTokenOptional, request, response);
+        if (csrfTokenOptional.isPresent()) {
+            addCsrfCookie(csrfTokenOptional, request, response);
+            csrfTokenRepository.saveToken(csrfTokenOptional.get(), request, response);
+        }
         if (HttpRequestUtils.isAjaxRequest(request)) {
             request.setCharacterEncoding(CommonConstants.UTF8);
             response.setContentType(TEXT_PLAIN_CHARSET_UTF_8);
@@ -64,32 +71,28 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
             response.setStatus(HttpServletResponse.SC_OK);
             writeCsrfTokenToResponse(csrfTokenOptional, response);
             response.getWriter().flush();
-        } else {
-            super.onAuthenticationSuccess(request, response, authentication);
         }
     }
 
     private Optional<CsrfToken> getCsrfToken(HttpServletRequest request) {
         CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
         if (csrfConfig != null && csrfConfig.isEnforceCsrfSecurity()) {
-            CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+            CsrfToken csrfToken = csrfTokenRepository.generateToken(request);
             return Optional.ofNullable(csrfToken);
         }
         return Optional.empty();
     }
 
     private void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletRequest request, HttpServletResponse response) {
-        if (csrfTokenOptional.isPresent()) {
-            CsrfToken csrfToken = csrfTokenOptional.get();
-            Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
-            String contextPath = request.getContextPath();
-            if (StringUtils.isBlank(contextPath)) {
-                contextPath = "/";
-            }
-            cookie.setPath(contextPath);
-            cookie.setSecure(request.isSecure());
-            response.addCookie(cookie);
+        CsrfToken csrfToken = csrfTokenOptional.get();
+        Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
+        String contextPath = request.getContextPath();
+        if (StringUtils.isBlank(contextPath)) {
+            contextPath = "/";
         }
+        cookie.setPath(contextPath);
+        cookie.setSecure(request.isSecure());
+        response.addCookie(cookie);
     }
 
     private void writeCsrfTokenToResponse(Optional<CsrfToken> csrfTokenOptional, HttpServletResponse response) throws IOException {
@@ -103,15 +106,8 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         }
     }
 
-    @Override
-    protected String determineTargetUrl(final HttpServletRequest request, final HttpServletResponse response) {
-        String targetUrl = super.determineTargetUrl(request, response);
-        String redirectPage = request.getParameter("redirectPage");
-        if (StringUtils.isNotEmpty(redirectPage) && StringUtils.isNotEmpty(targetUrl) && !StringUtils
-                .containsAny(targetUrl, '#', '?') && StringUtils.endsWith(targetUrl, "/")) {
-            targetUrl += "#" + redirectPage;
-        }
-        return targetUrl;
+    public void setCsrfTokenRepository(CsrfTokenRepository csrfTokenRepository) {
+        this.csrfTokenRepository = csrfTokenRepository;
     }
-}
 
+}

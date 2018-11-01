@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,28 +22,28 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 /**
- * Created by kishorer on 13/7/16.
+ * Created by kishorer on 7/7/16.
  */
-public abstract class AbstractCsrfTokenRepository implements CsrfTokenRepository {
+public class WMCsrfTokenRepository implements CsrfTokenRepository {
 
-    private CsrfTokenRepository delegator;
+    private CsrfTokenRepository tokenRepository;
 
-    protected AbstractCsrfTokenRepository(CsrfTokenRepository csrfTokenRepository) {
-        this.delegator = csrfTokenRepository;
+    public WMCsrfTokenRepository(CsrfTokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
     }
 
     @Override
     public CsrfToken generateToken(HttpServletRequest request) {
-        return this.delegator.generateToken(request);
+        return this.tokenRepository.generateToken(request);
     }
 
     @Override
     public void saveToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response) {
-        this.delegator.saveToken(token, request, response);
+        this.tokenRepository.saveToken(token, request, response);
     }
 
     @Override
     public CsrfToken loadToken(HttpServletRequest request) {
-        return this.delegator.loadToken(request);
+        return this.tokenRepository.loadToken(request);
     }
 }
