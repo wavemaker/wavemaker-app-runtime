@@ -789,14 +789,13 @@ WM.module('wm.prefabs')
                 return $markup[0].outerHTML;
             }
 
-            function publishPrefabToWorkspace() {
-                projectDetails = ProjectService.getDetails();
+            function publishPrefabToWorkspace(publishDetails) {
                 var payload = {
-                    'projectID' : projectDetails.studioProjectId || projectDetails.id,
+                    'projectID' : publishDetails.projectID,
                     'data'      : {
-                        'prefabName' : projectDetails.name,
-                        'version'    : projectDetails.version,
-                        'category'   : projectDetails.category
+                        'prefabName' : publishDetails.name,
+                        'version'    : publishDetails.version,
+                        'category'   : publishDetails.category
                     }
                 };
                 return PrefabService.publishPrefabToWorkSpace(payload);
