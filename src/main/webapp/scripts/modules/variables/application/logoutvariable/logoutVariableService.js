@@ -88,10 +88,6 @@ wm.variables.services.LogoutVariableService = ['Variables',
                                     redirectPage = "";
                                 }
                                 $location.url(redirectPage);
-                                $timeout(function () {
-                                    // reloading in timeout as, firefox and safari are not updating the url before reload(WMS-7887)
-                                    $window.location.reload();
-                                });
                             }
                             Utils.triggerFn(success);
                         }, handleError);
