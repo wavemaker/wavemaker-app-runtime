@@ -316,20 +316,20 @@ wm.variables.factories.BaseVariablePropertyFactory = [
         function getPropertiesByServiceType(serviceType) {
             var props = {};
             props[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE] = {
-                "liveSource": {"displayName": "Select Database", "type": "string", "required": true, "widgettype": "typeahead"},
+                "liveSource": {"displayName": "Database", "type": "string", "required": true, "widgettype": "typeahead"},
                 "target": {"displayName": "Target", "type": "string", "required": false, "hide": "true", "widgettype": "radioset", "options": {"table": "table", "query": "query", "procedure": "procedure"}},
                 "table": {"displayName": "Table", "type": "string", "required": true, "widgettype": "typeahead", "hide": true},
                 "operation": {"displayName": "Operation", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', "hide": true}
             };
             props[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB] = {
-                "apitype": {"hide": true, "displayName": "Select API Type", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', modelPropertyName: 'object'},
-                "service": {"displayName": "Select Service", "type": "string", "required": false, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'}
+                "apitype": {"hide": true, "displayName": "API Type", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', modelPropertyName: 'object'},
+                "service": {"displayName": "Service", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'}
             };
             props[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE_API] = {
-                "liveSource": {"displayName": "Select Database", "type": "string", "required": true, "widgettype": "typeahead"},
+                "liveSource": {"displayName": "Database", "type": "string", "required": true, "widgettype": "typeahead"},
                 "target": {"displayName": "API Type", "type": "string", "required": true, "hide": "true", "widgettype": "radioset", "options": {"table": "Table APIs", "query": "Query APIs", "procedure": "Procedure APIs"}},
-                "table": {"displayName": "Select Table", "type": "string", "required": true, "widgettype": "typeahead", "hide": true},
-                "operation": {"displayName": "Select API", "type": "string", "required": true, "widgettype": "typeahead", "hide": true}
+                "table": {"displayName": "Table", "type": "string", "required": true, "widgettype": "typeahead", "hide": true},
+                "operation": {"displayName": "API", "type": "string", "required": true, "widgettype": "typeahead", "hide": true}
             };
             return props[serviceType] || props;
         }
