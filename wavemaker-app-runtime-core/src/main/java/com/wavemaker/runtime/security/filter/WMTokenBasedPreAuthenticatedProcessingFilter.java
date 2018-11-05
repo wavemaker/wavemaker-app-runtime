@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ package com.wavemaker.runtime.security.filter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -37,6 +38,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -72,6 +74,8 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
     private AuthenticationManager authenticationManager;
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
     private ApplicationEventPublisher eventPublisher = null;
+
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
 
     private boolean continueFilterChainOnUnsuccessfulAuthentication = true;
 
@@ -111,17 +115,22 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
 
         LOGGER.debug("Checking secure context token: [{}]", SecurityContextHolder.getContext().getAuthentication());
 
-        boolean authenticationAttemptFailure = false;
-        if (requiresAuthentication((HttpServletRequest) request)) {
-            String token = getTokenFromReq((HttpServletRequest) request);
-            if (token != null) {
-                final boolean authenticationSuccess = doAuthenticate(token, (HttpServletRequest) request, (HttpServletResponse) response);
-                authenticationAttemptFailure = !authenticationSuccess;
+        try {
+            boolean authenticationAttemptFailure = false;
+            if (requiresAuthentication((HttpServletRequest) request)) {
+                String token = getTokenFromReq((HttpServletRequest) request);
+                if (token != null) {
+                    final boolean authenticationSuccess = doAuthenticate(token, (HttpServletRequest) request, (HttpServletResponse) response);
+                    authenticationAttemptFailure = !authenticationSuccess;
+                }
             }
-        }
-
-        if (!authenticationAttemptFailure) {
-            chain.doFilter(request, response);
+            if (!authenticationAttemptFailure) {
+                chain.doFilter(request, response);
+            }
+        } finally {
+            if (request.getAttribute("tokenAuthLogin") != null) {
+                SecurityContextHolder.clearContext();
+            }
         }
     }
 
@@ -168,6 +177,15 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
             logger.debug("Authentication success: " + authResult);
         }
         SecurityContextHolder.getContext().setAuthentication(authResult);
+        if (Objects.nonNull(authenticationSuccessHandler)) {
+            try {
+                authenticationSuccessHandler.onAuthenticationSuccess(request, response, authResult);
+            } catch (Exception e) {
+                SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
+                throw new WMRuntimeException(e);
+            }
+        }
+        request.setAttribute("tokenAuthLogin", true);
         // Fire event
         if (this.eventPublisher != null) {
             eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
@@ -223,6 +241,10 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
 
     public void setWmTokenBasedAuthenticationService(final WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService) {
         this.wmTokenBasedAuthenticationService = wmTokenBasedAuthenticationService;
+    }
+
+    public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler authenticationSuccessHandler) {
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
 
 }
