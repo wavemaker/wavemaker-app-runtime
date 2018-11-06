@@ -87,7 +87,7 @@ wm.variables.services.LogoutVariableService = ['Variables',
                                 if (!redirectPage || redirectPage === "login.html" || redirectPage === "index.html") {
                                     redirectPage = "";
                                 }
-                                $location.url(redirectPage);
+                                $window.location.href = redirectPage;
                             }
                             Utils.triggerFn(success);
                         }, handleError);
