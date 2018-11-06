@@ -69,10 +69,11 @@ wm.modules.wmCommon.constant("WM_COMMON_SERVICE_URLS", {
 });
 
 /*Defining the config for the*/
-wm.modules.wmCommon.config(function (BaseServiceManagerProvider, WM_COMMON_SERVICE_URLS) {
+wm.modules.wmCommon.config(function (BaseServiceManagerProvider, WM_COMMON_SERVICE_URLS, $compileProvider) {
     'use strict';
 
     BaseServiceManagerProvider.register(WM_COMMON_SERVICE_URLS);
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|javascript):/);
 });
 
 wm.modules.wmCommon.run(function (Utils, CONSTANTS) {
