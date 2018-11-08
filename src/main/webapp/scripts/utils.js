@@ -14,6 +14,7 @@
  */
 
 WM.module('wm.utils', [])
+    .controller("EmptyController", WM.noop)
     .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', 'WIDGET_CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', 'wmToaster', '$locale', function ($rootScope, $location, $window, CONSTANTS, WIDGET_CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies, wmToaster, $locale) {
         'use strict';
 
@@ -2589,7 +2590,7 @@ WM.module('wm.utils', [])
 
                     DialogService.showConfirmDialog({
                         'caption'    : dialogParams.caption,
-                        'controller' : 'WM.noop',
+                        'controller' : 'EmptyController',
                         'onOk'       : fnName,
                         'content'    : dialogParams.content,
                         'oktext'     : $rootScope.locale.LABEL_DOWNLOAD_NOW,

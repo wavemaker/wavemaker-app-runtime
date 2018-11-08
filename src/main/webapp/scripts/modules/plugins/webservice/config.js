@@ -11,6 +11,8 @@ wm.plugins.webServices.controller(wm.plugins.webServices.controllers);
 wm.plugins.webServices.service(wm.plugins.webServices.services);
 wm.plugins.webServices.factory(wm.plugins.webServices.factories);
 
+wm.plugins.webServices.controllers.EmptyController = WM.noop;
+
 /*defining constants for web services module*/
 wm.plugins.webServices.constant('WS_SERVICE_URLS', {
     WebService: {

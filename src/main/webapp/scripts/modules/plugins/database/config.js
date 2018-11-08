@@ -15,6 +15,9 @@ wm.plugins.database.controller(wm.plugins.database.controllers);
 wm.plugins.database.service(wm.plugins.database.services);
 wm.plugins.database.factory(wm.plugins.database.factories);
 
+
+wm.plugins.database.controllers.EmptyController = WM.noop;
+
 /*defining urls as constants in the database services module*/
 wm.plugins.database.constant('DB_SERVICE_URLS', {
     Database: {
