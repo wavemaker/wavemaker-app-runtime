@@ -348,6 +348,63 @@
 }
 
 
+/********************************************************************************
+**************************** List ***********************
+*********************************************************************************/
+.app-livelist {
+  .list-group {
+    overflow-x: hidden;
+  }
+  li.app-list-item {
+    -webkit-transition: -webkit-transform 0.2s linear;
+    transition: transform 0.2s linear;
+  }
+  .app-listtemplate {
+    &.hide-view {
+      display: none !important;
+    }
+  }
+  .app-list-item-action-panel {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    &:after {
+      clear: both;
+    }
+    &.app-list-item-right-action-panel {
+      text-align: right;
+    }
+    &.app-listtemplate {
+      button {
+        height: 90px;
+      }
+    }
+  }
+  .actionMenu {
+    text-align: right;
+    button {
+      height: 100%;
+      border-width: 0;
+      font-weight: bold;
+      border-radius: 0;
+      position: absolute;
+      -webkit-transform: translate3d(0, 0, 0);
+      -webkit-transition: -webkit-transform 0.2s linear;
+      transform: translate3d(0, 0, 0);
+      transition: transform 0.2s linear;
+    }
+    &.app-list-item-left-action-panel {
+      button {
+        right: 100%;
+      }
+    }
+    &.app-list-item-right-action-panel {
+      button {
+        left: 100%;
+      }
+    }
+  }
+}
 /**************************************************************************************************/
 /**************************************************************************************************/
 /**************************default theme ***************************************/

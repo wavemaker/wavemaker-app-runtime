@@ -1236,6 +1236,12 @@ WM.module('wm.widgets.base', [])
                     'wm.layouts.listtemplate': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32}
                     },
+                    'wm.layouts.listactiontemplate': {
+                        "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
+                        "position": {"type": "string", "show": true},
+                        "addchild": {"hidelabel": true, "options": [{"labelKey": "LABEL_ADD_BUTTON", "label": "Add Button", "widgettype": "wm-button", "defaults": {"margin": ""}}], "widget": "add-widget"},
+                        "enablefullswipe" : {"type": "boolean", "value": false}
+                    },
                     'wm.layouts.mediatemplate': {
                         "width": {"type": "string", "pattern": dimensionRegex, "value": "100pt"},
                         "height": {"type": "string", "pattern": dimensionRegex, "value": "100pt"}
@@ -1887,7 +1893,8 @@ WM.module('wm.widgets.base', [])
                         "disableitem": {"type": "boolean", "bindable": "in-bound", "value": false},
                         "ondemandmessage": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true, "value": "Load More"},
                         "loadingicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "fa fa-circle-o-notch", "pattern": classRegex},
-                        "paginationclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg", "btn-default", "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]}
+                        "paginationclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg", "btn-default", "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]},
+                        "templateview": {"options": [{'label': 'ListTemplate', 'value': 'listtemplate', 'widgettype': 'wm-listtemplate', 'isAdded': true }, {'label': 'LeftActionTemplate', 'value': 'leftactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'left'} } }, {'label': 'RightActionTemplate', 'value': 'rightactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'right'} } }], "widget": "add-widget-by-prop", "value": "listtemplate", "show": false}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -2164,11 +2171,11 @@ WM.module('wm.widgets.base', [])
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
                 {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "mintime", "maxtime", "excludedays", "excludedates", "novalidate", "validationtype", "maxchars", "minvalue", "maxvalue", "step"], "parent": "properties"},
-                {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "defaultpaneindex", "pollinterval", "radiogroup", "viewgroup","showdropdownon", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
-                    "multiple", "maxsize", "inputposition", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
+                {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "templateview", "defaultmode", "defaultpaneindex", "pollinterval", "radiogroup", "viewgroup","showdropdownon", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
+                    "multiple", "maxsize", "inputposition", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen", "enablefullswipe",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "disableprevious", "disabledone", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
-                    "xpadding", "ypadding", "interaction", "autoopen", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchon",
+                    "xpadding", "ypadding", "interaction", "autoopen", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchon", "position",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "selectionlimit", "formposition", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard", "barcodeformat", "minchars"], "parent": "properties"},
                 {"name": "popoverbehavior", "properties": ["popoverplacement", "contentanimation", "popoverarrow", "popoverautoclose"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign", "ondemandmessage"], "parent": "properties"},

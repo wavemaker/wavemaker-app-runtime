@@ -79,7 +79,8 @@ WM.module('wm.widgets.live')
                     'itemsperrow'    : true,
                     'match'          : CONSTANTS.isStudioMode,
                     'padding'        : true,
-                    'paginationclass': true
+                    'paginationclass': true,
+                    'templateview'   : CONSTANTS.isStudioMode && $rs.isMobileApplicationType
                 },
                 directiveDefn,
                 NAVIGATION = WIDGET_CONSTANTS.NAVIGATION_TYPE;
@@ -792,6 +793,16 @@ WM.module('wm.widgets.live')
                 case 'paginationclass':
                     setNavigationClass($is, $el, nv);
                     break;
+                case 'templateview':
+                    $el.find('.app-livelist-container > li').addClass('hide-view');
+                    if (nv === 'listtemplate') {
+                        $el.find('.app-livelist-container > li.app-listtemplate.app-list-item').removeClass('hide-view');
+                    } else if (nv === 'rightactiontemplate') {
+                        $el.find('.app-livelist-container > li[position="right"]').removeClass('hide-view');
+                    } else if (nv === 'leftactiontemplate') {
+                        $el.find('.app-livelist-container > li[position="left"]').removeClass('hide-view');
+                    }
+                    break;
                 }
             }
 
@@ -1183,6 +1194,13 @@ WM.module('wm.widgets.live')
                 });
                 Utils.defineProps($is, $el, {'item' : true});
                 $el.removeAttr('title');
+
+                $is.widgetProps.templateview.show = CONSTANTS.isStudioMode && $rs.isMobileApplicationType;
+
+                $rs.$on('action-added', function ($event, type) {
+                    var actionProp = _.find($is.widgetProps.templateview.options, {'label': type});
+                    actionProp.isAdded = true;
+                });
             }
 
             function configureDnD($el, $is) {
