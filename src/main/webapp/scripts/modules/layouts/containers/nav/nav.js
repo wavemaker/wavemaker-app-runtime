@@ -19,6 +19,7 @@ WM.module('wm.layouts.containers')
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.containers', 'wm.menu.dataProps']),
                 menuDataProps = _.keys(PropertiesFactory.getPropertiesOf('', ['wm.menu.dataProps'])),
+                defaultDataset = 'Link 1, Link 2, Link 3',
                 notifyFor = {
                     'dataset'      : true,
                     'scopedataset' : true,
@@ -172,10 +173,16 @@ WM.module('wm.layouts.containers')
                     WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.binddataset);
                     // do not break here. continue with the next steps.
                 case 'scopedataset':
+                    if(!nv) {
+                        $s.dataset = defaultDataset;
+                        return;
+                    }
                     $is.nodes = getNodes($is, nv);
                     constructNav($el, $is, attrs);
                     if ($is.widgetid) {
                         $rs.$emit('nav-dataset-modified', {'widgetName': $is.name});
+                        // show Representation Data tag if dataset value is same as default value.
+                        (nv && defaultDataset !== nv) ? $el.removeAttr('data-evaluated-dataset') : $el.attr('data-evaluated-dataset', '');
                     }
                     break;
                 case 'itemicon':
@@ -288,6 +295,15 @@ WM.module('wm.layouts.containers')
                             //this hides type and layout properties only for top-nav
                             $is.widgetProps.type.show = false;
                             $is.widgetProps.layout.show = false;
+                        }
+                        if($is.widgetid) {
+                            // to set dataset value for the widget if it dont have any nav-items as children or if dataset is empty.
+                            // to show Representational data tag on the widget
+                            if (!$el.children().length && !$is.dataset) {
+                                $is.dataset = defaultDataset;
+                            } else {
+                                $el.attr('data-evaluated-dataset', '');
+                            }
                         }
                     }
                 }
