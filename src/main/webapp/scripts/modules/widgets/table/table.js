@@ -134,7 +134,8 @@ WM.module('wm.widgets.table')
                 'spacing'            : true,
                 'exportformat'       : true,
                 'editmode'           : CONSTANTS.isStudioMode,
-                'shownewrow'         : true
+                'shownewrow'         : true,
+                'enablecolumnselection' : true
             },
             getObjectIndexInArray = function (key, value, arr) {
                 var index = -1, i;
@@ -493,6 +494,7 @@ WM.module('wm.widgets.table')
                                         $is.$root.$emit('set-markup-attr', $is.widgetid, {'radioselect': false});
                                     }
                                     $is.setDataGridOption('multiselect', newVal);
+                                    wp.onDeselect.show = newVal === true;
                                 }
                                 break;
                             case 'radioselect':
@@ -613,6 +615,10 @@ WM.module('wm.widgets.table')
                                         return _.includes(act.action, 'addNewRow()');
                                     });
                                 $is.callDataGridMethod('option', 'actionsEnabled.new', enableNewRow);
+                                break;
+                            case 'enablecolumnselection':
+                                wp.onColumnselect.show = newVal === true;
+                                wp.onColumndeselect.show  = newVal === true;
                                 break;
                             }
                         }
