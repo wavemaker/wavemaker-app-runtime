@@ -23,6 +23,7 @@ import javax.servlet.ServletContext;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.core.Constants;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -41,13 +42,28 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
 
     private static final String RANDOM_STRING = "{randomStr}";
     private static final String TMP_DIR = "{tmpDir}";
+    private static final Constants constants = new Constants(PropertyPlaceholderConfigurer.class);
 
     private Environment environment;
     private String beanName;
     private ServletContext servletContext;
+    private int systemPropertiesMode;
 
     public WMPropertyPlaceholderConfigurer() {
         setSystemPropertiesMode(SYSTEM_PROPERTIES_MODE_OVERRIDE);
+        setSearchSystemEnvironment(true);
+    }
+
+    @Override
+    public void setSystemPropertiesModeName(String constantName) throws IllegalArgumentException {
+        super.setSystemPropertiesModeName(constantName);
+        this.systemPropertiesMode = constants.asNumber(constantName).intValue();
+    }
+
+    @Override
+    public void setSystemPropertiesMode(int systemPropertiesMode) {
+        super.setSystemPropertiesMode(systemPropertiesMode);
+        this.systemPropertiesMode = systemPropertiesMode;
     }
 
     @Override
@@ -105,9 +121,19 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
     }
 
     @Override
-    protected void processProperties(
-            final ConfigurableListableBeanFactory beanFactoryToProcess, final Properties props) {
-        super.processProperties(beanFactoryToProcess, props);
+    protected void processProperties(ConfigurableListableBeanFactory beanFactory, Properties props) {
+        super.processProperties(beanFactory, props);
+
+        props.entrySet().stream().forEach(entry -> {
+            String value = (String) entry.getValue();
+            if (value.startsWith(this.placeholderPrefix) && value.endsWith(this.placeholderSuffix)) {
+                String placeholder = value.substring(value.indexOf(this.placeholderPrefix) + 2, value.indexOf(this.placeholderSuffix));
+                String resolvedValue = resolvePlaceholder(placeholder, props, systemPropertiesMode);
+                if (org.apache.commons.lang.StringUtils.isNotBlank(resolvedValue)) {
+                    entry.setValue(resolvedValue);
+                }
+            }
+        });
 
         if (environment instanceof ConfigurableEnvironment) {
             PropertiesPropertySource propertySource = new PropertiesPropertySource(beanName + "Properties", props);
