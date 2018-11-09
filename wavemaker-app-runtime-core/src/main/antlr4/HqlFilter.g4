@@ -21,7 +21,7 @@ expression : key condition;
 condition : (comparison | between | in | like | isNull | isNotNull);
 
 comparison :  OPERATOR (string | BOOLEAN_VALUE | NUMBER_VALUE | NULL);
-between : BETWEEN (NUMBER_VALUE AND NUMBER_VALUE) | (string AND string);
+between : BETWEEN ((NUMBER_VALUE AND NUMBER_VALUE) | (string AND string));
 in : IN BRAC_OPEN (commaSeparatedStrings |  commaSeparatedNumbers) BRAC_CLOSE;
 like : LIKE string ;
 isNull : IS NULL;
