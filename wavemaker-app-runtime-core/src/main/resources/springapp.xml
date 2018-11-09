@@ -108,6 +108,8 @@
 
     <bean id="securityService" class="com.wavemaker.runtime.security.SecurityService"/>
 
+    <bean id="propertyPlaceHolderReplacementHelper" class="com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper"/>
+
     <bean class="com.wavemaker.runtime.data.spring.WMPropertyPlaceholderConfigurer">
         <property name="locations">
             <list>

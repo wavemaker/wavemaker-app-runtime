@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseExtractor;
@@ -51,6 +53,7 @@ import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
 import com.wavemaker.runtime.rest.util.RestRequestUtils;
 import com.wavemaker.runtime.util.HttpRequestUtils;
+import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
@@ -65,11 +68,17 @@ import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
  */
 public class RestRuntimeService {
 
-    private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
-
     private static final String AUTHORIZATION = "authorization";
-
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
+private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
+
+    @Autowired
+    private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
+    @PostConstruct
+    public void init() {
+        restRuntimeServiceCacheHelper.setPropertyPlaceHolderReplacementHelper(propertyPlaceHolderReplacementHelper);
+    }
+
 
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData) {
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
@@ -272,5 +281,6 @@ public class RestRuntimeService {
     private HttpResponseDetails invokeRestCall(HttpRequestDetails httpRequestDetails) {
         return new RestConnector().invokeRestCall(httpRequestDetails);
     }
+
 }
 
