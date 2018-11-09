@@ -468,6 +468,9 @@ WM.module('wm.widgets.table')
                                 if (CONSTANTS.isStudioMode) {
                                     $is.setDataGridOption('showHeader', newVal);
                                 }
+                                if ($is.widgetid) {
+                                    wp.onHeaderclick.show = newVal === true;
+                                }
                                 break;
                             case 'gridsearch':
                                 if (newVal) {
@@ -476,6 +479,9 @@ WM.module('wm.widgets.table')
                                 break;
                             case 'filtermode':
                                 $is.setDataGridOption('filtermode', newVal);
+                                if ($is.widgetid) {
+                                    wp.onBeforefilter.show = !!newVal;
+                                }
                                 break;
                             case 'searchlabel':
                                 $is.setDataGridOption('searchLabel', newVal);
@@ -525,6 +531,7 @@ WM.module('wm.widgets.table')
                                 /*Check for sanity*/
                                 if ($is.widgetid) {
                                     wp.showrecordcount.show = wp.showrecordcount.showindesigner = !_.includes(['None', 'Pager'], newVal);
+                                    wp.onSetrecord.show = newVal !== 'None';
                                 }
                                 break;
                             case 'insertrow':
@@ -617,8 +624,15 @@ WM.module('wm.widgets.table')
                                 $is.callDataGridMethod('option', 'actionsEnabled.new', enableNewRow);
                                 break;
                             case 'enablecolumnselection':
-                                wp.onColumnselect.show = newVal === true;
-                                wp.onColumndeselect.show  = newVal === true;
+                                if ($is.widgetid) {
+                                    wp.onColumnselect.show = newVal === true;
+                                    wp.onColumndeselect.show = newVal === true;
+                                }
+                                break;
+                            case 'enablesort':
+                                if ($is.widgetid) {
+                                    wp.onSort.show = newVal === true;
+                                }
                                 break;
                             }
                         }
