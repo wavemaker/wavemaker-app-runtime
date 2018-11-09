@@ -1195,8 +1195,6 @@ WM.module('wm.widgets.live')
                 Utils.defineProps($is, $el, {'item' : true});
                 $el.removeAttr('title');
 
-                $is.widgetProps.templateview.show = CONSTANTS.isStudioMode && $rs.isMobileApplicationType;
-
                 $rs.$on('action-added', function ($event, type) {
                     var actionProp = _.find($is.widgetProps.templateview.options, {'label': type});
                     actionProp.isAdded = true;

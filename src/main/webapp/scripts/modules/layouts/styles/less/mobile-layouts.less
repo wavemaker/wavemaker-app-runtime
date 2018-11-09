@@ -347,9 +347,86 @@
 }
 }
 
+/********************************************************************************
+**************************** PullToRefresh Styles ***********************
+*********************************************************************************/
+.refresh-container {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  text-align: center;
+  transition: transform 200ms linear;
+  display: none;
+  opacity: 0.5;
+  z-index: 5;
+  &.entry {
+    position: relative;
+    top: 0;
+  }
+  &.ios-refresh-container {
+    top: -100%;
+    position: relative;
+  }
+}
+.android-spinner {
+  height: 32px;
+  width: 32px;
+  display: inline-block;
+  box-shadow: 1px 1px 10px #333;
+  border-radius: 150px;
+  &.spin {
+    svg {
+      animation: android-spinner-spin 1.8s linear infinite;
+    }
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+  path {
+    fill: transparent;
+    stroke-width: 10%;
+    stroke-linecap: round;
+  }
+}
+
+@keyframes android-spinner-spin {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  50% {
+    transform: rotateZ(360deg);
+  }
+  100% {
+    transform: rotateZ(720deg);
+  }
+}
+
+.ios-spinner {
+  height: 50px;
+  width: 50px;
+  display: inline-block;
+  svg {
+    width: 100%;
+    height: 100%;
+    line {
+      stroke-width: 2px;
+      stroke-linecap: round;
+      opacity: 1;
+
+      .compute-opacity(@n, @i: 1) when (@i =< @n) {
+        &:nth-child(@{i}) {
+          opacity: 1 - (@i * 0.1);
+        }
+        .compute-opacity(@n, (@i + 1));
+      }
+      .compute-opacity(9);
+    }
+  }
+}
 
 /********************************************************************************
-**************************** List ***********************
+**************************** List Action Styles ***********************
 *********************************************************************************/
 .app-livelist {
   .list-group {

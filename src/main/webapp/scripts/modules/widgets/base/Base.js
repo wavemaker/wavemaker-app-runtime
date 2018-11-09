@@ -1240,7 +1240,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.listactiontemplate': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
-                        "position": {"type": "string", "show": true},
+                        "position": {"type": "string", "show": true, "disabled": true},
                         "addchild": {"hidelabel": true, "options": [{"labelKey": "LABEL_ADD_BUTTON", "label": "Add Button", "widgettype": "wm-button", "defaults": {"margin": ""}}], "widget": "add-widget"},
                         "enablefullswipe" : {"type": "boolean", "value": false}
                     },
@@ -1895,8 +1895,11 @@ WM.module('wm.widgets.base', [])
                         "disableitem": {"type": "boolean", "bindable": "in-bound", "value": false},
                         "ondemandmessage": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true, "value": "Load More"},
                         "loadingicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "fa fa-circle-o-notch", "pattern": classRegex},
-                        "paginationclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg", "btn-default", "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]},
-                        "templateview": {"options": [{'label': 'ListTemplate', 'value': 'listtemplate', 'widgettype': 'wm-listtemplate', 'isAdded': true }, {'label': 'LeftActionTemplate', 'value': 'leftactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'left'} } }, {'label': 'RightActionTemplate', 'value': 'rightactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'right'} } }], "widget": "add-widget-by-prop", "value": "listtemplate", "show": false}
+                        "paginationclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg", "btn-default", "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]}
+                        },
+                    "wm.list.mobile": {
+                        "templateview": {"options": [{'label': 'ListTemplate', 'value': 'listtemplate', 'widgettype': 'wm-listtemplate', 'isAdded': true }, {'label': 'LeftActionTemplate', 'value': 'leftactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'left'} } }, {'label': 'RightActionTemplate', 'value': 'rightactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'right'} } }], "widget": "add-widget-by-prop", "value": "listtemplate"},
+                        "onPulltorefresh": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -2202,7 +2205,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onAdd", "onBeforeremove", "onRemove", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onRowclick", "onRowselect", "onRowdeselect", "onBeforeselect", "onSelect", "onChipclick", "onChipselect", "onDeselect", "onViewrender", "onBeforerender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onBeforeformrender", "onFormrender", "onBeforerowdelete", "onRowdelete", "onBeforerowinsert", "onRowinsert", "onBeforerowupdate", "onRowupdate", "onResult",  "onSuccess", "onError", "onBeforeservicecall", "onActionsclick",
-                    "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onBeforereorder", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onSetrecord", "onBeforenavigate","onBeforeexport", "onBeforefilter"], "parent": "events"},
+                    "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onBeforereorder", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onPulltorefresh", "onSetrecord", "onBeforenavigate","onBeforeexport", "onBeforefilter"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
                 {"name": "devicesize", "properties": ["showindevice", "itemsperrow"], "parent": "device"},
                 {"name": "gridstyles", "properties": ['rowclass', 'rowngclass'], "parent": "properties"},
