@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.data.filter.parser;
 
+import java.lang.reflect.Field;
+
 import com.wavemaker.runtime.data.model.JavaType;
 
 /**
@@ -8,6 +10,7 @@ import com.wavemaker.runtime.data.model.JavaType;
  */
 public interface HqlFilterPropertyResolver {
 
-    JavaType resolveProperty(String propertyKey);
-    
+    Field findField(String propertyKey);
+
+    JavaType findJavaType(Field field);
 }

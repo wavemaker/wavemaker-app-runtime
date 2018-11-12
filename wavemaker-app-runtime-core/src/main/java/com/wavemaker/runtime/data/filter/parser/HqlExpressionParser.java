@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.filter.parser;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +24,11 @@ public class HqlExpressionParser {
             HqlFilterParser.BOOLEAN_VALUE
     );
 
+    private static final List<Class<?>> nullContexts = Arrays.asList(
+            HqlFilterParser.IsNullContext.class,
+            HqlFilterParser.IsNotNullContext.class
+    );
+
     private ParseTree condition;
     private HqlFilterParser.KeyContext keyContext;
 
@@ -33,7 +39,15 @@ public class HqlExpressionParser {
 
     public void parse(HqlParserContext hqlParserContext) {
         String key = keyContext.getToken(HqlFilterParser.KEY, 0).getText();
-        JavaType keyJavaType = hqlParserContext.getHqlFilterPropertyResolver().resolveProperty(key);
+        HqlFilterPropertyResolver propertyResolver = hqlParserContext.getHqlFilterPropertyResolver();
+
+        Field keyField = propertyResolver.findField(key);
+
+        JavaType keyJavaType = null;
+
+        if (!nullContexts.contains(condition.getChild(0).getClass())) {
+            keyJavaType = propertyResolver.findJavaType(keyField);
+        }
 
         hqlParserContext.appendQuery(keyContext.getText());
         resolveCondition(condition, hqlParserContext, keyJavaType);
