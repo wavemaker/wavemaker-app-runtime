@@ -235,6 +235,12 @@ WM.module('wm.prefabs')
                             prop.widget = 'list-number';
                         }
 
+                        prop.widget = prop.type === 'date' ? 'date' : prop.widget;
+
+                        if (prop.value && prop.type === 'date') {
+                            prop.value = new Date(prop.value);
+                        }
+
                         prop.label = Utils.initCaps(key);
                         prop.helpText = prop.description;
 
