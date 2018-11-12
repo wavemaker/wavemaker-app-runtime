@@ -54,6 +54,7 @@ WM.module('wm.widgets.basic')
                                 $is.widgetProps.inlinecontent.show = true;
                                 $is.widgetProps.content.show = false;
                                 $is.widgetProps.onLoad.show  = false;
+                                $rs.$emit('set-markup-attr', $is.widgetid, {'content': ''});
                             } else {
                                 $is.widgetProps.onLoad.show  = true;
                                 $is.widgetProps.content.show = true;
