@@ -1508,6 +1508,22 @@ WM.module('wm.widgets.form')
             }, 0, false);
         }
 
+        /**
+         * This function adjusts the Timepicker popup position when it is going outside of the page
+         */
+        function setTimePickerDropdownPosition() {
+            $timeout(function () {
+                var $popupElem = WM.element('body').find('> [uib-dropdown-menu]');
+                var $popupElemLeft = _.parseInt($popupElem.css('left'));
+                var $popupElemWidth = _.parseInt($popupElem.css('width'));
+                var viewPortWidth = $(window).width();
+                // check whether popup is not completely visible on right side of the page
+                if ($popupElemLeft + $popupElemWidth > viewPortWidth) {
+                    $popupElem.css('left', 'auto');
+                    $popupElem.css('right', '10px');
+                }
+            })
+        }
 
         /**
          * This function sets the keyboard events to Date, Daettime Time picker button
@@ -1527,5 +1543,6 @@ WM.module('wm.widgets.form')
         this.setFocusOnDateOrTimePicker      = setFocusOnDateOrTimePicker;
         this.setDatePickerKeyboardEvents     = setDatePickerKeyboardEvents;
         this.setTimePickerKeyboardEvents     = setTimePickerKeyboardEvents;
+        this.setTimePickerDropdownPosition   = setTimePickerDropdownPosition;
         this.setKeydownEventOnPickerButtons  = setKeydownEventOnPickerButtons;
     }]);
