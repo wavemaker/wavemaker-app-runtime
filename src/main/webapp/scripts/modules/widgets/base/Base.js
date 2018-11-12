@@ -972,6 +972,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "number", "value": "0"},
                         "title": {"type": "string", "maxlength": 256, "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
@@ -983,6 +984,7 @@ WM.module('wm.widgets.base', [])
                     "wm.dialog.dialogheader": {
                         "caption": {"type": "string", "maxlength": 256, "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
