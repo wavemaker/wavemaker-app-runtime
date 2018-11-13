@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +65,13 @@ public class AppRuntimeController {
     }
 
     @RequestMapping(value = "/application/wmProperties.js", method = RequestMethod.GET)
-    public void getApplicationProperties(HttpServletResponse response) throws IOException {
+    public void getApplicationProperties(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/javascript;charset=UTF-8");
         Map<String, Object> applicationProperties = appRuntimeService.getApplicationProperties();
+        String acceptLanguageHeader = request.getHeader("Accept-Language");
+        if (acceptLanguageHeader != null) {
+            applicationProperties.put("preferredLanguage", acceptLanguageHeader);
+        }
         response.getWriter().write("var _WM_APP_PROPERTIES = " + JSONUtils.toJSON(applicationProperties, true) + ";");
         response.getWriter().flush();
     }
