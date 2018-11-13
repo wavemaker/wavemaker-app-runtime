@@ -69,8 +69,10 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
                 for (String s : uiProperties) {
                     applicationProperties.put(s, properties.get(s));
                 }
-                applicationProperties.put("securityEnabled", securityService.isSecurityEnabled());
-                applicationProperties.put("xsrf_header_name", getCsrfHeaderName());
+                if("APPLICATION".equals(getApplicationType())) {
+                    applicationProperties.put("securityEnabled", securityService.isSecurityEnabled());
+                    applicationProperties.put("xsrf_header_name", getCsrfHeaderName());
+                }
                 applicationProperties.put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
             }
         }
@@ -78,7 +80,6 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     }
 
     public String getApplicationType() {
-
         synchronized (this) {
             if (applicationType == null) {
                 InputStream inputStream = appFileSystem.getClasspathResourceStream(APP_PROPERTIES);
