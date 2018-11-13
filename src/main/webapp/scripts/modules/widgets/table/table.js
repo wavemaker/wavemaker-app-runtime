@@ -63,9 +63,9 @@
  *                  Callback function which will be triggered  any time a widget is shown due to changes in its parent's state.
  * @param {string=} hide
  *                  Callback function which will be triggered  any time a widget is hidden due to changes in its parent's state
- * @param {string=} onselect
+ * @param {string=} onrowselect
  *                  Callback function which will be triggered when the grid is selected.
- * @param {string=} ondeselect
+ * @param {string=} onrowdeselect
  *                  Callback function which will be triggered when the grid is unselected.
  * @param {string=} datasort
  *                  Callback function which will be triggered when the user clicks the grid headers to sort your grid.
@@ -218,8 +218,8 @@ WM.module('wm.widgets.table')
             'restrict'   : 'E',
             'scope'      : {
                 'scopedataset'      : '=?',
-                'onSelect'          : '&',
-                'onDeselect'        : '&',
+                'onRowselect'       : '&',
+                'onRowdeselect'     : '&',
                 'onSort'            : '&',
                 'onClick'           : '&',
                 'onHeaderclick'     : '&',
@@ -500,7 +500,6 @@ WM.module('wm.widgets.table')
                                         $is.$root.$emit('set-markup-attr', $is.widgetid, {'radioselect': false});
                                     }
                                     $is.setDataGridOption('multiselect', newVal);
-                                    wp.onDeselect.show = newVal === true;
                                 }
                                 break;
                             case 'radioselect':
@@ -2569,7 +2568,7 @@ WM.module('wm.widgets.table')
                         $is.items.length = 0;
                         $is.items.push(rowData);
                     }
-                    $is.onSelect({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
+                    $is.onRowselect({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                     $is.onRowclick({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                     // For backward compatibility.
                     if (WM.isDefined($is.onClick) && !$is.widgetid) {
@@ -2588,7 +2587,7 @@ WM.module('wm.widgets.table')
                     if ($is.multiselect) {
                         $is.items = _.pullAllWith($is.items, [rowData], _.isEqual);
                         $is.selectedItems = $is.callDataGridMethod('getSelectedRows');
-                        $is.onDeselect({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
+                        $is.onRowdeselect({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                         $rs.$safeApply($is);
                     }
                 },
