@@ -1614,8 +1614,8 @@ WM.module('wm.widgets.base', [])
                         "margin": {"type": "string", "widget": "box-model", "show": false}, //Deprecated margin property for data table
 
                         /* Events */
-                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onClick": {"type": "event", "show": false, "options": widgetEventOptions, "widget": "eventlist"},
+                        "onTap": {"type": "event", "show": false, "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDeselect": {"type": "event", "show": false, "options": widgetEventOptions, "widget": "eventlist"},
                         "onSort": {"type": "event", "show": false, "options": widgetEventOptions, "widget": "eventlist"},
@@ -1632,7 +1632,7 @@ WM.module('wm.widgets.base', [])
                         "onRowupdate": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onRowclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onRowdblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onRowdblclick": {"type": "event", "show": false, "options": widgetEventOptions, "widget": "eventlist"},
                         "onColumnselect": {"type": "event", "show": false,"options": widgetEventOptions, "widget": "eventlist"},
                         "onColumndeselect": {"type": "event", "show": false, "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "show": false, "options": widgetEventOptions, "widget": "eventlist"},
