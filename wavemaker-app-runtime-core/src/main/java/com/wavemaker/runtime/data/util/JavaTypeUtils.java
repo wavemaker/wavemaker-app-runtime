@@ -61,7 +61,7 @@ public class JavaTypeUtils {
         type = ClassUtils.primitiveToWrapper(type);
         final String typeName = type.getCanonicalName();
         //Since, java.util.Date is obtained from hql meta data.
-        return (classNameVsJavaTypeMap.containsKey(typeName) || Date.class.getCanonicalName().equals(typeName));
+        return (classNameVsJavaTypeMap.containsKey(typeName) || Date.class.isAssignableFrom(type));
     }
 
     public static boolean isNotCollectionType(final Class<?> typeClass) {
