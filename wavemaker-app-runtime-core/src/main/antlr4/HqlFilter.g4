@@ -18,12 +18,14 @@ logicalExpression : BRAC_OPEN logicalExpression BRAC_CLOSE | logicalExpression (
 
 expression : key condition;
 
-condition : (comparison | between | in | like | isNull | isNotNull);
+condition : (comparison | between | in | notIn | like | notLike | isNull | isNotNull);
 
 comparison :  OPERATOR (string | BOOLEAN_VALUE | NUMBER_VALUE | NULL);
 between : BETWEEN ((NUMBER_VALUE AND NUMBER_VALUE) | (string AND string));
 in : IN BRAC_OPEN (commaSeparatedStrings |  commaSeparatedNumbers) BRAC_CLOSE;
+notIn : NOT IN BRAC_OPEN (commaSeparatedStrings |  commaSeparatedNumbers) BRAC_CLOSE;
 like : LIKE string ;
+notLike : NOT LIKE string ;
 isNull : IS NULL;
 isNotNull : IS NOT NULL;
 
