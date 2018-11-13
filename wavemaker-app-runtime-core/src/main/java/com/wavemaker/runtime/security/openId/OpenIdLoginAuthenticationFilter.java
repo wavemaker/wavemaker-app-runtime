@@ -22,15 +22,11 @@ import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationExchange;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationResponse;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.wavemaker.commons.auth.openId.OpenIdConstants;
-import com.wavemaker.runtime.security.WMAuthenticationToken;
-import com.wavemaker.runtime.security.WMUser;
-import com.wavemaker.runtime.security.WMUserBuilder;
 
 
 /**
@@ -127,13 +123,7 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
                 authenticationResult.getAccessToken());
 
         this.authorizedClientService.saveAuthorizedClient(authorizedClient, oauth2Authentication);
-
-        OidcUser oidcUser = (OidcUser) authenticationResult.getPrincipal();
-        WMUser wmUser = WMUserBuilder.create(oidcUser.getName(), authenticationResult.getAuthorities())
-                .setCustomAttributes(oidcUser.getClaims())
-                .build();
-
-        return new WMAuthenticationToken(wmUser, authenticationResult.getAuthorities());
+        return authenticationResult;
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.security.authenticationSuccessHandler;
+package com.wavemaker.runtime.security.handler;
 
 
 import java.io.IOException;

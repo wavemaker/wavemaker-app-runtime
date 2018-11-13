@@ -31,12 +31,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
-import com.wavemaker.runtime.util.MessageDigestUtil;
 import com.wavemaker.commons.model.security.TokenAuthConfig;
+import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.token.exception.TokenGenerationException;
 import com.wavemaker.runtime.security.token.repository.InMemoryPersistentAuthTokenRepository;
 import com.wavemaker.runtime.security.token.repository.PersistentAuthTokenRepository;
+import com.wavemaker.runtime.util.MessageDigestUtil;
 
 /**
  * Generate Token encoded by this implementation adopts the following form:
@@ -132,8 +133,9 @@ public class WMTokenBasedAuthenticationService {
     }
 
     protected WMUser toWMUser(final Authentication authentication) {
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) authentication;
+        Authentication authenticationSource = ((WMAuthentication) authentication).getAuthenticationSource();
+        if (authenticationSource instanceof UsernamePasswordAuthenticationToken) {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) authenticationSource;
             if (usernamePasswordAuthenticationToken.getPrincipal() instanceof WMUser) {
                 return (WMUser) usernamePasswordAuthenticationToken.getPrincipal();
             } else if (usernamePasswordAuthenticationToken.getPrincipal() instanceof UserDetails) {
@@ -142,19 +144,19 @@ public class WMTokenBasedAuthenticationService {
                 return toWMUser(userDetails.getUsername(), password, userDetails.getAuthorities());
             } else {
                 String username = (String) usernamePasswordAuthenticationToken.getPrincipal();
-                return toWMUser(username, "", authentication.getAuthorities());
+                return toWMUser(username, "", authenticationSource.getAuthorities());
             }
 
-        } else if (authentication instanceof CasAuthenticationToken) {
-            CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken) authentication;
+        } else if (authenticationSource instanceof CasAuthenticationToken) {
+            CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken) authenticationSource;
             if (casAuthenticationToken.getPrincipal() instanceof WMUser) {
                 return (WMUser) casAuthenticationToken.getPrincipal();
             }
-        } else if (authentication instanceof RememberMeAuthenticationToken) {
-            RememberMeAuthenticationToken rememberMeAuthenticationToken = (RememberMeAuthenticationToken) authentication;
+        } else if (authenticationSource instanceof RememberMeAuthenticationToken) {
+            RememberMeAuthenticationToken rememberMeAuthenticationToken = (RememberMeAuthenticationToken) authenticationSource;
             String username = (String) rememberMeAuthenticationToken.getPrincipal();
             String password = (String) rememberMeAuthenticationToken.getCredentials();
-            return toWMUser(username, password, authentication.getAuthorities());
+            return toWMUser(username, password, authenticationSource.getAuthorities());
         }
         throw new TokenGenerationException("Unknown authentication,failed to build token for current user");
     }

@@ -1,0 +1,95 @@
+package com.wavemaker.runtime.security;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wavemaker.runtime.security.authenticationToken.AbstractAuthenticationToken;
+import com.wavemaker.runtime.security.authority.SimpleGrantedAuthority;
+
+/**
+ * Created by srujant on 13/8/18.
+ */
+public class WMAuthentication extends AbstractAuthenticationToken {
+
+    private static String prefix = "ROLE_";
+
+    private Map<String, Attribute> attributes = new HashMap<>();
+    private String principal;
+    private long loginTime;
+    private String userId;
+
+    @JsonIgnore
+    private transient Authentication authenticationSource;
+
+    public WMAuthentication() {
+    }
+
+    public WMAuthentication(Authentication authenticationSource) {
+        super();
+        setAuthorities(mapAuthorities(authenticationSource.getAuthorities()));
+        this.principal = authenticationSource.getName();
+        this.authenticationSource = authenticationSource;
+        if (authenticationSource.getPrincipal() instanceof WMUser) {
+            this.userId = ((WMUser) authenticationSource.getPrincipal()).getUserId();
+        }
+        setAuthenticated(true);
+        this.loginTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public Object getCredentials() {
+        return null;
+    }
+
+    @Override
+    public String getPrincipal() {
+        return principal;
+    }
+
+    public Map<String, Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public Authentication getAuthenticationSource() {
+        return authenticationSource;
+    }
+
+    public long getLoginTime() {
+        return loginTime;
+    }
+
+    public void setLoginTime(long loginTime) {
+        this.loginTime = loginTime;
+    }
+
+    public void addAttribute(String key, Object value, Attribute.AttributeScope scope) {
+        attributes.put(key, new Attribute(scope, value));
+    }
+
+    private Set<SimpleGrantedAuthority> mapAuthorities(
+            Collection<? extends GrantedAuthority> authorities) {
+        HashSet<SimpleGrantedAuthority> mapped = new HashSet<>(authorities.size());
+        for (GrantedAuthority authority : authorities) {
+            mapped.add(mapAuthority(authority.getAuthority()));
+        }
+        return mapped;
+    }
+
+    private SimpleGrantedAuthority mapAuthority(String name) {
+        if (prefix.length() > 0 && !name.startsWith(prefix)) {
+            name = prefix + name;
+        }
+        return new SimpleGrantedAuthority(name);
+    }
+}

@@ -75,12 +75,6 @@ public class SecurityController {
         return WMUtils.wrapString(securityService.getUserId());
     }
 
-    @RequestMapping(value = "/user/tenantid", method = RequestMethod.GET)
-    @ApiOperation(value = "Returns tenant-id for the logged-in user.")
-    public IntegerWrapper getTenantId() {
-        return WMUtils.wrapInteger(securityService.getTenantId());
-    }
-
     @RequestMapping(value = "/user/roles", method = RequestMethod.GET)
     @ApiOperation(value = "Returns list of roles for the logged-in user.")
     public List<String> getUserRoles() {

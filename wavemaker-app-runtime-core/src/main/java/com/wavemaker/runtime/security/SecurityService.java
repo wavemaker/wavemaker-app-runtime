@@ -18,6 +18,7 @@ package com.wavemaker.runtime.security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -74,39 +75,13 @@ public class SecurityService {
     }
 
     /**
-     * If authentication is null then it returns 0. Otherwise, it retrieves tenantId from the authentication cobject and return that value.
-     *
-     * @return The tenant Id or 0 if authentication is null.
+     * This method is deprecated. You can set custom attributes in successhandlers.
      */
+    @Deprecated
     public static int getTenantId() {
-        Authentication authentication = getAuthenticatedAuthentication();
-
-        if (authentication != null && authentication.getPrincipal() instanceof WMUserDetails) {
-            WMUserDetails principal = (WMUserDetails) authentication.getPrincipal();
-            return principal.getTenantId();
-        }
         return 0;
     }
 
-    /**
-     * This method returns a proxy ticket to the caller. The serviceUrl must be the EXACT url of the service that you
-     * are using the ticket to call.
-     *
-     * @param serviceUrl The url of the service, protected by CAS, that you want to call.
-     * @return A 'use once' proxy service ticket, or null if a ticket cannot be retrieved.
-     */
-    public static String getCASProxyTicket(String serviceUrl) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String ticket = null;
-        try {
-            if (auth instanceof CasAuthenticationToken) {
-                ticket = ((CasAuthenticationToken) auth).getAssertion().getPrincipal().getProxyTicketFor(serviceUrl);
-            }
-        } catch (Exception e) {
-            logger.error("The CASSecurityService.getServiceTicket() has failed", e);
-        }
-        return ticket;
-    }
 
     /**
      * Checks whether the security is enabled or not. It returns true if it is enable, else, false.
@@ -145,23 +120,38 @@ public class SecurityService {
         return getAuthenticatedAuthentication() != null;
     }
 
-    public Map<String, Object> getCustomAttributes() {
+    public Map<String, Object> getClientAttributes() {
         Authentication authentication = getAuthenticatedAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() instanceof WMUserDetails) {
-            WMUserDetails wmUserDetails = (WMUserDetails) authentication.getPrincipal();
-            return wmUserDetails.getCustomAttributes();
+        if (authentication != null) {
+            WMAuthentication wmAuthentication = (WMAuthentication) authentication;
+            Map<String, Object> customAttributes = new HashMap<>();
+            Map<String, Attribute> attributeMap = wmAuthentication.getAttributes();
+            attributeMap.entrySet().stream().forEach(entry -> {
+                        Attribute attribute = entry.getValue();
+                        if (attribute.getScope() != Attribute.AttributeScope.SERVER_ONLY) {
+                            customAttributes.put(entry.getKey(), attribute.getValue());
+                        }
+                    }
+            );
+            return customAttributes;
         }
         return null;
     }
 
-    private WMUserDetails getWMUserDetails() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public Map<String, Object> getAllAttributes() {
+        Authentication authentication = getAuthenticatedAuthentication();
+
         if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof WMUserDetails) {
-                return (WMUserDetails) principal;
-            }
+            WMAuthentication wmAuthentication = (WMAuthentication) authentication;
+            Map<String, Object> customAttributes = new HashMap<>();
+            Map<String, Attribute> attributeMap = wmAuthentication.getAttributes();
+            attributeMap.entrySet().stream().forEach(entry -> {
+                        Attribute attribute = entry.getValue();
+                        customAttributes.put(entry.getKey(), attribute.getValue());
+                    }
+            );
+            return customAttributes;
         }
         return null;
     }
@@ -183,11 +173,7 @@ public class SecurityService {
             wmCurrentUser.setUserId(getUserId());
             wmCurrentUser.setUserName(getUserName());
             wmCurrentUser.setUserRoles(getUserRoles());
-            WMUserDetails wmUserDetails = getWMUserDetails();
-            if (wmUserDetails != null) {
-                wmCurrentUser.setTenantId(wmUserDetails.getTenantId());
-                wmCurrentUser.setLoginTime(wmUserDetails.getLoginTime());
-            }
+            wmCurrentUser.setLoginTime(getLoginTime());
         }
         return wmCurrentUser;
     }
@@ -201,10 +187,6 @@ public class SecurityService {
      * @return The user name.
      */
     public String getUserName() {
-        WMUserDetails wmUserDetails = getWMUserDetails();
-        if (wmUserDetails != null) {
-            return wmUserDetails.getUsername();
-        }
         final Authentication authentication = getAuthenticatedAuthentication();
         if (authentication != null) {
             return authentication.getName();
@@ -218,13 +200,9 @@ public class SecurityService {
      * @return String value, which will contain userId.
      */
     public String getUserId() {
-        WMUserDetails wmUserDetails = getWMUserDetails();
-        if (wmUserDetails != null) {
-            return wmUserDetails.getUserId();
-        }
         final Authentication authentication = getAuthenticatedAuthentication();
         if (authentication != null) {
-            return authentication.getName();
+            return ((WMAuthentication) authentication).getUserId();
         }
         return null;
     }
@@ -303,9 +281,10 @@ public class SecurityService {
      * @return login tine in milliseconds (long value).
      */
     public long getLoginTime() {
-        WMUserDetails wmUserDetails = getWMUserDetails();
-        if (wmUserDetails != null)
-            return wmUserDetails.getLoginTime();
+        final Authentication authentication = getAuthenticatedAuthentication();
+        if (authentication != null) {
+            return ((WMAuthentication) authentication).getLoginTime();
+        }
         return 0L;
     }
 
@@ -323,7 +302,7 @@ public class SecurityService {
             userInfo.setUserName(getUserName());
             userInfo.setUserRoles(getUserRoles());
             userInfo.setLandingPage(getUserLandingPage());
-            userInfo.setUserAttributes(getCustomAttributes());
+            userInfo.setUserAttributes(getClientAttributes());
         }
 
         SecurityInfo securityInfo = new SecurityInfo();
