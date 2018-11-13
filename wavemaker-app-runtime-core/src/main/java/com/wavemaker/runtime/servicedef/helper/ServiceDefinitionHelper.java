@@ -17,6 +17,7 @@ package com.wavemaker.runtime.servicedef.helper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,12 +40,9 @@ public class ServiceDefinitionHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDefinitionHelper.class);
 
-    public Map<String, ServiceDefinition> build(InputStream inputStream) {
-        if (inputStream == null) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.attempt.to.build.service.definition"), "InputStream");
-        }
-        logger.debug("Building service definitions from InputStream");
-        final String serviceDefJson = WMIOUtils.toString(inputStream);
+    public Map<String, ServiceDefinition> build( Reader reader) {
+        logger.debug("Building service definitions from Reader");
+        final String serviceDefJson = WMIOUtils.toString(reader);
         return buildServiceDef(serviceDefJson);
     }
 

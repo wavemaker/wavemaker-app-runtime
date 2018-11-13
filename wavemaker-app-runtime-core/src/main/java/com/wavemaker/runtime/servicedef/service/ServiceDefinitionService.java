@@ -17,6 +17,7 @@ package com.wavemaker.runtime.servicedef.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
 import com.wavemaker.runtime.security.SecurityService;
 import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
+import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
@@ -61,7 +63,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     public static final String SERVICE_DEF_RESOURCE_POST_FIX = "-service-definitions.json";
     public static final String SERVICE_DEF_LOCATION_PATTERN = "/servicedefs/**" + SERVICE_DEF_RESOURCE_POST_FIX;
     public static final String PREFAB_SERVICE_DEF_LOCATION_PATTERN = "/prefab-servicedefs/**" + SERVICE_DEF_RESOURCE_POST_FIX;
-    
+
     private ServiceDefinitionHelper serviceDefinitionHelper = new ServiceDefinitionHelper();
 
     private MultiValuedMap<String, ServiceDefinition> authExpressionVsServiceDefinitions = null;
@@ -70,9 +72,12 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     @Autowired
     private PrefabManager prefabManager;
-    
+
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDefinitionService.class);
 
@@ -85,7 +90,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
             Map<String, ServiceDefinition> serviceDefinitionsMap = new HashMap<>(baseServiceDefinitions);
             putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), serviceDefinitionsMap, false);
             String[] userRoles = securityService.getUserRoles();
-            for (String role: userRoles) {
+            for (String role : userRoles) {
                 putElements(authExpressionVsServiceDefinitions.get("ROLE_" + role), serviceDefinitionsMap, false);
             }
             return serviceDefinitionsMap;
@@ -107,31 +112,27 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private void loadServiceDefinitions() {
 
-            synchronized (this) {
-                if (authExpressionVsServiceDefinitions == null) {
-                    Map<String, ServiceDefinition> serviceDefinitionsCache = new HashMap<>();
-                    Resource[] resources = getServiceDefResources(false);
-                    if (resources != null) {
-                        for (Resource resource : resources) {
-                            try {
-                                serviceDefinitionsCache.putAll(serviceDefinitionHelper.build(resource.getInputStream()));
-                            } catch (IOException e) {
-                                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
-                            }
-                        }
-                    } else {
-                        logger.warn("Service def resources does not exist for this project");
+        synchronized (this) {
+            if (authExpressionVsServiceDefinitions == null) {
+                Map<String, ServiceDefinition> serviceDefinitionsCache = new HashMap<>();
+                Resource[] resources = getServiceDefResources(false);
+                if (resources != null) {
+                    for (Resource resource : resources) {
+                        serviceDefinitionsCache.putAll(getServiceDefinition(resource));
                     }
-                    this.authExpressionVsServiceDefinitions = constructAuthVsServiceDefinitions(serviceDefinitionsCache);
-                    this.baseServiceDefinitions = new HashMap<>();
-                    putElements(authExpressionVsServiceDefinitions.get("permitAll"), baseServiceDefinitions, false);
-                    putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), baseServiceDefinitions, true);
-                    Set<String> authExpressions = authExpressionVsServiceDefinitions.keySet();
-                    authExpressions.stream().filter(s->s.startsWith("ROLE_")).forEach(s->{
-                        putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true);
-                    });
+                } else {
+                    logger.warn("Service def resources does not exist for this project");
                 }
+                this.authExpressionVsServiceDefinitions = constructAuthVsServiceDefinitions(serviceDefinitionsCache);
+                this.baseServiceDefinitions = new HashMap<>();
+                putElements(authExpressionVsServiceDefinitions.get("permitAll"), baseServiceDefinitions, false);
+                putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), baseServiceDefinitions, true);
+                Set<String> authExpressions = authExpressionVsServiceDefinitions.keySet();
+                authExpressions.stream().filter(s -> s.startsWith("ROLE_")).forEach(s -> {
+                    putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true);
+                });
             }
+        }
     }
 
     //TODO find a better way to fix it, read intercept urls from json instead of from spring xml
@@ -144,7 +145,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                 String path = serviceDefinition.getWmServiceOperationInfo().getRelativePath();
                 String method = serviceDefinition.getWmServiceOperationInfo().getHttpMethod();
                 method = StringUtils.upperCase(method);
-                Collection<ConfigAttribute> attributes = securityMetadataSource.getAttributes(new FilterInvocation(null, "/services", path, null, 
+                Collection<ConfigAttribute> attributes = securityMetadataSource.getAttributes(new FilterInvocation(null, "/services", path, null,
                         method));
                 List<ConfigAttribute> configAttributeList;
                 if (attributes instanceof List) {
@@ -157,11 +158,11 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                     if (configAttribute != null) {
                         String attribute = configAttribute.toString().trim();
                         if (attribute.startsWith("hasAnyRole(")) {
-                            String rolesString = attribute.substring("hasAnyRole(".length(), attribute.length() -1);
+                            String rolesString = attribute.substring("hasAnyRole(".length(), attribute.length() - 1);
                             String[] roles = rolesString.split(",");
                             for (String role : roles) {
                                 role = role.trim();
-                                role = role.substring(1, role.length()- 1);
+                                role = role.substring(1, role.length() - 1);
                                 authExpressionVsServiceDefinitions.put(role, serviceDefinition);
                             }
                         } else {
@@ -180,35 +181,40 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private void loadPrefabsServiceDefinitions() {
 
-            synchronized (this) {
-                if (prefabServiceDefinitionsCache == null) {
-                    final Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = new HashMap<>();
-                    for (final Prefab prefab : prefabManager.getPrefabs()) {
-                        runInPrefabClassLoader(prefab, () -> loadPrefabServiceDefs(prefab, prefabServiceDefinitionsCache));
-                    }
-                    this.prefabServiceDefinitionsCache = prefabServiceDefinitionsCache;
+        synchronized (this) {
+            if (prefabServiceDefinitionsCache == null) {
+                final Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = new HashMap<>();
+                for (final Prefab prefab : prefabManager.getPrefabs()) {
+                    runInPrefabClassLoader(prefab, () -> loadPrefabServiceDefs(prefab, prefabServiceDefinitionsCache));
                 }
+                this.prefabServiceDefinitionsCache = prefabServiceDefinitionsCache;
             }
+        }
     }
 
     private synchronized void loadPrefabServiceDefs(final Prefab prefab, Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache) {
         if (prefabServiceDefinitionsCache.get(prefab.getName()) == null) {
             prefabServiceDefinitionsCache.put(prefab.getName(), new HashMap<>());
         }
-
         Resource[] resources = getServiceDefResources(true);
         if (resources != null) {
             for (Resource resource : resources) {
-                try {
-                    prefabServiceDefinitionsCache.get(prefab.getName()).putAll(serviceDefinitionHelper.build(resource.getInputStream()));
-                } catch (IOException e) {
-                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
-                }
+                prefabServiceDefinitionsCache.get(prefab.getName()).putAll(getServiceDefinition(resource));
             }
         } else {
             logger.warn("Service def resources does not exist for this project");
         }
     }
+
+    private Map<String, ServiceDefinition> getServiceDefinition(Resource resource) {
+        try {
+            Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(resource.getInputStream());
+            return serviceDefinitionHelper.build(reader);
+        } catch (IOException e) {
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
+        }
+    }
+
 
     private void runInPrefabClassLoader(final Prefab prefab, Runnable runnable) {
         ClassLoader classLoader = prefab.getClassLoader();
@@ -244,7 +250,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
             executor = Executors.newFixedThreadPool(2);
             loadServiceDefinitions(executor);
         } finally {
-            if(executor != null) {
+            if (executor != null) {
                 executor.shutdown();
             }
         }
