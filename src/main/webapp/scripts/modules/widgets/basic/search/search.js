@@ -408,12 +408,18 @@ WM.module('wm.widgets.basic')
                     // set the datatSet of the widget
                     setDataSet(newVal, $is, element);
                     break;
-                case 'type':
+                    case 'type':
                     //To avoid overridding check for that attribute
                     if (!attrs.showsearchicon) {
                         toggleSearchIcon($is, newVal);
                     }
                     setTypeAheadMinLengthValue($is);
+                    // hide searchon property for autocomplete and remove if this attr is on markup.
+                    var isAutocomplete = newVal === 'autocomplete';
+                    $is.widgetProps.searchon.show = !isAutocomplete;
+                    if (isAutocomplete) {
+                        $rs.$emit('set-markup-attr', $is.widgetid, {'searchon': ''});
+                    }
                     break;
                 case 'width':
                 case 'height':

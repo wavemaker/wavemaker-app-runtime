@@ -1951,7 +1951,7 @@ WM.module('wm.widgets.base', [])
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "limit": {"type": "number"},
-                        "searchon": {"type": "string", "widget": "list", "options": ["typing", "onbuttonclick"], "value": "typing", "show": true},
+                        "searchon": {"type": "select-by-object", "options": [{"label": "Typing", "value": "typing"}, {"label": "On search icon click", "value": "onsearchiconclick"}], "value": "typing", "show": true},
                         "placeholder": {"type": "string", "value": "Search", "bindable": "in-bound"},
                         "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
