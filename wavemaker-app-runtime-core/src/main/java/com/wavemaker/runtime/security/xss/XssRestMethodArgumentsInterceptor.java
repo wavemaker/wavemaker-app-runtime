@@ -79,7 +79,7 @@ public class XssRestMethodArgumentsInterceptor implements RestMethodArgumentsInt
             final Class<?> valueClass = value.getClass();
             manipulatedObjects.add(value);
 
-            if ("char[]".equals(valueClass.getSimpleName())) {
+            if (valueClass == char[].class) {
                 encoded = encode(((char[]) value));
                 modified = true;
             } else if (valueClass.isArray()) {
@@ -146,10 +146,11 @@ public class XssRestMethodArgumentsInterceptor implements RestMethodArgumentsInt
     }
 
     private boolean isExcludedClass(Object value) {
-        boolean excluded = value.getClass().isAnnotationPresent(XssDisable.class);
+        Class<?> valueClass = value.getClass();
+        boolean excluded = valueClass.isAnnotationPresent(XssDisable.class);
         if (!excluded) {
-            excluded = EXCLUDED_CLASSES.stream()
-                    .anyMatch(type -> type.isInstance(value));
+            excluded = EXCLUDED_CLASSES.contains(valueClass) ||
+                    (valueClass.getComponentType() != null && valueClass.getComponentType().isPrimitive() && valueClass != char[].class);
         }
         return excluded;
     }
