@@ -876,6 +876,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.skyscreamer</groupId>
+                <artifactId>jsonassert</artifactId>
+                <version>1.5.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.wavemaker.commons</groupId>
                 <artifactId>wavemaker-commons-util</artifactId>
                 <version>${project.version}</version>
@@ -919,6 +925,10 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
         </dependency>
         <dependency>
             <groupId>com.wavemaker.commons</groupId>
