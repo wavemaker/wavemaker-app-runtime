@@ -148,10 +148,15 @@ public class XssRestMethodArgumentsInterceptor implements RestMethodArgumentsInt
     private boolean isExcludedClass(Object value) {
         Class<?> valueClass = value.getClass();
         boolean excluded = valueClass.isAnnotationPresent(XssDisable.class);
+
         if (!excluded) {
-            excluded = EXCLUDED_CLASSES.contains(valueClass) ||
-                    (valueClass.getComponentType() != null && valueClass.getComponentType().isPrimitive() && valueClass != char[].class);
+            excluded = (valueClass.getComponentType() != null && valueClass.getComponentType().isPrimitive() && valueClass != char[].class);
+
+            if (!excluded) {
+                excluded = EXCLUDED_CLASSES.stream().anyMatch(type -> type.isInstance(value));
+            }
         }
+
         return excluded;
     }
 
