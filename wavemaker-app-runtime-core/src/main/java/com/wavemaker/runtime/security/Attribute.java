@@ -29,11 +29,11 @@ public class Attribute implements Serializable{
 
     public enum AttributeScope {
         /*
-        *  This attributescoped variables will be used both in backend and frontend.
+        *  This attributescoped variables will be visible to both client and server.
         * */
         ALL,
         /*
-        * This attributescoped variables get's persisted only in backend.
+        * This attributescoped variables will be visible only to the server.
         * */
         SERVER_ONLY;
     }
