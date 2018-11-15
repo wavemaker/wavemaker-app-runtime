@@ -32,6 +32,7 @@ public class RuntimeQuery {
     @NotEmpty
     private String queryString;
     private String countQueryString;
+    private String offlineQueryString;
 
     private boolean nativeSql;
     private boolean fetchCount;
@@ -69,6 +70,14 @@ public class RuntimeQuery {
 
     public void setQueryString(final String queryString) {
         this.queryString = queryString;
+    }
+
+    public String getOfflineQueryString() {
+        return offlineQueryString;
+    }
+
+    public void setOfflineQueryString(String offlineQueryString) {
+        this.offlineQueryString = offlineQueryString;
     }
 
     public QueryType getType() {
