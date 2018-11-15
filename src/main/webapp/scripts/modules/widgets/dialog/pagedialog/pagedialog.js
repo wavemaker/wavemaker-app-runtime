@@ -6,7 +6,7 @@ WM.module('wm.widgets.dialog')
         "use strict";
         $templateCache.put("template/widget/dialog/pagedialog.html",
             '<div init-widget class="app-view dialog-view clearfix"  wm-navigable-element="true">' +
-                '<div class="app-dialog modal-dialog app-page-dialog" dialogclass page-container>' +
+                '<div class="app-dialog modal-dialog app-page-dialog" widgetid={{widgetid}} dialogclass page-container>' +
                     '<div class="modal-content">' +
                         '<wm-dialogheader iconclass={{iconclass}} iconurl="{{iconurl}}" closable="{{closable}}" caption={{title}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target wmtransclude></div>' +
