@@ -1726,6 +1726,8 @@ body.modal-open {
   overflow: hidden;
   .modal {
     overflow-y: auto;
+    // TODO: Temporary fix for 'Rendering issue in modals with Chrome 70 update'. Remove after chrome 72 update.
+    will-change: transform;
   }
 }
 .modal-backdrop {
