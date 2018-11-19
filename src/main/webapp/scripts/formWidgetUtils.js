@@ -118,7 +118,8 @@ WM.module('wm.widgets.form')
                     break;
                 case 'number':
                     widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
-                    widgetProps.placeholder.show = widgetProps.maxchars.show = true;
+                    widgetProps.placeholder.show = true;
+                    widgetProps.maxchars.show = false;
                     break;
                 case 'date':
                 case 'datetime-local':
