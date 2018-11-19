@@ -20,9 +20,9 @@ import com.wavemaker.runtime.security.WMAuthentication;
 /**
  * Created by srujant on 31/10/18.
  */
-public class WMApplicationSuccessHandler implements AuthenticationSuccessHandler, BeanPostProcessor {
+public class WMApplicationAuthenticationSuccessHandler implements AuthenticationSuccessHandler, BeanPostProcessor {
 
-    private List<AuthenticationSuccessHandler> defaultSuccessHandlerList;
+    private List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
     private List<WMAuthenticationSuccessHandler> customSuccessHandlerList = new ArrayList<>();
 
     @Override
@@ -43,7 +43,7 @@ public class WMApplicationSuccessHandler implements AuthenticationSuccessHandler
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof WMApplicationSuccessHandler) {
+        if (bean instanceof WMApplicationAuthenticationSuccessHandler) {
             customSuccessHandlerList.add((WMAuthenticationSuccessHandler) bean);
         }
         return bean;
