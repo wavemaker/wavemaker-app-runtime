@@ -40,10 +40,6 @@ public class WMBasicAuthenticationFilter extends BasicAuthenticationFilter {
         } finally {
             if (request.getAttribute("basicAuthLogin") != null) {
                 SecurityContextHolder.clearContext();
-                HttpSession httpSession = request.getSession(false);
-                if (httpSession != null) {
-                    httpSession.invalidate();
-                }
             }
         }
     }
