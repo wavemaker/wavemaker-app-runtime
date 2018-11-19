@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.security.handler;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
@@ -30,28 +29,18 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
-import com.wavemaker.commons.CommonConstants;
-import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
-import com.wavemaker.runtime.security.model.LoginSuccessResponse;
-import com.wavemaker.runtime.util.HttpRequestUtils;
-
-import static com.wavemaker.runtime.security.SecurityConstants.CACHE_CONTROL;
-import static com.wavemaker.runtime.security.SecurityConstants.EXPIRES;
-import static com.wavemaker.runtime.security.SecurityConstants.NO_CACHE;
-import static com.wavemaker.runtime.security.SecurityConstants.PRAGMA;
-import static com.wavemaker.runtime.security.SecurityConstants.TEXT_PLAIN_CHARSET_UTF_8;
 
 /**
  * Created by srujant on 31/10/18.
  */
-public class WMCsrfAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSuccessHandler {
 
     private CsrfTokenRepository csrfTokenRepository;
 
-    public WMCsrfAuthenticationSuccessHandler(CsrfTokenRepository csrfTokenRepository) {
+    public WMCsrfTokenRepositorySuccessHandler(CsrfTokenRepository csrfTokenRepository) {
         this.csrfTokenRepository = csrfTokenRepository;
     }
 
@@ -61,16 +50,6 @@ public class WMCsrfAuthenticationSuccessHandler implements AuthenticationSuccess
         if (csrfTokenOptional.isPresent()) {
             addCsrfCookie(csrfTokenOptional, request, response);
             csrfTokenRepository.saveToken(csrfTokenOptional.get(), request, response);
-        }
-        if (HttpRequestUtils.isAjaxRequest(request)) {
-            request.setCharacterEncoding(CommonConstants.UTF8);
-            response.setContentType(TEXT_PLAIN_CHARSET_UTF_8);
-            response.setHeader(CACHE_CONTROL, NO_CACHE);
-            response.setDateHeader(EXPIRES, 0);
-            response.setHeader(PRAGMA, NO_CACHE);
-            response.setStatus(HttpServletResponse.SC_OK);
-            writeCsrfTokenToResponse(csrfTokenOptional, response);
-            response.getWriter().flush();
         }
     }
 
@@ -93,17 +72,6 @@ public class WMCsrfAuthenticationSuccessHandler implements AuthenticationSuccess
         cookie.setPath(contextPath);
         cookie.setSecure(request.isSecure());
         response.addCookie(cookie);
-    }
-
-    private void writeCsrfTokenToResponse(Optional<CsrfToken> csrfTokenOptional, HttpServletResponse response) throws IOException {
-        if (csrfTokenOptional.isPresent()) {
-            CsrfToken csrfToken = csrfTokenOptional.get();
-            PrintWriter writer = response.getWriter();
-            LoginSuccessResponse loginSuccessResponse = new LoginSuccessResponse();
-            loginSuccessResponse.setWmCsrfToken(csrfToken.getToken());
-            writer.println(JSONUtils.toJSON(loginSuccessResponse));
-            writer.flush();
-        }
     }
 
     public void setCsrfTokenRepository(CsrfTokenRepository csrfTokenRepository) {

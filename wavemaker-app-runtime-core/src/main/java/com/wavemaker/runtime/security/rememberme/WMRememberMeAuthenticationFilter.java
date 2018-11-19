@@ -7,9 +7,11 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +25,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
 /**
@@ -93,8 +96,6 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
                     if (successHandler != null) {
                         successHandler.onAuthenticationSuccess(request, response,
                                 rememberMeAuth);
-
-                        return;
                     }
 
                 } catch (AuthenticationException authenticationException) {
@@ -108,15 +109,11 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
                     }
 
                     rememberMeServices.loginFail(request, response);
-                    isRememberMeAuthentication = false;
                     onUnsuccessfulAuthentication(request, response,
                             authenticationException);
                 }
             }
             chain.doFilter(request, response);
-            if (isRememberMeAuthentication) {
-                onSuccessfulAuthentication(request, response, rememberMeAuth);
-            }
         } else {
             if (logger.isDebugEnabled()) {
                 logger.debug("SecurityContextHolder not populated with remember-me token, as it already contained: '"
@@ -148,6 +145,15 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
     protected void onUnsuccessfulAuthentication(
             HttpServletRequest request,
             HttpServletResponse response, AuthenticationException failed) {
+        Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, null);
+        cookie.setMaxAge(0);
+        String contextPath = request.getContextPath();
+        if (StringUtils.isBlank(contextPath)) {
+            contextPath = "/";
+        }
+        cookie.setPath(contextPath);
+        cookie.setSecure(request.isSecure());
+        response.addCookie(cookie);
     }
 
     public RememberMeServices getRememberMeServices() {
