@@ -1444,6 +1444,9 @@ WM.module('wm.widgets.base', [])
                         "columnwidth": {"type": "list", "options": columnWidths},
                         "padding": {"type": "string", "widget": "box-model"}
                     },
+                    'wm.layouts.pagecontent.mobile': {
+                       "onPulltorefresh": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    },
                     'wm.layouts.row': {
                         "show": {"type": "boolean", "value": true}
                     },
@@ -1898,8 +1901,7 @@ WM.module('wm.widgets.base', [])
                         "paginationclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg", "btn-default", "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]}
                         },
                     "wm.list.mobile": {
-                        "templateview": {"options": [{'label': 'ListTemplate', 'value': 'listtemplate', 'widgettype': 'wm-listtemplate', 'isAdded': true }, {'label': 'LeftActionTemplate', 'value': 'leftactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'left'} } }, {'label': 'RightActionTemplate', 'value': 'rightactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'right'} } }], "widget": "add-widget-by-prop", "value": "listtemplate"},
-                        "onPulltorefresh": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "templateview": {"options": [{'label': 'ListTemplate', 'value': 'listtemplate', 'widgettype': 'wm-listtemplate', 'isAdded': true }, {'label': 'LeftActionTemplate', 'value': 'leftactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'left'} } }, {'label': 'RightActionTemplate', 'value': 'rightactiontemplate', 'widgettype': 'wm-list-action-template', 'defaults': {'wm-list-action-template': {'position': 'right'} } }], "widget": "add-widget-by-prop", "value": "listtemplate"}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
