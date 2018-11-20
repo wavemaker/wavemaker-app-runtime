@@ -26,7 +26,8 @@ WM.module('wm.widgets.advanced')
                     'controls'      : true,
                     'calendartype'  : true,
                     'view'          : true,
-                    'selectionmode' : true
+                    'selectionmode' : true,
+                    'active'        : true
                 },
                 defaultHeaderOptions = {
                     'left'  : 'prev next today',
@@ -217,6 +218,13 @@ WM.module('wm.widgets.advanced')
                                 $is.eventSources.push(eventSet);
                             });
                         }
+                    }
+                    break;
+                    case 'active':
+                    /*listening on 'active' property, as losing the properties during page switch*/
+                    /*if studio-mode, then update the events data fields(title, start, end, allday and classname) in property panel*/
+                    if ($is.widgetid && newVal) {
+                        WidgetUtilService.updatePropertyPanelOptions($is);
                     }
                     break;
                 case 'height':
