@@ -1,17 +1,14 @@
 package com.wavemaker.runtime.security.rememberme;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,12 +18,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
-
-import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
-import com.wavemaker.runtime.util.HttpRequestUtils;
 
 /**
  * @author Kishore Routhu on 6/2/18 4:47 PM.
@@ -125,18 +118,6 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
     }
 
     /**
-     * Called if a remember-me token is presented and successfully authenticated by the
-     * {@code RememberMeServices} {@code autoLogin} method and the
-     * {@code AuthenticationManager}.
-     */
-    protected void onSuccessfulAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response, Authentication authResult) {
-        Optional<CsrfToken> csrfTokenOptional = HttpRequestUtils.getCsrfToken(request);
-        HttpRequestUtils.addCsrfCookie(csrfTokenOptional, request, response);
-    }
-
-    /**
      * Called if the {@code AuthenticationManager} rejects the authentication object
      * returned from the {@code RememberMeServices} {@code autoLogin} method. This method
      * will not be called when no remember-me token is present in the request and
@@ -145,15 +126,6 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
     protected void onUnsuccessfulAuthentication(
             HttpServletRequest request,
             HttpServletResponse response, AuthenticationException failed) {
-        Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, null);
-        cookie.setMaxAge(0);
-        String contextPath = request.getContextPath();
-        if (StringUtils.isBlank(contextPath)) {
-            contextPath = "/";
-        }
-        cookie.setPath(contextPath);
-        cookie.setSecure(request.isSecure());
-        response.addCookie(cookie);
     }
 
     public RememberMeServices getRememberMeServices() {
@@ -173,7 +145,7 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
      * original request was for.
      *
      * @param successHandler the strategy to invoke immediately before returning from
-     * {@code doFilter()}.
+     *                       {@code doFilter()}.
      */
     public void setAuthenticationSuccessHandler(
             AuthenticationSuccessHandler successHandler) {
