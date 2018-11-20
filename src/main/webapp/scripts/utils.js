@@ -3103,7 +3103,7 @@ WM.module('wm.utils', [])
         }
 
         function prepareDocLinks(docLinks, studioVersion) {
-            var hostname = $window.location.hostname,
+            var hostname = $window.location.hostname, origin = $window.location.origin,
                 isWMO = hostname.indexOf('wavemakeronline.com') !== -1,
                 baseUrl;
 
