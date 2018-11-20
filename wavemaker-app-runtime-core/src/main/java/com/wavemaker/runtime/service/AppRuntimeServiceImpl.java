@@ -65,7 +65,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
             if (applicationProperties == null) {
                 InputStream inputStream = appFileSystem.getClasspathResourceStream(APP_PROPERTIES);
                 Properties properties = PropertiesFileUtils.loadFromXml(inputStream);
-                applicationProperties = new HashMap<>();
+                Map<String, Object> applicationProperties = new HashMap<>();
                 for (String s : uiProperties) {
                     applicationProperties.put(s, properties.get(s));
                 }
@@ -74,6 +74,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
                     applicationProperties.put("xsrf_header_name", getCsrfHeaderName());
                 }
                 applicationProperties.put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
+                this.applicationProperties = applicationProperties;  
             }
         }
         return new HashMap<>(applicationProperties);
