@@ -417,9 +417,7 @@ WM.module('wm.widgets.basic')
                     // hide searchon property for autocomplete and remove if this attr is on markup.
                     var isAutocomplete = newVal === 'autocomplete';
                     $is.widgetProps.searchon.show = !isAutocomplete;
-                    if (isAutocomplete) {
-                        $rs.$emit('set-markup-attr', $is.widgetid, {'searchon': ''});
-                    }
+                    $rs.$emit('set-markup-attr', $is.widgetid, {'searchon': isAutocomplete ? '' : 'typing'});
                     break;
                 case 'width':
                 case 'height':
