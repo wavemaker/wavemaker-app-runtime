@@ -43,7 +43,7 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof WMApplicationAuthenticationSuccessHandler) {
+        if (bean instanceof WMAuthenticationSuccessHandler) {
             customSuccessHandlerList.add((WMAuthenticationSuccessHandler) bean);
         }
         return bean;
