@@ -831,6 +831,11 @@ WM.module('wm.prefabs')
                 return errKey === 'com.wavemaker.platform.project$DependentPrefabExistWithDifferentVersion';
             }
 
+            function isCircularDependencyError(errObj) {
+                var errKey = _.get(errObj, 'errors.error[0].messageKey');
+                return errKey === 'com.wavemaker.studio.prefab.circularDependencyNotAllowed';
+            }
+
             /**
              *
              * publishes the prefab to the workspace
@@ -1065,6 +1070,7 @@ WM.module('wm.prefabs')
              * @param {prefabName} name of the prefab
              */
             this.getScriptOf = getScriptOf;
+
             /**
              * @ngdoc function
              * @name PrefabManager#isPrefabVersionConflictError
@@ -1074,5 +1080,15 @@ WM.module('wm.prefabs')
              * @param {prefabName} name of the prefab
              */
             this.isPrefabVersionConflictError = isPrefabVersionConflictError;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#isCircularDependencyError
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * returns true if the error message is related to the prefab circular dependency.
+             * @param {prefabName} name of the prefab
+             */
+            this.isCircularDependencyError = isCircularDependencyError;
         }
     ]);
