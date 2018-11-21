@@ -33,5 +33,6 @@ public class SAMLConstants {
 
     public static final String SAML_IDP_METADATA_BACKUP_LOCATION = "/saml/metadata/idpMetadata.xml";
 
+    public static final String SAML_CREDENTIALS = "SAML_CREDENTIALS";
 
 }
