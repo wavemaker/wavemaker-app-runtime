@@ -15,6 +15,7 @@ import com.wavemaker.runtime.data.filter.QueryInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryFunctionInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryGrammarInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
 import com.wavemaker.runtime.data.periods.PeriodClause;
 
 /**
@@ -72,7 +73,7 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
         return (T) this;
     }
 
-    protected String generateFromClause(final Map<String, Object> parameters, boolean updateDelete) {
+    protected String generateFromClause(final Map<String, WMQueryParamInfo> parameters, boolean updateDelete) {
         final StringBuilder builder = new StringBuilder();
 
         if (!updateDelete) {
@@ -95,7 +96,7 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
         return builder.toString();
     }
 
-    protected String generateWhereClause(final Map<String, Object> parameters) {
+    protected String generateWhereClause(final Map<String, WMQueryParamInfo> parameters) {
         final StringBuilder builder = new StringBuilder();
 
         if (!filterConditions.isEmpty() || StringUtils.isNotBlank(filter)) {
@@ -103,7 +104,7 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
 
             builder.append(filterConditions.entrySet().stream()
                     .map(entry -> new Tuple.Two<>(entry, "wm_filter_" + entry.getKey()))
-                    .peek(tuple -> parameters.put(tuple.v2, tuple.v1.getValue()))
+                    .peek(tuple -> parameters.put(tuple.v2, new WMQueryParamInfo(tuple.v1.getValue())))
                     .map(tuple -> tuple.v1.getKey() + " = :" + tuple.v2)
                     .collect(Collectors.joining(" and ", " ", " ")));
 

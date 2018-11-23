@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -15,7 +16,7 @@ public class DeleteQueryBuilder extends QueryBuilder<DeleteQueryBuilder> {
     }
 
     public WMQueryInfo build() {
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, WMQueryParamInfo> parameters = new HashMap<>();
 
         final String query = "delete " +
                 generateFromClause(parameters, true) +

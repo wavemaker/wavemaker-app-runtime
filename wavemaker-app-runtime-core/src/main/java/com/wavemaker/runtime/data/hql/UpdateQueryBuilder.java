@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -25,7 +26,7 @@ public class UpdateQueryBuilder extends QueryBuilder<UpdateQueryBuilder> {
     }
 
     public WMQueryInfo build() {
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, WMQueryParamInfo> parameters = new HashMap<>();
         String query = "update " +
                 generateFromClause(parameters, true) +
                 generateSetClause(parameters) +
@@ -34,10 +35,10 @@ public class UpdateQueryBuilder extends QueryBuilder<UpdateQueryBuilder> {
         return new WMQueryInfo(query, parameters);
     }
 
-    private String generateSetClause(Map<String, Object> parameters) {
+    private String generateSetClause(Map<String, WMQueryParamInfo> parameters) {
         return (setters.entrySet().stream()
                 .map(entry -> new Tuple.Two<>(entry, "wm_setter_" + entry.getKey()))
-                .peek(tuple -> parameters.put(tuple.v2, tuple.v1.getValue()))
+                .peek(tuple -> parameters.put(tuple.v2, new WMQueryParamInfo(tuple.v1.getValue())))
                 .map(tuple -> tuple.v1.getKey() + " = :" + tuple.v2)
                 .collect(Collectors.joining(", ", " set ", " ")));
     }

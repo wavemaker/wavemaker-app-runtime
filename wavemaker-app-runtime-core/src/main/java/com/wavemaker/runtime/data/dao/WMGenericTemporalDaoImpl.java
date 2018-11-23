@@ -24,6 +24,7 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.annotations.TableTemporal;
 import com.wavemaker.runtime.data.dao.generators.TemporalQueryGenerator;
+import com.wavemaker.runtime.data.dao.query.types.RuntimeParameterTypeResolver;
 import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
@@ -180,7 +181,8 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
     private int executeUpdateDeleteQuery(final WMQueryInfo queryInfo) {
         return getHistoryTemplate().execute(session -> {
             final Query<?> query = session.createQuery(queryInfo.getQuery());
-            ParametersConfigurator.configure(query, queryInfo.getParameters());
+            ParametersConfigurator.configure(query, queryInfo.getParameterValueMap(),
+                    new RuntimeParameterTypeResolver(queryInfo.getParameters(), session.getTypeHelper()));
             return query.executeUpdate();
         });
     }

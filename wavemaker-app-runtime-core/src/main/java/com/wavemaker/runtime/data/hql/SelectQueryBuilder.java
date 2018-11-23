@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
 import com.wavemaker.runtime.data.model.Aggregation;
 import com.wavemaker.runtime.data.model.AggregationInfo;
 
@@ -63,7 +64,7 @@ public class SelectQueryBuilder extends QueryBuilder<SelectQueryBuilder> {
 
     public WMQueryInfo build() {
         StringBuilder builder = new StringBuilder();
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, WMQueryParamInfo> parameters = new HashMap<>();
 
         final String projections = generateProjections();
 
@@ -90,7 +91,7 @@ public class SelectQueryBuilder extends QueryBuilder<SelectQueryBuilder> {
 
         // hql doesn't support group by in combination of group by
         if (CollectionUtils.isEmpty(groupByFields)) {
-            Map<String, Object> parameters = new HashMap<>();
+            Map<String, WMQueryParamInfo> parameters = new HashMap<>();
 
             final String countQuery = "select count(*) " +
                     generateFromClause(parameters, false) +

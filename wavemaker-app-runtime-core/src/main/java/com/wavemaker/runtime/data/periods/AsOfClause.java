@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.wavemaker.runtime.data.annotations.TableTemporal;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -25,6 +26,6 @@ public class AsOfClause implements PeriodClause {
         String variableName = "wm_" + type.asHqlKeyword() + "_as_of_timestamp";
         final String hql = type.asHqlKeyword()
                 + " as of :" + variableName;
-        return new WMQueryInfo(hql, Collections.singletonMap(variableName, timestamp));
+        return new WMQueryInfo(hql, Collections.singletonMap(variableName, new WMQueryParamInfo(timestamp)));
     }
 }

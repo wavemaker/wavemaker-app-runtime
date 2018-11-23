@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.wavemaker.runtime.data.annotations.TableTemporal;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -30,9 +31,9 @@ public class FromToClause implements PeriodClause {
         String var2Name = "wm_" + type.asHqlKeyword() + "_to_timestamp";
         String hql = type.asHqlKeyword() + " from :" + var1Name + " to :" + var2Name;
 
-        Map<String, Object> parameters = new HashMap<>(2);
-        parameters.put(var1Name, from);
-        parameters.put(var2Name, to);
+        Map<String, WMQueryParamInfo> parameters = new HashMap<>(2);
+        parameters.put(var1Name, new WMQueryParamInfo(from));
+        parameters.put(var2Name, new WMQueryParamInfo(to));
 
         return new WMQueryInfo(hql, parameters);
     }
