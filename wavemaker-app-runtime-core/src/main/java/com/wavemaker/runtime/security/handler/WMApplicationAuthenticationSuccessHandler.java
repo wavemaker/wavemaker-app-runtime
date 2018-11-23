@@ -8,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.security.core.Authentication;
@@ -22,8 +24,10 @@ import com.wavemaker.runtime.security.WMAuthentication;
  */
 public class WMApplicationAuthenticationSuccessHandler implements AuthenticationSuccessHandler, BeanPostProcessor {
 
+    private static final Logger logger = LoggerFactory.getLogger(WMApplicationAuthenticationSuccessHandler.class);
     private List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
     private List<WMAuthenticationSuccessHandler> customSuccessHandlerList = new ArrayList<>();
+    private WMAuthenticationRedirectionHandler authenticationSuccessRedirectionHandler;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
@@ -32,6 +36,7 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
         try {
             invokeDefaultAuthenticationSuccessHandlers(request, response, authentication);
             invokeCustomWMAuthenticationSuccessHandler(request, response, (WMAuthentication) authentication);
+            invokeRedirectionHandler(request, response, (WMAuthentication) authentication);
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
             if (e instanceof RuntimeException) {
@@ -46,20 +51,34 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
         if (bean instanceof WMAuthenticationSuccessHandler) {
             customSuccessHandlerList.add((WMAuthenticationSuccessHandler) bean);
         }
+        if (bean instanceof WMAuthenticationRedirectionHandler) {
+            authenticationSuccessRedirectionHandler = (WMAuthenticationRedirectionHandler) bean;
+        }
         return bean;
     }
 
     private void invokeCustomWMAuthenticationSuccessHandler(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
+        logger.info("Invoking CustomAuthenticationSuccessHandlers");
         for (WMAuthenticationSuccessHandler authenticationSuccessHandler : customSuccessHandlerList) {
             authenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
         }
     }
 
     private void invokeDefaultAuthenticationSuccessHandlers(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        logger.info("Invoking DefaultAuthenticationSuccessHandlers");
         for (AuthenticationSuccessHandler authenticationSuccessHandler : defaultSuccessHandlerList) {
             authenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
         }
     }
+
+    private void invokeRedirectionHandler(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
+        logger.info("Invoking authenticationSuccessRedirectionHandler");
+        if (authenticationSuccessRedirectionHandler == null) {
+            authenticationSuccessRedirectionHandler = new WMAuthenticationSuccessRedirectionHandler();
+        }
+        authenticationSuccessRedirectionHandler.onAuthenticationSuccess(request, response, authentication);
+    }
+
 
     public void setDefaultSuccessHandlerList(List<AuthenticationSuccessHandler> defaultSuccessHandlerList) {
         this.defaultSuccessHandlerList = defaultSuccessHandlerList;

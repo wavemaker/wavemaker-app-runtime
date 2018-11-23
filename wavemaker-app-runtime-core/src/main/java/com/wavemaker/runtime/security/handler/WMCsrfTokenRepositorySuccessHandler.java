@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -37,6 +39,8 @@ import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
  * Created by srujant on 31/10/18.
  */
 public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSuccessHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(WMCsrfTokenRepositorySuccessHandler.class);
 
     private CsrfTokenRepository csrfTokenRepository;
 
@@ -63,6 +67,7 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
     }
 
     private void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletRequest request, HttpServletResponse response) {
+        logger.info("Adding CsrfCookie");
         CsrfToken csrfToken = csrfTokenOptional.get();
         Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
         String contextPath = request.getContextPath();

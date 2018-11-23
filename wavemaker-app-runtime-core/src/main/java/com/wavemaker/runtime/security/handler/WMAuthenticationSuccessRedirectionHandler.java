@@ -25,16 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
+import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
-public class WMAuthenticationSuccessRedirectionHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-        if (!HttpRequestUtils.isAjaxRequest(request)) {
-            super.onAuthenticationSuccess(request, response, authentication);
-        }
-    }
+public class WMAuthenticationSuccessRedirectionHandler extends SavedRequestAwareAuthenticationSuccessHandler implements WMAuthenticationRedirectionHandler {
 
     @Override
     protected String determineTargetUrl(final HttpServletRequest request, final HttpServletResponse response) {
@@ -45,6 +39,14 @@ public class WMAuthenticationSuccessRedirectionHandler extends SavedRequestAware
             targetUrl += "#" + redirectPage;
         }
         return targetUrl;
+    }
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
+        Authentication sourceAuthentication = authentication.getAuthenticationSource();
+        if (!HttpRequestUtils.isAjaxRequest(request)) {
+            super.onAuthenticationSuccess(request, response, sourceAuthentication);
+        }
     }
 }
 
