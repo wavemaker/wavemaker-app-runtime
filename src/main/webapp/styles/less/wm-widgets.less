@@ -845,6 +845,15 @@ app-page-outlet.page-load-in-progress {
     }
   }
 }
+
+.app-textbox[type=number].step-hidden {
+  -moz-appearance:textfield;
+  &::-webkit-inner-spin-button, &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
 .app-textbox, .app-textarea, .app-select {
   max-width: 100%;
   position: relative;
