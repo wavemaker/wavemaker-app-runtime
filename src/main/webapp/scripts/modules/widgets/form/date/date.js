@@ -48,8 +48,9 @@ WM.module('wm.widgets.form')
         'CONSTANTS',
         'Utils',
         'DateTimeWidgetUtils',
+        'AppDefaults',
 
-        function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS, Utils, DateTimeWidgetUtils) {
+        function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS, Utils, DateTimeWidgetUtils, AppDefaults) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
@@ -319,6 +320,8 @@ WM.module('wm.widgets.form')
                                 }
                             };
 
+                        }  else if (!attrs.datepattern) {
+                            $is.datepattern = AppDefaults.get('dateFormat');
                         }
                     }
                 }
