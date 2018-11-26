@@ -12,7 +12,6 @@ import com.wavemaker.runtime.data.dao.callbacks.QueryCallback;
 import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
 import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
-import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.hql.SelectQueryBuilder;
 
@@ -29,8 +28,7 @@ public class HqlQueryHelper {
         final WMQueryInfo queryInfo = builder.build();
 
         final RuntimeQueryProvider<R> queryProvider = RuntimeQueryProvider.from(queryInfo, returnType);
-        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo.getParameters(),
-                new HqlParameterTypeResolver());
+        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo, template.getSessionFactory().getTypeHelper());
 
         return template
                 .execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider, pageable));
@@ -43,8 +41,7 @@ public class HqlQueryHelper {
 
         final RuntimeQueryProvider<R> queryProvider = RuntimeQueryProvider.from(queryInfo, returnType);
 
-        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo.getParameters(),
-                new HqlParameterTypeResolver());
+        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo, template.getSessionFactory().getTypeHelper());
 
         return template.execute(new QueryCallback<>(queryProvider, parametersProvider));
     }

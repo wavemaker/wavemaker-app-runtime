@@ -26,7 +26,7 @@ public class HqlParser {
         HqlParserContext hqlParserContext = new HqlParserContext(resolver);
         ParseTree rootNode = getRootNode(expression);
         parse(rootNode, hqlParserContext);
-        return new WMQueryInfo(hqlParserContext.getQueryBuilder().toString(), hqlParserContext.getParameters());
+        return hqlParserContext.toWMQueryInfo();
     }
 
     private ParseTree getRootNode(String expression) {

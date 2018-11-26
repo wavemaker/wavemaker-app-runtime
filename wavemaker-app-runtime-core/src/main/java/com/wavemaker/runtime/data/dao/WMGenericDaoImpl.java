@@ -48,7 +48,6 @@ import com.wavemaker.runtime.data.dao.generators.SimpleEntitiyQueryGenerator;
 import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
 import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
-import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
 import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.dao.validators.SortValidator;
@@ -208,8 +207,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     public long count(final String query) {
         return getTemplate().execute(session -> {
             final WMQueryInfo queryInfo = queryGenerator.searchByQuery(query).build();
-            return QueryHelper
-                    .getQueryResultCount(queryInfo.getQuery(), queryInfo.getParameters(), false, getTemplate());
+            return QueryHelper.getQueryResultCount(queryInfo, false, getTemplate());
         });
     }
 
@@ -242,10 +240,8 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
         getTemplate().execute(session -> {
             final WMQueryInfo queryInfo = queryGenerator.searchByQuery(options.getQuery()).build();
-            final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider
-                    .from(queryInfo, entityClass);
-            ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo.getParameters(), new
-                    HqlParameterTypeResolver());
+            final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider.from(queryInfo, entityClass);
+            ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo, session.getTypeHelper());
 
             final Query<E> hqlQuery = queryProvider.getQuery(session, validPageable, provider);
             QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());

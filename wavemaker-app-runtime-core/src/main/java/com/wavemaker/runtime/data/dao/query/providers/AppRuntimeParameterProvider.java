@@ -4,10 +4,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.hibernate.Session;
+import org.hibernate.TypeHelper;
 import org.hibernate.type.Type;
 
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
+import com.wavemaker.runtime.data.dao.query.types.RuntimeParameterTypeResolver;
+import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.replacers.providers.VariableType;
 
 /**
@@ -22,6 +25,10 @@ public class AppRuntimeParameterProvider implements ParametersProvider {
     public AppRuntimeParameterProvider(final Map<String, Object> parameters, final ParameterTypeResolver resolver) {
         this.parameters = parameters;
         this.resolver = resolver;
+    }
+
+    public AppRuntimeParameterProvider(WMQueryInfo queryInfo, TypeHelper typeHelper) {
+        this(queryInfo.getParameterValueMap(), new RuntimeParameterTypeResolver(queryInfo.getParameters(), typeHelper));
     }
 
     @Override

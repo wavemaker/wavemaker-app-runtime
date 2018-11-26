@@ -23,12 +23,11 @@ public class HqlExpressionParser {
             HqlFilterParser.NULL,
             HqlFilterParser.BOOLEAN_VALUE
     );
-
     private static final List<Class<?>> nullContexts = Arrays.asList(
             HqlFilterParser.IsNullContext.class,
             HqlFilterParser.IsNotNullContext.class
     );
-
+    private static final String PARAMETER_PREFIX = "wm_parsed_param";
     private ParseTree condition;
     private HqlFilterParser.KeyContext keyContext;
 
@@ -63,10 +62,10 @@ public class HqlExpressionParser {
 
                     if (!QueryParserConstants.NULL.equalsIgnoreCase(value)) {
                         value = value.replaceAll("^'|'$", ""); // Remove wrapping single quotes.
-                        Object objectValue = keyJavaType.fromString(value);
-                        String placeHolder = getNextPlaceholder(hqlParserContext);
-                        hqlParserContext.getParameters().put(placeHolder, objectValue);
-                        hqlParserContext.appendQuery(':' + placeHolder);
+                        String placeHolderKey = getNextPlaceHolderKey(hqlParserContext);
+
+                        hqlParserContext.addParameter(placeHolderKey, value, keyJavaType);
+                        hqlParserContext.appendQuery(':' + placeHolderKey);
                     } else {
                         hqlParserContext.appendQuery(value);
                     }
@@ -79,8 +78,8 @@ public class HqlExpressionParser {
         }
     }
 
-    private String getNextPlaceholder(HqlParserContext hqlParserContext) {
-        return "wm_parsed_param" + hqlParserContext.getParameters().size();
+    private String getNextPlaceHolderKey(HqlParserContext hqlParserContext) {
+        return PARAMETER_PREFIX + hqlParserContext.getParameters().size();
     }
 
 

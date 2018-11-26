@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 
 import com.wavemaker.runtime.data.exception.HqlGrammarException;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
 import com.wavemaker.runtime.data.filter.parser.utils.dataprovider.HqlParserDataProvider;
 import com.wavemaker.runtime.data.filter.parser.utils.models.Model;
 
@@ -24,16 +25,16 @@ public class HqlParserTest extends HqlParserDataProvider {
 
 
     @Test(dataProvider = "dataTypeQueriesProvider")
-    public void comparisionAndDataTypeCheck(Class dateType, List<String> queries) {
+    public void comparisionAndDataTypeCheck(Class dateType, List<String> queries) throws ClassNotFoundException {
         logger.debug("Testing for the Data type {}.", dateType);
         HqlFilterPropertyResolver propertyResolver = new HqlFilterPropertyResolverImpl(Model.class);
         assert queries != null;
 
         for (String query : queries) {
             WMQueryInfo wmQueryInfo = HqlParser.getInstance().parse(query, propertyResolver);
-            for (Object object : wmQueryInfo.getParameters().values()) {
-                Assert.assertTrue(dateType.isInstance(object),
-                        "'" + object + "' in '" + query + "' could not be converted to " + dateType);
+            for (WMQueryParamInfo wmQueryParamInfo : wmQueryInfo.getParameters().values()) {
+                Assert.assertSame(dateType, Class.forName(wmQueryParamInfo.getJavaType().getClassName()),
+                        "'" + wmQueryParamInfo + "' in '" + query + "' could not be converted to " + dateType);
             }
         }
     }

@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import com.wavemaker.runtime.data.dao.query.types.RuntimeParameterTypeResolver;
+import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
@@ -42,22 +44,20 @@ import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 public class QueryHelper {
 
-    private QueryHelper(){}
-
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryHelper.class);
-
     private static final String EMPTY_SPACE = " ";
     private static final String ORDER_PROPERTY_SEPARATOR = ",";
     private static final String BACK_TICK = "`";
-
     private static final String COUNT_QUERY_TEMPLATE = "select count(*) from ({0}) wmTempTable";
     private static final String ORDER_BY_QUERY_TEMPLATE = "select * from ({0}) wmTempTable";
-
     private static final String SELECT_COUNT1 = "select count(*) ";
     private static final String FROM = " FROM ";
     private static final String FROM_HQL = "FROM ";//For a Select (*) hibernate query.
     private static final String GROUP_BY = " group by ";
     private static final String ORDER_BY = " order by ";
+
+    private QueryHelper() {
+    }
 
     public static String applySortingForNativeQuery(
             String queryString, Sort sort, WMResultTransformer transformer, Dialect dialect) {
@@ -138,21 +138,19 @@ public class QueryHelper {
     }
 
 
-    public static Long getQueryResultCount(
-            String queryStr, Map<String, Object> params, boolean isNative, HibernateTemplate template) {
-        return getCountFromCountStringQuery(queryStr, params, isNative, template);
+    public static Long getQueryResultCount(WMQueryInfo wmQueryInfo, boolean isNative, HibernateTemplate template) {
+        return getCountFromCountStringQuery(wmQueryInfo, isNative, template);
     }
 
-    private static Long getCountFromCountStringQuery(
-            String queryStr, final Map<String, Object> params, final boolean isNative,
-            final HibernateTemplate template) {
+    private static Long getCountFromCountStringQuery(WMQueryInfo wmQueryInfo, final boolean isNative,
+                                                     final HibernateTemplate template) {
         try {
-            final String strQuery = getCountQuery(queryStr, isNative);
+            final String strQuery = getCountQuery(wmQueryInfo.getQuery(), isNative);
             if (strQuery == null) {
                 return maxCount();
             }
 
-            return template.execute(session -> executeCountQuery(session, isNative, strQuery, params));
+            return template.execute(session -> executeCountQuery(session, isNative, strQuery, wmQueryInfo));
         } catch (Exception ex) {
             LOGGER.error("Count query operation failed", ex);
             return maxCount();
@@ -160,9 +158,10 @@ public class QueryHelper {
     }
 
     public static Long executeCountQuery(
-            final Session session, final boolean isNative, final String strQuery, final Map<String, Object> params) {
+            final Session session, final boolean isNative, final String strQuery, final WMQueryInfo wmQueryInfo) {
         Query<Integer> query = isNative ? session.createNativeQuery(strQuery) : session.createQuery(strQuery);
-        ParametersConfigurator.configure(query, params);
+        ParametersConfigurator.configure(query, wmQueryInfo.getParameterValueMap(),
+                new RuntimeParameterTypeResolver(wmQueryInfo.getParameters(), session.getTypeHelper()));
         Object result = query.uniqueResult();
         return result == null ? 0 : ((Number) result).longValue();
     }
