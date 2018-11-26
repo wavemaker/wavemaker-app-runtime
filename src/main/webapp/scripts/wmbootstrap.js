@@ -937,7 +937,6 @@ Application
             'wmSpinner',
             'MetaDataFactory',
             'DeviceService',
-            'AppDefaults',
             '$location',
 
             //do not remove the below lines
@@ -951,14 +950,11 @@ Application
             'TimerVariableService',
             '$websocketvariable',
 
-            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory, DeviceService, AppDefaults, $location) {
+            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory, DeviceService, $location) {
                 'use strict';
 
                 var projectID      = ProjectService.getId(), // ProjectID will always be at the same index in the URL
                     appProperties  = Utils.getClonedObject(_WM_APP_PROPERTIES),
-                    dateFormat,
-                    timeFormat,
-                    dateTimeFormat,
                     locationQueryParams = $location.search(),
                     stateParams = locationQueryParams.state;
 
@@ -970,18 +966,6 @@ Application
 
                 /* Name-spaced Utils Object on rootScope for the developer to access App related functionality */
                 $rs.AppUtils                = {};
-
-
-                dateFormat = appProperties.dateFormat;
-                timeFormat = appProperties.timeFormat;
-
-                dateTimeFormat = (dateFormat && timeFormat) ? dateFormat + ' ' + timeFormat : undefined;
-
-                AppDefaults.set({
-                    'dateFormat'    : dateFormat,
-                    'timeFormat'    : timeFormat,
-                    'dateTimeFormat': dateTimeFormat
-                });
 
                 $rs.project = {
                     'id'          : projectID,
