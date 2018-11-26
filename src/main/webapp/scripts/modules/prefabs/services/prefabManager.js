@@ -368,6 +368,7 @@ WM.module('wm.prefabs')
              */
             function setWorkspacePrefabs(prefabs) {
                 workspacePrefabs = prefabs;
+                setVersionMismatchMessages();
                 prepareWorkspacePrefabsNamePropertiesMap();
             }
 
