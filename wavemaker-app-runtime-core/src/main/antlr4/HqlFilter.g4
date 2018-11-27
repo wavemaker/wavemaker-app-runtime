@@ -20,8 +20,8 @@ expression : key condition;
 
 condition : (comparison | between | in | notIn | like | notLike | isNull | isNotNull);
 
-comparison :  OPERATOR (string | BOOLEAN_VALUE | NUMBER_VALUE | NULL);
-between : BETWEEN ((NUMBER_VALUE AND NUMBER_VALUE) | (string AND string));
+comparison :  OPERATOR (string | BOOLEAN_VALUE | number | NULL | function);
+between : BETWEEN ((number AND number) | (string AND string));
 in : IN BRAC_OPEN (commaSeparatedStrings |  commaSeparatedNumbers) BRAC_CLOSE;
 notIn : NOT IN BRAC_OPEN (commaSeparatedStrings |  commaSeparatedNumbers) BRAC_CLOSE;
 like : LIKE string ;
@@ -35,8 +35,10 @@ commaSeparatedNumbers : NUMBER_VALUE (COMMA NUMBER_VALUE)*;
 
 
 //Handling hql functions
-key : LOWER BRAC_OPEN KEY BRAC_CLOSE |  KEY;
-string : LOWER BRAC_OPEN STRING_VALUE BRAC_CLOSE |  STRING_VALUE;
+key : FUNCTION BRAC_OPEN KEY BRAC_CLOSE |  KEY;
+string : FUNCTION BRAC_OPEN STRING_VALUE BRAC_CLOSE |  STRING_VALUE;
+number : FUNCTION BRAC_OPEN NUMBER_VALUE BRAC_CLOSE |  NUMBER_VALUE;
+function : FUNCTION BRAC_OPEN KEY? BRAC_CLOSE;
 
 /*
  * Lexer Rules
@@ -73,7 +75,7 @@ fragment COLON : ':';
 fragment ESCAPE_QUOTE : ( '\'' | '\\' )  '\'' ; // \' or '' (escape quote)
 fragment ALL_BUT_QUOTE : ~('\''); // all the charecters except '
 fragment NUMBER : ('0'..'9');
-fragment ALPHABET : ('a'..'z'|'A'..'Z');
+fragment ALPHABET : ('_'|'a'..'z'|'A'..'Z');
 fragment ALPHA_NUMERIC : ( ALPHABET | NUMBER );
 fragment STRING : (ESCAPE_QUOTE|ALL_BUT_QUOTE)* ; // all the content which can be inside singlequotes, this includes escaped singlequotes.
 fragment EQ : '=';
@@ -82,6 +84,7 @@ fragment LT : '<';
 fragment LE : '<=';
 fragment GT : '>';
 fragment GE : '>=';
+fragment US : '_';
 
 WHITESPACE : ' ' -> skip ;
 
@@ -101,7 +104,37 @@ OR : O R ;
 IS : I S ;
 NOT : N O T ;
 NULL : N U L L ;
-LOWER : L O W E R;
+
+//Hql Functions
+FUNCTION : 'current_date' |
+             'current_time' |
+             'current_timestamp' |
+//             'substring' |
+//             'trim' |
+//             'upper' |
+//             'length' |
+//             'locate' |
+//             'abs' |
+//             'sqrt' |
+//             'bit_length' |
+//             'mod' |
+//             'coalesce' |
+//             'nullif' |
+//             'str' |
+//             'cast' |
+//             'extract' |
+//             'index' |
+//             'size' |
+//             'minelement' |
+//             'maxelement' |
+//             'minindex' |
+//             'maxindex' |
+//             'elements' |
+//             'sign' |
+//             'trunc' |
+//             'rtrim' |
+//             'sin' |
+             'lower';
 
 
 OPERATOR : EQ | NE |  GT | LT | GE | LE ;

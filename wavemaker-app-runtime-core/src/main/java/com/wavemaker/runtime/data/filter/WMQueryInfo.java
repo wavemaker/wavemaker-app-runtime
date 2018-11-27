@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.wavemaker.runtime.data.model.JavaType;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 29/12/16
@@ -63,7 +65,14 @@ public class WMQueryInfo {
     }
 
     public Map<String, Object> getParameterValueMap() {
-        return parameters.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, m -> m.getValue().getValue()));
+        return parameters.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+                m -> {
+                    WMQueryParamInfo paramInfo = m.getValue();
+                    JavaType javaType = paramInfo.getJavaType();
+                    return javaType.fromString(String.valueOf(paramInfo.getValue()));
+
+                })
+        );
     }
 
     @Override
