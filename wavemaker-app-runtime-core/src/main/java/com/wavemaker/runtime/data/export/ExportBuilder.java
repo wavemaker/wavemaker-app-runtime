@@ -26,8 +26,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellUtil;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
@@ -58,9 +58,9 @@ public class ExportBuilder {
 
     public void build(OutputStream outputStream) {
         try {
-            try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
                 initCellStyles(workbook);
-                XSSFSheet spreadSheet = workbook.createSheet("Data");
+                SXSSFSheet spreadSheet = workbook.createSheet("Data");
                 fillSheet(spreadSheet);
                 exportWorkbook(workbook, options.getExportType(), outputStream);
             }
