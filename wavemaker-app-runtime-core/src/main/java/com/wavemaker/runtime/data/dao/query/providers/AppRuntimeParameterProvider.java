@@ -10,6 +10,7 @@ import org.hibernate.type.Type;
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
 import com.wavemaker.runtime.data.dao.query.types.RuntimeParameterTypeResolver;
+import com.wavemaker.runtime.data.dao.query.types.wmql.WMQLTypeHelper;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.replacers.providers.VariableType;
 
@@ -27,8 +28,8 @@ public class AppRuntimeParameterProvider implements ParametersProvider {
         this.resolver = resolver;
     }
 
-    public AppRuntimeParameterProvider(WMQueryInfo queryInfo, TypeHelper typeHelper) {
-        this(queryInfo.getParameterValueMap(), new RuntimeParameterTypeResolver(queryInfo.getParameters(), typeHelper));
+    public AppRuntimeParameterProvider(WMQueryInfo queryInfo, TypeHelper typeHelper, WMQLTypeHelper wmqlTypeHelper) {
+        this(queryInfo.getParameterValueMap(wmqlTypeHelper), new RuntimeParameterTypeResolver(queryInfo.getParameters(), typeHelper, wmqlTypeHelper));
     }
 
     @Override

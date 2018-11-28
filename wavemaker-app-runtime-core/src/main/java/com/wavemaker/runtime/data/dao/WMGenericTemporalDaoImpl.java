@@ -96,7 +96,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
         periodClauses.forEach(builder::withPeriodClause);
 
         final Page<TemporalHistoryEntity<E>> responsePage = HqlQueryHelper
-                .execute(getHistoryTemplate(), historyClass, builder, validPageable);
+                .execute(getHistoryTemplate(), historyClass, builder, validPageable, getWMQLTypeHelper());
 
         return responsePage.map(TemporalHistoryEntity::asParent);
     }
@@ -113,7 +113,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
         periodClauses.forEach(builder::withPeriodClause);
 
         final Page<TemporalHistoryEntity<E>> responsePage = HqlQueryHelper
-                .execute(getHistoryTemplate(), historyClass, builder, validPageable);
+                .execute(getHistoryTemplate(), historyClass, builder, validPageable, getWMQLTypeHelper());
 
         return responsePage.map(TemporalHistoryEntity::asParent);
     }
@@ -181,8 +181,8 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
     private int executeUpdateDeleteQuery(final WMQueryInfo queryInfo) {
         return getHistoryTemplate().execute(session -> {
             final Query<?> query = session.createQuery(queryInfo.getQuery());
-            ParametersConfigurator.configure(query, queryInfo.getParameterValueMap(),
-                    new RuntimeParameterTypeResolver(queryInfo.getParameters(), session.getTypeHelper()));
+            ParametersConfigurator.configure(query, queryInfo.getParameterValueMap(getWMQLTypeHelper()),
+                    new RuntimeParameterTypeResolver(queryInfo.getParameters(), session.getTypeHelper(), getWMQLTypeHelper()));
             return query.executeUpdate();
         });
     }

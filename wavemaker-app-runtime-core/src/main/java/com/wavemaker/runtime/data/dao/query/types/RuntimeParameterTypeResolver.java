@@ -10,7 +10,6 @@ import org.hibernate.Session;
 import org.hibernate.TypeHelper;
 import org.hibernate.type.Type;
 
-import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.dao.query.types.wmql.WMQLTypeHelper;
 import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
 import com.wavemaker.runtime.data.model.JavaType;
@@ -31,14 +30,16 @@ public class RuntimeParameterTypeResolver implements ParameterTypeResolver {
                         queryParameter -> typeHelper.heuristicType(queryParameter.getType().getClassName())));
     }
 
-    public RuntimeParameterTypeResolver(Map<String, WMQueryParamInfo> parameters, TypeHelper typeHelper) {
+    public RuntimeParameterTypeResolver(Map<String, WMQueryParamInfo> parameters, TypeHelper typeHelper, WMQLTypeHelper wmqlTypeHelper) {
         typesMap = new HashMap<>();
         for (Map.Entry<String, WMQueryParamInfo> queryParamInfoEntry : parameters.entrySet()) {
             String key = queryParamInfoEntry.getKey();
             JavaType javaType = queryParamInfoEntry.getValue().getJavaType();
 
             if (javaType != null) {
-                javaType = getDBSpecificJavaType(javaType);
+                if (wmqlTypeHelper != null) {
+                    javaType = wmqlTypeHelper.aliasFor(javaType);
+                }
                 typesMap.put(key, typeHelper.heuristicType(javaType.getClassName()));
             }
 
@@ -47,15 +48,6 @@ public class RuntimeParameterTypeResolver implements ParameterTypeResolver {
 
     public static RuntimeParameterTypeResolver from(Session session, RuntimeQuery query) {
         return new RuntimeParameterTypeResolver(query.getParameters(), session.getSessionFactory().getTypeHelper());
-    }
-
-    private JavaType getDBSpecificJavaType(JavaType javaType) {
-        WMQLTypeHelper typeHelper = WMAppContext.getInstance().getSpringBean(WMQLTypeHelper.class);
-
-        if (typeHelper != null) {
-            javaType = typeHelper.aliasFor(javaType);
-        }
-        return javaType;
     }
 
     @Override

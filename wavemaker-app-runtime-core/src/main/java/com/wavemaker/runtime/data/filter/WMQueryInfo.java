@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.wavemaker.runtime.data.dao.query.types.wmql.WMQLTypeHelper;
 import com.wavemaker.runtime.data.model.JavaType;
 
 /**
@@ -64,11 +65,11 @@ public class WMQueryInfo {
         parameters.put(key, wmQueryParamInfo);
     }
 
-    public Map<String, Object> getParameterValueMap() {
+    public Map<String, Object> getParameterValueMap(WMQLTypeHelper wmqlTypeHelper) {
         return parameters.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
                 m -> {
                     WMQueryParamInfo paramInfo = m.getValue();
-                    JavaType javaType = paramInfo.getJavaType();
+                    JavaType javaType = wmqlTypeHelper.aliasFor(paramInfo.getJavaType());
                     return javaType.fromString(String.valueOf(paramInfo.getValue()));
 
                 })

@@ -48,6 +48,7 @@ import com.wavemaker.runtime.data.dao.generators.SimpleEntitiyQueryGenerator;
 import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
 import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
+import com.wavemaker.runtime.data.dao.query.types.wmql.WMQLTypeHelper;
 import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.dao.validators.SortValidator;
@@ -80,6 +81,8 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     private ExportedFileManager exportedFileManager;
 
     public abstract HibernateTemplate getTemplate();
+
+    public abstract WMQLTypeHelper getWMQLTypeHelper();
 
     @SuppressWarnings("unchecked")
     @PostConstruct
@@ -114,7 +117,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     public E findById(I entityId) {
         final SelectQueryBuilder builder = queryGenerator.findById(entityId);
 
-        return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder, getWMQLTypeHelper())
                 .orElseThrow(() -> new EntityNotFoundException(MessageResource.create("com.wavemaker.runtime.no.entity.exists.for.given.id"), entityId));
     }
 
@@ -142,7 +145,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     public E findByUniqueKey(final Map<String, Object> fieldValueMap) {
         final SelectQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
 
-        return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder, getWMQLTypeHelper())
                 .orElseThrow(() -> new EntityNotFoundException(
                         MessageResource.create("com.wavemaker.runtime.entity.not.found.for.given.map"), fieldValueMap));
     }
@@ -195,7 +198,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         this.sortValidator.validate(validPageable, entityClass);
 
         final SelectQueryBuilder builder = queryGenerator.searchByQuery(query);
-        return HqlQueryHelper.execute(getTemplate(), entityClass, builder, validPageable);
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder, validPageable, getWMQLTypeHelper());
     }
 
     @Override
@@ -207,7 +210,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     public long count(final String query) {
         return getTemplate().execute(session -> {
             final WMQueryInfo queryInfo = queryGenerator.searchByQuery(query).build();
-            return QueryHelper.getQueryResultCount(queryInfo, false, getTemplate());
+            return QueryHelper.getQueryResultCount(queryInfo, false, getTemplate(), getWMQLTypeHelper());
         });
     }
 
@@ -220,7 +223,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         this.sortValidator.validate(validPageable, entityClass);
 
         final SelectQueryBuilder builder = queryGenerator.getAggregatedValues(aggregationInfo);
-        final Page result = HqlQueryHelper.execute(getTemplate(), Map.class, builder, validPageable);
+        final Page result = HqlQueryHelper.execute(getTemplate(), Map.class, builder, validPageable, getWMQLTypeHelper());
 
         return (Page<Map<String, Object>>) result;
     }
@@ -241,7 +244,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         getTemplate().execute(session -> {
             final WMQueryInfo queryInfo = queryGenerator.searchByQuery(options.getQuery()).build();
             final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider.from(queryInfo, entityClass);
-            ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo, session.getTypeHelper());
+            ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo, session.getTypeHelper(), getWMQLTypeHelper());
 
             final Query<E> hqlQuery = queryProvider.getQuery(session, validPageable, provider);
             QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());

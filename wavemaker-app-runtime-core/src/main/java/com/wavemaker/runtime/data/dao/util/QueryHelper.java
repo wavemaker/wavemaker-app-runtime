@@ -32,6 +32,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.wavemaker.runtime.data.dao.query.types.RuntimeParameterTypeResolver;
+import com.wavemaker.runtime.data.dao.query.types.wmql.WMQLTypeHelper;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
@@ -138,19 +139,19 @@ public class QueryHelper {
     }
 
 
-    public static Long getQueryResultCount(WMQueryInfo wmQueryInfo, boolean isNative, HibernateTemplate template) {
-        return getCountFromCountStringQuery(wmQueryInfo, isNative, template);
+    public static Long getQueryResultCount(WMQueryInfo wmQueryInfo, boolean isNative, HibernateTemplate template, WMQLTypeHelper wmqlTypeHelper) {
+        return getCountFromCountStringQuery(wmQueryInfo, isNative, template, wmqlTypeHelper);
     }
 
     private static Long getCountFromCountStringQuery(WMQueryInfo wmQueryInfo, final boolean isNative,
-                                                     final HibernateTemplate template) {
+                                                     final HibernateTemplate template, WMQLTypeHelper wmqlTypeHelper) {
         try {
             final String strQuery = getCountQuery(wmQueryInfo.getQuery(), isNative);
             if (strQuery == null) {
                 return maxCount();
             }
 
-            return template.execute(session -> executeCountQuery(session, isNative, strQuery, wmQueryInfo));
+            return template.execute(session -> executeCountQuery(session, isNative, strQuery, wmQueryInfo, wmqlTypeHelper));
         } catch (Exception ex) {
             LOGGER.error("Count query operation failed", ex);
             return maxCount();
@@ -158,10 +159,10 @@ public class QueryHelper {
     }
 
     public static Long executeCountQuery(
-            final Session session, final boolean isNative, final String strQuery, final WMQueryInfo wmQueryInfo) {
+            final Session session, final boolean isNative, final String strQuery, final WMQueryInfo wmQueryInfo, WMQLTypeHelper wmqlTypeHelper) {
         Query<Integer> query = isNative ? session.createNativeQuery(strQuery) : session.createQuery(strQuery);
-        ParametersConfigurator.configure(query, wmQueryInfo.getParameterValueMap(),
-                new RuntimeParameterTypeResolver(wmQueryInfo.getParameters(), session.getTypeHelper()));
+        ParametersConfigurator.configure(query, wmQueryInfo.getParameterValueMap(wmqlTypeHelper),
+                new RuntimeParameterTypeResolver(wmQueryInfo.getParameters(), session.getTypeHelper(), wmqlTypeHelper));
         Object result = query.uniqueResult();
         return result == null ? 0 : ((Number) result).longValue();
     }
