@@ -57,6 +57,7 @@
         <jasperreports.version>6.5.1</jasperreports.version>
         <freemarker.version>2.3.23</freemarker.version>
         <antlr.version>4.7</antlr.version>
+        <wm.parser.directory>${project.build.sourceDirectory}/com/wavemaker/runtime/data/filter/parser/antlr4</wm.parser.directory>
 
     </properties>
 
@@ -252,7 +253,7 @@
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <version>${antlr.version}</version>
                 <configuration>
-                    <outputDirectory>${project.build.sourceDirectory}/com/wavemaker/runtime/data/filter/parser/antlr4</outputDirectory>
+                    <outputDirectory>${wm.parser.directory}</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
