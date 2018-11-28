@@ -1561,9 +1561,14 @@ bs-datepicker-container, bs-daterangepicker-container {
   .bs-datepicker-body {
     table {
       td {
-        &.week {
+        &.week, &.disabled {
           span {
-            color: #1d96f4;
+            cursor: initial;
+            &:hover, &:focus {
+              background-color: transparent;
+              color: inherit;
+              cursor: initial;
+            }
           }
         }
         span {
