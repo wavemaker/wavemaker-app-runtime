@@ -44,6 +44,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.HttpRequestUtils;
+import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
 
@@ -176,6 +177,7 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
         if (logger.isDebugEnabled()) {
             logger.debug("Authentication success: " + authResult);
         }
+        authResult = new WMAuthentication(authResult);
         SecurityContextHolder.getContext().setAuthentication(authResult);
         if (Objects.nonNull(authenticationSuccessHandler)) {
             try {

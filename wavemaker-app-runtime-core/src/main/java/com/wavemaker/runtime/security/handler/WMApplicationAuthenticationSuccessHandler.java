@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -58,25 +59,28 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
     }
 
     private void invokeCustomWMAuthenticationSuccessHandler(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
-        logger.info("Invoking CustomAuthenticationSuccessHandlers");
-        for (WMAuthenticationSuccessHandler authenticationSuccessHandler : customSuccessHandlerList) {
-            authenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+        if (CollectionUtils.isNotEmpty(customSuccessHandlerList)) {
+            logger.info("Invoking CustomAuthenticationSuccessHandlers");
+            for (WMAuthenticationSuccessHandler authenticationSuccessHandler : customSuccessHandlerList) {
+                authenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+            }
         }
     }
 
     private void invokeDefaultAuthenticationSuccessHandlers(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        logger.info("Invoking DefaultAuthenticationSuccessHandlers");
-        for (AuthenticationSuccessHandler authenticationSuccessHandler : defaultSuccessHandlerList) {
-            authenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+        if (CollectionUtils.isNotEmpty(defaultSuccessHandlerList)) {
+            logger.info("Invoking DefaultAuthenticationSuccessHandlers");
+            for (AuthenticationSuccessHandler authenticationSuccessHandler : defaultSuccessHandlerList) {
+                authenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+            }
         }
     }
 
     private void invokeRedirectionHandler(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
-        logger.info("Invoking authenticationSuccessRedirectionHandler");
-        if (authenticationSuccessRedirectionHandler == null) {
-            authenticationSuccessRedirectionHandler = new WMAuthenticationSuccessRedirectionHandler();
+        if (authenticationSuccessRedirectionHandler != null) {
+            logger.info("Invoking authenticationSuccessRedirectionHandler");
+            authenticationSuccessRedirectionHandler.onAuthenticationSuccess(request, response, authentication);
         }
-        authenticationSuccessRedirectionHandler.onAuthenticationSuccess(request, response, authentication);
     }
 
 
@@ -84,6 +88,10 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
         this.defaultSuccessHandlerList = defaultSuccessHandlerList;
     }
 
+
+    public void setAuthenticationSuccessRedirectionHandler(WMAuthenticationRedirectionHandler authenticationSuccessRedirectionHandler) {
+        this.authenticationSuccessRedirectionHandler = authenticationSuccessRedirectionHandler;
+    }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
