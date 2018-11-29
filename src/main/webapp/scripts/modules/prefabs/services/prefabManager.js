@@ -464,6 +464,54 @@ WM.module('wm.prefabs')
                 return versionMismatchMessages[prefabName];
             }
 
+            /**
+             * Show the prefab upgrade dialog.
+             */
+            function showPrefabUpgradeDialog(prefabName, callback) {
+                var prefab = getProjectPrefab(prefabName);
+                var wsPrefab = getWorkspacePrefab(prefabName);
+                DialogService
+                    .showDialog('upgradePrefabDialog', {
+                        resolve: {
+                            upgradeFn: function () {
+                                return function () {
+                                    // register the prefab and reload the page
+                                    register(
+                                        wsPrefab.id,
+                                        {
+                                            forceRegister: false,
+                                            upgrade: true
+                                        },
+                                        function () {
+                                            Utils.triggerFn(callback);
+                                            DialogService.hideDialog('upgradePrefabDialog');
+                                            setTimeout(function() {
+                                                $rs.$emit('save-workspace', false, function () {
+                                                    window.location.reload();
+                                                });
+                                            }, 1000);
+                                        },
+                                        function (errResp) {
+                                            Utils.triggerFn(callback, errResp);
+                                            DialogService.hideDialog('upgradePrefabDialog');
+                                        }
+                                    );
+                                };
+                            },
+                            prefab: function() {
+                                prefab.conflictMessage = constructPrefabConflictMessage(prefab);
+                                return prefab;
+                            },
+                            onSkipUpgrade: function () {
+                                return function () {
+                                    Utils.triggerFn(callback);
+                                    DialogService.hideDialog('upgradePrefabDialog');
+                                }
+                            }
+                        }
+                    });
+            }
+
             /*
              * Register the prefab in a synchronous way and trigger the callback on success.
              */
@@ -490,9 +538,12 @@ WM.module('wm.prefabs')
              * Trigger the callback if the registration is not required.
              */
             function validateAndRegister(prefabName, callback, forceRegister) {
-                if (!appPrefabNamePropertiesMap[prefabName] || isPrefabVersionMismatch(prefabName)) {
+                if (!appPrefabNamePropertiesMap[prefabName] || (isPrefabVersionMismatch(prefabName) && forceRegister)) {
                     // prefab never registered.
                     doRegistration(prefabName, callback, forceRegister);
+                } else if (isPrefabVersionMismatch(prefabName)) {
+                    // prefab is registered but the version of studio-prefab is not same as app-prefab
+                    showPrefabUpgradeDialog(prefabName, callback);
                 } else {
                     // registration is not required
                     Utils.triggerFn(callback);
