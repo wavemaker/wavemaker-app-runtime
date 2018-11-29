@@ -1292,7 +1292,7 @@ WM.module('wm.widgets.live')
                     break;
                 case 'active':
                     if (scope.widgetid && newVal) {
-                        if (scope.widget === 'number' || scope.widget === 'password' || scope.widget === 'text') {
+                        if (scope.widget === 'password' || scope.widget === 'text') {
                             FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, scope.inputtype);
                         } else if (isDataSetWidgets[scope.widget]) {
                             updatePropertyPanelOptions(scope);
@@ -1317,7 +1317,7 @@ WM.module('wm.widgets.live')
                 var widgetProps,
                     baseProperties,
                     extendedProperties,
-                    textWidgets = ['text', 'number', 'password'],
+                    textWidgets = ['text', 'password'],
                     setDefaultValueProps = function () {
                         var defaultProp;
                         /*Use default value instead of datavalue for fields*/
@@ -1400,6 +1400,10 @@ WM.module('wm.widgets.live')
                     break;
                 case 'currency':
                     baseProperties      = 'wm.currency';
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
+                    break;
+                case 'number':
+                    baseProperties      = 'wm.number';
                     extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
                     break;
                 case 'typeahead':
