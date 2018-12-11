@@ -27,6 +27,7 @@ import org.hibernate.internal.AbstractScrollableResults;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.data.export.ExportCellStyles;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.util.JavaTypeUtils;
 
@@ -51,8 +52,9 @@ public class DataSourceExporterUtil {
     }
 
 
-    public static void setCellValue(Object data, final Cell cell) {
+    public static void setCellValue(Object data, final Cell cell, ExportCellStyles cellStyles) {
         try {
+            cell.setCellStyle(cellStyles.getColumnCellStyle());
             if (data != null) {
                 final Optional<JavaType> typeOptional = JavaTypeUtils.fromClassName(data.getClass().getCanonicalName());
                 if (typeOptional.isPresent()) {
@@ -62,6 +64,7 @@ public class DataSourceExporterUtil {
                             break;
                         case DATE:
                             cell.setCellValue((Date) data);
+                            cell.setCellStyle(cellStyles.getDateCellStyle());
                             break;
                         case INTEGER:
                         case SHORT:

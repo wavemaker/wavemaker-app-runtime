@@ -20,8 +20,6 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -42,13 +40,13 @@ public class ExportBuilder {
 
     private static final int FIRST_ROW_NUMBER = 0;
     private static final int FIRST_COLUMN_NUMBER = 0;
-    private static final int COLUMN_HEADER_FONT_SIZE = 10;
 
     private QueryExtractor queryExtractor;
     private ExportOptionsStrategy optionsStrategy;
     private ExportOptions options;
-    private CellStyle columnCellStyle;
-    private CellStyle headerCellStyle;
+
+    private ExportCellStyles cellStyles; // todo should have separate class for context.
+
 
     public ExportBuilder(final QueryExtractor queryExtractor, ExportOptions options, final Class<?> entityClass) {
         this.queryExtractor = queryExtractor;
@@ -59,7 +57,7 @@ public class ExportBuilder {
     public void build(OutputStream outputStream) {
         try {
             try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
-                initCellStyles(workbook);
+                cellStyles = new ExportCellStyles(workbook);
                 SXSSFSheet spreadSheet = workbook.createSheet("Data");
                 fillSheet(spreadSheet);
                 exportWorkbook(workbook, options.getExportType(), outputStream);
@@ -97,14 +95,13 @@ public class ExportBuilder {
         if (rowData == null) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.report.generation.failed"));
         }
-        final Class<?> dataClass = rowData.getClass();
-        fillData(optionsStrategy.getFilteredRowData(dataClass, rowData), row);
+        fillData(optionsStrategy.readRowData(rowData), row);
     }
 
     private void fillHeader(Row row, List<String> fieldNames, Sheet sheet) {
         int colNum = FIRST_COLUMN_NUMBER;
         for (final String fieldName : fieldNames) {
-            CellUtil.createCell(row, colNum, fieldName, headerCellStyle);
+            CellUtil.createCell(row, colNum, fieldName, cellStyles.getHeaderCellStyle());
             sheet.setColumnWidth(colNum, 20 * 256);
             colNum++;
         }
@@ -115,28 +112,9 @@ public class ExportBuilder {
         int colNum = FIRST_COLUMN_NUMBER;
         for (Object value : rowValues) {
             final Cell cell = row.createCell(colNum);
-            DataSourceExporterUtil.setCellValue(value, cell);
-            cell.setCellStyle(columnCellStyle);
+            DataSourceExporterUtil.setCellValue(value, cell, cellStyles);
             colNum++;
         }
     }
 
-    private void initCellStyles(Workbook workbook) {
-        columnCellStyle = workbook.createCellStyle();
-        headerCellStyle = workbook.createCellStyle();
-        setHeaderCellStyle(workbook);
-        setColumnCellStyle();
-    }
-
-    private void setColumnCellStyle() {
-        columnCellStyle.setWrapText(true);
-    }
-
-    private void setHeaderCellStyle(Workbook workbook) {
-        Font font = workbook.createFont();
-        font.setBold(true);
-        font.setFontHeightInPoints((short) COLUMN_HEADER_FONT_SIZE);
-        headerCellStyle.setWrapText(true);
-        headerCellStyle.setFont(font);
-    }
 }

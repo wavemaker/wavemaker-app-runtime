@@ -3,49 +3,80 @@ package com.wavemaker.runtime.data.export;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.data.dao.validators.HqlPropertyResolver;
 import com.wavemaker.runtime.data.util.JavaTypeUtils;
 
 
 public class ExportOptionsStrategy {
-    private ExportOptions options;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExportOptionsStrategy.class);
+
+    private List<ExportField> exportFields;
 
     public ExportOptionsStrategy(ExportOptions options, Class<?> entityClass) {
-        this.options = options;
-        setFieldsIfEmpty(entityClass);
+        init(options, entityClass);
     }
 
     public List<String> getDisplayNames() {
-        List<String> fieldNames = new ArrayList<>();
-        for (FieldInfo field : options.getFields()) {
-            fieldNames.add(getDisplayName(field));
-        }
-        return fieldNames;
+        return this.exportFields.stream()
+                .map(ExportField::getDisplayName)
+                .collect(Collectors.toList());
     }
 
-    public List<Object> getFilteredRowData(Class<?> dataClass, Object rowData) throws Exception {
+    public List<Object> readRowData(Object rowData) {
+        return this.exportFields.stream()
+                .map(exportField -> exportField.getValueProvider().getValue(rowData))
+                .collect(Collectors.toList());
+    }
+
+    private void init(ExportOptions options, Class<?> entityClass) {
         List<FieldInfo> fieldInfos = options.getFields();
-        List<Object> rowValues = new ArrayList<>();
-        for (final FieldInfo fieldInfo : fieldInfos) {
-            rowValues.add(getColumnValue(dataClass, rowData, fieldInfo));
+
+        if (CollectionUtils.isEmpty(fieldInfos)) {
+            fieldInfos = includeAllFields(entityClass, "", true);
         }
-        return rowValues;
+
+        this.exportFields = fieldInfos.stream()
+                .map(fieldInfo -> generateExportField(entityClass, fieldInfo))
+                .collect(Collectors.toList());
     }
 
-    private void setFieldsIfEmpty(Class<?> dataClass) {
-        if (options.getFields().isEmpty()) {
-            includeAllFields(dataClass, "", true);
+    private ExportField generateExportField(final Class<?> entityClass, final FieldInfo fieldInfo) {
+        String displayName = getDisplayName(fieldInfo);
+        FieldValueProvider provider;
+        if (StringUtils.isNotBlank(fieldInfo.getField())) {
+            final Optional<Field> fieldOptional = HqlPropertyResolver.findField(fieldInfo.getField(), entityClass);
+            if (fieldOptional.isPresent()) {
+                provider = new SimpleFieldValueProvider(fieldInfo.getField(), entityClass);
+            } else {
+                LOGGER.warn("Field: {} not present in the Entity class: {}", fieldInfo.getField(),
+                        entityClass.getName());
+                provider = object -> null;
+            }
+        } else if (StringUtils.isNotBlank(fieldInfo.getExpression())) {
+            provider = new ExpressionFieldValueProvider(fieldInfo.getExpression());
+        } else {
+            throw new WMRuntimeException(
+                    MessageResource.create("com.wavemaker.runtime.no.fieldName.or.expression"));
         }
+        return new ExportField(displayName, provider);
     }
 
-    private void includeAllFields(Class<?> dataClass, String prefix, boolean includeChildren) {
+
+    private List<FieldInfo> includeAllFields(Class<?> dataClass, String prefix, boolean includeChildren) {
         try {
-            List<FieldInfo> fieldInfos = options.getFields();
+            List<FieldInfo> fieldInfos = new ArrayList<>();
             for (final Field field : dataClass.getDeclaredFields()) {
                 String fieldName = field.getName();
                 final Class<?> type = field.getType();
@@ -55,11 +86,13 @@ public class ExportOptionsStrategy {
                     }
                     fieldInfos.add(new FieldInfo(fieldName));
                 } else if (includeChildren && JavaTypeUtils.isNotCollectionType(type)) {
-                    includeAllFields(Class.forName(type.getName()), fieldName, false);
+                    fieldInfos.addAll(includeAllFields(Class.forName(type.getName()), fieldName, false));
                 }
             }
+            return fieldInfos;
         } catch (Exception e) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unexpected.exportOptions.generation.error"), e);
+            throw new WMRuntimeException(
+                    MessageResource.create("com.wavemaker.runtime.unexpected.exportOptions.generation.error"), e);
         }
     }
 
@@ -85,21 +118,6 @@ public class ExportOptionsStrategy {
             }
         }
         return displayName.toString();
-    }
-
-    private Object getColumnValue(Class<?> dataClass, Object rowData, FieldInfo fieldInfo) throws Exception {
-        Object value;
-        FieldValueProvider provider;
-        if (fieldInfo.getField() != null) {
-            provider = new SimpleFieldValueProvider(fieldInfo.getField(), dataClass);
-            value = provider.getValue(rowData);
-        } else if (fieldInfo.getExpression() != null) {
-            provider = new ExpressionFieldValueProvider(fieldInfo.getExpression());
-            value = provider.getValue(rowData);
-        } else {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.no.fieldName.or.expression"));
-        }
-        return value;
     }
 
 }
