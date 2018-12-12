@@ -227,6 +227,16 @@ wm.variables.services.$servicevariable = ['Variables',
                 formData = new FormData();
                 return formData;
             }
+            //function checks whether the test parameters are given and valid or not
+            function isValidParamValue(paramValue, paramType) {
+                var isValid = false;
+                if (isBodyTypeQueryProcedure && paramType !== 'file') {
+                    isValid = true;
+                } else if (WM.isDefined(paramValue) && paramValue !== null) {
+                    isValid = _.isEmpty(paramValue) ? paramType === 'file' : true;
+                }
+                return isValid;
+            }
 
             securityDefnObj = _.get(operationInfo.securityDefinitions, '0');
 
@@ -268,7 +278,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 }
                 var paramValue = param.sampleValue;
 
-                if ((WM.isDefined(paramValue) && paramValue !== null && paramValue !== '') || (isBodyTypeQueryProcedure && param.type !== 'file')) {
+                if (isValidParamValue(paramValue, param.type)) {
                     //Format dateTime params for dataService variables
                     if (variable.serviceType === 'DataService' && Utils.isDateTimeType(param.type)) {
                         paramValue = Utils.formatDate(paramValue, param.type);
