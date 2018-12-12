@@ -11,7 +11,7 @@ import com.wavemaker.runtime.data.util.JavaTypeUtils;
 public class SimpleFieldValueProvider implements FieldValueProvider {
 
     private final String fieldName;
-    private Class<?> dataClass;
+    private final Class<?> dataClass;
 
     public SimpleFieldValueProvider(String fieldName, Class<?> dataClass) {
         this.fieldName = fieldName;
@@ -23,9 +23,10 @@ public class SimpleFieldValueProvider implements FieldValueProvider {
         String[] nestedFields = fieldName.split("\\.");
         Object value = null;
         Object nestedRowData = object;
+        Class<?> currentClass = this.dataClass;
         try {
             for (String name : nestedFields) {
-                PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(dataClass, name);
+                PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(currentClass, name);
                 value = (nestedRowData == null) ? null : propertyDescriptor.getReadMethod().invoke(nestedRowData);
                 if(value == null) {
                     break;
@@ -33,7 +34,7 @@ public class SimpleFieldValueProvider implements FieldValueProvider {
                 nestedRowData = value;
                 Class<?> propertyType = propertyDescriptor.getPropertyType();
                 if (!JavaTypeUtils.isKnownType(propertyType)) {
-                    dataClass = propertyType;
+                    currentClass = propertyType;
                 }
             }
             return value;

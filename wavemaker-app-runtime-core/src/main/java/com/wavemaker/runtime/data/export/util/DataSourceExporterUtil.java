@@ -76,9 +76,6 @@ public class DataSourceExporterUtil {
                             cell.setCellType(CellType.NUMERIC);
                             cell.setCellValue((double) JavaType.DOUBLE.fromString(data.toString()));
                             break;
-                        case BOOLEAN:
-                            cell.setCellValue((boolean) data);
-                            break;
                         default:
                             cell.setCellValue(data.toString());
                             break;
