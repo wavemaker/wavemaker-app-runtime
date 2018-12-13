@@ -229,13 +229,7 @@ wm.variables.services.$servicevariable = ['Variables',
             }
             //function checks whether the test parameters are given and valid or not
             function isValidParamValue(paramValue, paramType) {
-                var isValid = false;
-                if (isBodyTypeQueryProcedure && paramType !== 'file') {
-                    isValid = true;
-                } else if (WM.isDefined(paramValue) && paramValue !== null) {
-                    isValid = _.isEmpty(paramValue) ? paramType === 'file' : true;
-                }
-                return isValid;
+                return (WM.isDefined(paramValue) && paramValue !== null && paramValue !== '') || (isBodyTypeQueryProcedure && paramType !== 'file');
             }
 
             securityDefnObj = _.get(operationInfo.securityDefinitions, '0');
