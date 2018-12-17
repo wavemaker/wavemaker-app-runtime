@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.data.export;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -23,12 +24,15 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.io.File;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
 import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
 
@@ -72,8 +76,21 @@ public class ExportBuilder {
             if (exportType == ExportType.EXCEL) {
                 workbook.write(outputStream);
             } else if (exportType == ExportType.CSV) {
-                CSVConverterUtil csvConverterUtil = new CSVConverterUtil(workbook);
-                csvConverterUtil.convert(outputStream);
+                // to support larger data files we are using SXSSFWorkbook
+                final File tempFile = WMIOUtils.createTempFile("export", "excel_csv");
+                try {
+                    try (OutputStream tos = tempFile.getContent().asOutputStream()) {
+                        workbook.write(tos);
+                    }
+                    try (InputStream inputStream = tempFile.getContent().asInputStream();
+                         Workbook tempWorkbook = WorkbookFactory.create(inputStream)) {
+                        CSVConverterUtil csvConverterUtil = new CSVConverterUtil(tempWorkbook);
+                        csvConverterUtil.convert(outputStream);
+                    }
+                } finally {
+                    tempFile.delete();
+                }
+
             }
         } catch (IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.data.exporting.error"), e);
