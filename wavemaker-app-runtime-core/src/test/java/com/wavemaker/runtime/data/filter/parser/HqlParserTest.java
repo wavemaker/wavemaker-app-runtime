@@ -53,7 +53,7 @@ public class HqlParserTest extends HqlParserDataProvider {
 
     @Test(dataProvider = "syntaxErrorQueriesProvider",
             expectedExceptions = HqlGrammarException.class,
-            expectedExceptionsMessageRegExp = ".*Failed to parse.*")
+            expectedExceptionsMessageRegExp = "Syntax error.*")
     public void syntaxErrors(Class dateType, List<String> queries) {
         logger.debug("Testing for the Data type {}.", dateType);
         HqlFilterPropertyResolver propertyResolver = new HqlFilterPropertyResolverImpl(Model.class);
@@ -67,7 +67,7 @@ public class HqlParserTest extends HqlParserDataProvider {
 
     @Test(dataProvider = "sqlInjectionQueriesProvider",
             expectedExceptions = HqlGrammarException.class,
-            expectedExceptionsMessageRegExp = ".*Failed to parse.*")
+            expectedExceptionsMessageRegExp = "Syntax error.*")
     public void sqlInjections(Class dateType, List<String> queries) {
         logger.debug("Testing for the Data type {}.", dateType);
         HqlFilterPropertyResolver propertyResolver = new HqlFilterPropertyResolverImpl(Model.class);
@@ -92,7 +92,7 @@ public class HqlParserTest extends HqlParserDataProvider {
 
     @Test(dataProvider = "betweenNegativeQueriesProvider",
             expectedExceptions = HqlGrammarException.class,
-            expectedExceptionsMessageRegExp = ".*Failed to parse.*")
+            expectedExceptionsMessageRegExp = "Syntax error.*")
     public void betweenNegative(Class dateType, List<String> queries) {
         logger.debug("Testing for the Data type {}.", dateType);
         HqlFilterPropertyResolver propertyResolver = new HqlFilterPropertyResolverImpl(Model.class);
@@ -114,7 +114,7 @@ public class HqlParserTest extends HqlParserDataProvider {
 
     @Test(dataProvider = "inNegativeQueriesProvider",
             expectedExceptions = HqlGrammarException.class,
-            expectedExceptionsMessageRegExp = ".*Failed to parse.*")
+            expectedExceptionsMessageRegExp = "Syntax error.*")
     public void inNegative(Class dateType, List<String> queries) {
         logger.debug("Testing for the Data type {}.", dateType);
         HqlFilterPropertyResolver propertyResolver = new HqlFilterPropertyResolverImpl(Model.class);
@@ -136,7 +136,7 @@ public class HqlParserTest extends HqlParserDataProvider {
 
     @Test(dataProvider = "likeNegativeQueriesProvider",
             expectedExceptions = HqlGrammarException.class,
-            expectedExceptionsMessageRegExp = ".*Failed to parse.*")
+            expectedExceptionsMessageRegExp = "Syntax error.*")
     public void likeNegative(Class dateType, List<String> queries) {
         logger.debug("Testing for the Data type {}.", dateType);
         HqlFilterPropertyResolver propertyResolver = new HqlFilterPropertyResolverImpl(Model.class);
@@ -159,7 +159,7 @@ public class HqlParserTest extends HqlParserDataProvider {
 
     @Test(dataProvider = "nestedBracesNegativeQueriesProvider",
             expectedExceptions = HqlGrammarException.class,
-            expectedExceptionsMessageRegExp = ".*Failed to parse.*")
+            expectedExceptionsMessageRegExp = "Syntax error.*")
     public void nestedBracesNegative(Class dateType, List<String> queries) {
         logger.debug("Testing for the Data type {}.", dateType);
         HqlFilterPropertyResolver propertyResolver = new HqlFilterPropertyResolverImpl(Model.class);
