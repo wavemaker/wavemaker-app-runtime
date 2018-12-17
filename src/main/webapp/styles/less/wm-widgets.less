@@ -3695,6 +3695,60 @@ If the height and width are not specified the video takes the height of the post
         }
       }
     }
+    .app-progress.circle.progress {
+      width: 100%;
+      background-color: transparent;
+      box-shadow: none;
+      > svg {
+        path:first-of-type {
+          stroke: #ddd;
+        }
+        path:last-of-type {
+          stroke: #4489ff;
+          stroke-linecap: round;
+        }
+      }
+      .show-percent:after {
+        content: ' %';
+        font-size: 0.7em;
+      }
+      circle-progress > svg {
+        circle:last-of-type {
+          stroke: #ddd;
+        }
+        path:first-of-type {
+          stroke: #4489ff;
+        }
+      }
+      &.progress-bar-success {
+        svg {
+          path:last-of-type {
+            stroke: #4caf50;
+          }
+        }
+      }
+      &.progress-bar-warning {
+        svg {
+          path:last-of-type {
+            stroke: #ffb300;
+          }
+        }
+      }
+      &.progress-bar-info {
+        svg {
+          path:last-of-type {
+            stroke: #03a9f4;
+          }
+        }
+      }
+      &.progress-bar-danger {
+        svg {
+          path:last-of-type {
+            stroke: #F44336;
+          }
+        }
+      }
+    }
 
     .wm-app .app-global-progress-bar{
       &.modal {
