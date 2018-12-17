@@ -32,7 +32,8 @@
         "angular-websocket": "v2.0.0",
         "wavicon": "https://github.com/wavemaker/wavicon.git#v1.0.5",
         "angular-ui-mask": "1.8.7",
-        "iscroll": "5.2.0"
+        "iscroll": "5.2.0",
+        "progressbar.js": "1.0.1"
     },
     "resolutions": {
         "d3": "v3.5.17",
