@@ -2488,6 +2488,14 @@ If the height and width are not specified the video takes the height of the post
           vertical-align: inherit;
         }
       }
+      .table-striped.table-row-expansion > tbody > {
+        tr:nth-of-type(odd) {
+          background-color: inherit;
+        }
+        tr:nth-of-type(4n-2), tr:nth-of-type(4n-3) {
+          background-color:  rgba(162, 162, 162, 0.06) ;
+        }
+      }
     }
     .app-datagrid-cell {
       img {

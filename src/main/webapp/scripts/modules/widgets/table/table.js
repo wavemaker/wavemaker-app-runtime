@@ -702,6 +702,14 @@ WM.module('wm.widgets.table')
                                 $compile(markup)($is);
                             }
                         }));
+                        /* event emitted whenever grid row defs are modified */
+                        handlers.push($rs.$on('wms:compile-grid-rowdefs', function (event, scopeId, markup) {
+                            /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
+                            if ($is.$id === scopeId) {
+                                $is.rowDef = {};
+                                $compile(markup)($is);
+                            }
+                        }));
                         /* event emitted whenever grid actions are modified */
                         handlers.push($rs.$on('wms:compile-grid-row-actions', function (event, scopeId, markup, fromDesigner) {
                             /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
@@ -3142,4 +3150,34 @@ WM.module('wm.widgets.table')
                 };
             }
         };
+    }])
+    .directive('wmTableRow', ['CONSTANTS', 'LiveWidgetUtils', function(CONSTANTS, LiveWidgetUtils) {
+        'use strict';
+        return {
+            'restrict': 'E',
+            'scope': true,
+            'replace': true,
+            'compile': function () {
+                return {
+                    'pre': function (scope, element, attrs) {
+                        scope.partialParams = [];
+                    },
+                    'post': function (scope, element, attrs) {
+                        var parentIsolateScope,
+                            rowDef =  LiveWidgetUtils.getRowDef(attrs),
+                            $parentElement = element.parent();
+                        if (CONSTANTS.isRunMode) {
+                           parentIsolateScope = scope;
+                        } else {
+                            parentIsolateScope = scope.parentIsolateScope = ($parentElement && $parentElement.length > 0) ? $parentElement.closest('[data-identifier = "table"]').isolateScope() || scope.$parent : scope.$parent;
+                        }
+                        rowDef.partialParams = scope.partialParams;
+                        parentIsolateScope.rowDef = parentIsolateScope.rowDef || {};
+                        parentIsolateScope.rowDef = rowDef;
+
+                    }
+                }
+            }
+
+        }
     }]);

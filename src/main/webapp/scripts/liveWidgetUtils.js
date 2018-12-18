@@ -506,6 +506,29 @@ WM.module('wm.widgets.live')
                 };
             }
 
+            /*Returns row defs attributes to grid*/
+            function getRowDef(attrs) {
+                return {
+                    'content'                :  attrs.content,
+                    'expandicon'             :  attrs.expandicon,
+                    'collapseicon'           :  attrs.collapseicon,
+                    'position'               :  attrs.position || '0',
+                    'closeothers'            :  _.isUndefined(attrs.closeothers) ? 'true' : (attrs.closeothers || 'false'),
+                    'height'                 :  attrs.height,
+                    'onBeforerowexpand'      :  attrs.onBeforerowexpand,
+                    'onRowexpand'            :  attrs.onRowexpand,
+                    'onBeforerowcollapse'    :  attrs.onBeforerowcollapse,
+                    'onRowcollapse'          :  attrs.onRowcollapse,
+                    'widgetType'             :  attrs.widgetType || 'button',
+                    'displayName'            :  attrs.displayName,
+                    'title'                  :   _.isUndefined(attrs.title) ? (attrs.displayName || '') : attrs.title,
+                    'show'                   :  _.isUndefined(attrs.show) ? 'true' : (attrs.show || 'false'),
+                    'disabled'               :  attrs.disabled || 'false',
+                    'class'                  :  attrs.class || 'btn-transparent',
+                    'columnwidth'            :  attrs.columnwidth || '30px'
+                }
+            }
+
             /*Returns step attribute value based on input type*/
             function getStepValue(fieldObj) {
                 return fieldObj.scale ? Math.pow(10, fieldObj.scale * -1) : 0;
@@ -2965,6 +2988,7 @@ WM.module('wm.widgets.live')
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
             this.getColumnDef               = getColumnDef;
             this.getButtonDef               = getButtonDef;
+            this.getRowDef                  = getRowDef;
             this.getTemplate                = getTemplate;
             this.translateVariableObject    = translateVariableObject;
             this.getColumnCountByLayoutType = getColumnCountByLayoutType;

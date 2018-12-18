@@ -384,6 +384,9 @@ WM.module('wm.widgets.base')
             replace: true,
             link: function (iScope, element, attrs) {
                 var container = element.closest('[page-container]');
+                if (!container.length) {
+                    container = element.closest('wm-table-row');
+                }
                 var containerScope = container.isolateScope() || container.scope();
                 containerScope.partialParams.push({
                     name: attrs.name,
