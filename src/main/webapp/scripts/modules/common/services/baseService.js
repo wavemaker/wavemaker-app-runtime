@@ -137,6 +137,7 @@ wm.modules.wmCommon.services.BaseService = [
                     config.isExtURL        = serviceParams.isExtURL;
                     config.preventMultiple = serviceParams.preventMultiple;
                     config.responseType    = serviceParams.responseType;
+                    config.withCredentials = serviceParams.withCredentials;
 
                     return config;
                 }

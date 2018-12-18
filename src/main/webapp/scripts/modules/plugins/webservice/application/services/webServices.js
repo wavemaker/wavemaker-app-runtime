@@ -583,6 +583,7 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                     headers: params.headers
                 },
                 data: params.dataParams || undefined,
+                "withCredentials": params.withCredentials,
                 "isDirectCall": params.isDirectCall,
                 "byPassResult": true,
                 "isExtURL": params.isExtURL
