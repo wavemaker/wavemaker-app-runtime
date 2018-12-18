@@ -123,7 +123,7 @@ WM.module('wm.variables').run([
                 properties: [
                     {"target": "autoUpdate", "type": "boolean", "value": true, "hide" : true},
                     {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
-                    {"target": "networkStatus", "type": "boolean", value: "bind:$root.networkStatus", "dataBinding": true, hide: true},
+                    {"target": "networkStatus", "type": "boolean", value: "bind:App.networkStatus", "dataBinding": true, hide: true},
                     {"target": "onOnline", "hide" : false},
                     {"target": "onOffline", "hide" : false}
                 ],
