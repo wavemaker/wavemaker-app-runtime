@@ -260,7 +260,7 @@ WM.module('wm.layouts.page')
                     Variables.register(pageName, variables, true, variableScope);
 
                     // expose partial's Variables to its container's scope (to be visible to parent)
-                    if (CONSTANTS.isRunMode && containerScope) {
+                    if (containerScope) {
                         containerScope.Variables = $s.Variables;
                         containerScope.Actions = $s.Actions;
                     }
