@@ -21,9 +21,10 @@ WM.module('wm.prefabs')
                     pre: function($s) {
                         // register the page variables for prefab (not putting studio mode check here as it is 10.x studio code only)
                         // done only for prefab project and not for prefab in app (as that is handled by wm-prefab directive)
-                        if($rootScope.isPrefabTemplate) {
-                            Variables.getPageVariables("Main", function (variables) {
-                                Variables.register($rootScope.isPrefabTemplate ? "Main" : $s.name, variables, true, $s);
+                        if($rootScope.isPrefabTemplate && !$s.name) {
+                            var pageName = "Main";
+                            Variables.getPageVariables(pageName, function (variables) {
+                                Variables.register(pageName, variables, true, $s);
                             });
                         }
                     }
