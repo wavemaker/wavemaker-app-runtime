@@ -579,6 +579,12 @@ wm.variables.services.Variables = [
                         if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(targetObj[targetNodeKey])))) {
                             return;
                         }
+                        // When a variable is bound to an empty object then its datset shouldn't be empty, if empty
+                        // then the bind dialog won't contain datset values for that particular variable.
+                        // Hence, check if the bound value is an empty object, then retain the old dataset, if defined.
+                        if (!runMode && WM.isDefined(oldVal) && _.isEqual(newVal, {})) {
+                                return;
+                        }
                         //Skip cloning for blob column
                         if (!_.includes(['blob', 'file'], obj.type)) {
                             newVal = Utils.getClonedObject(newVal);
