@@ -2106,20 +2106,34 @@ WM.module('wm.widgets.base', [])
                         "maxvalue": {"type": "number", "value": 100, "bindable": "in-bound"},
                         "datavalue": {"type": "number, string", "bindable": "in-out-bound", "widget": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "pollinterval": {"type": "number"},
                         "displayformat": {"type": "list", "options": ["9", "9.9", "9.99", "9.999", "9%", "9.9%", "9.99%", "9.999%"]},
                         "captionplacement": {"type": "list", "options": ["inside", "hidden"], "value": "hidden"},
                         "type": {"type": "list", "options": ["default", "default-striped", "success", "success-striped", "info", "info-striped", "warning", "warning-striped", "danger", "danger-striped"], "value": "default", "bindable": "in-bound"},
 
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "onStart": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onComplete": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onBeforeupdate": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         /* ---- styles ----*/
                         "margin": {"type": "string", "widget": "box-model"},
                         "tabindex": {"type": "number", "value": "0"}
+                    },
+
+                    "wm.progress.circle": {
+                        "hint": {"type": "string", "bindable": "in-bound"},
+                        "title": {"type": "string", "bindable": "in-bound"},
+                        "subtitle": {"type": "string", "bindable": "in-bound"},
+                        "percentageValue": {"type": "number", "bindable": "out-bound"},
+                        "minvalue": {"type": "number", "value": 0, "bindable": "in-bound"},
+                        "maxvalue": {"type": "number", "value": 100, "bindable": "in-bound"},
+                        "datavalue": {"type": "number, string", "value": 30, "bindable": "in-out-bound", "widget": "string"},
+                        "displayformat": {"type": "list", "options": ["9", "9.9", "9.99", "9.999", "9%", "9.9%", "9.99%", "9.999%"]},
+                        "captionplacement": {"type": "list", "options": ["inside", "hidden"], "value": "hidden"},
+                        "type": {"type": "list", "options": ["default", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-bound"},
+
+                        "width": {"type": "string", "value": "200px", "pattern": dimensionRegex},
+                        "height": {"type": "string", "value": "200px", "pattern": dimensionRegex},
+                        /* ---- styles ----*/
+                        "margin": {"type": "string", "widget": "box-model"}
                     },
                     "wm.template": {
                         "header": {"type": "list", "options": [], "widget": "templates-list", value: "_nocontent"},
@@ -2143,7 +2157,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events", "iconClass":"wms wms-events"},
                 {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile", "iconClass":"wms wms-devices"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security", "iconClass":"wms wms-security"},
-                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "maxplaceholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype", "homelink"], "parent": "properties"},
+                {"properties": ["widget", "caption", "gridcaption", "title", "subtitle","displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "maxplaceholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype", "homelink"], "parent": "properties"},
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
                 {"name": "picture", "properties": ["imageheight", "picturesource", "pictureplaceholder", "pictureaspect", "shape", "picturetitle"], "parent": "properties"},
