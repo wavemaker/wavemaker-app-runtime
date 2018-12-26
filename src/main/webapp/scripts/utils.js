@@ -2479,7 +2479,8 @@ WM.module('wm.utils', [])
                     "wm-view",
                     "wm-form",
                     "wm-carousel",
-                    "wm-media-list"
+                    "wm-media-list",
+                    "wm-circle-progress"
                 ];
             } else if (type === 'page-container-widgets') {
                 types = [
