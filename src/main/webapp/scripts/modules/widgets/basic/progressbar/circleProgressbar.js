@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/circle-progress.html',
-            '<div class="progress app-progress circle {{strokeColor}}" title="{{hint}}" init-widget apply-styles></div>'
+            '<div class="progress app-progress circle" ng-class="strokeColor" title="{{hint}}" init-widget apply-styles></div>'
         );
     }])
     .directive('wmCircleProgress', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
@@ -13,6 +13,7 @@ WM.module('wm.widgets.basic')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.progress.circle', ['wm.base', 'wm.base.events']),
             notifyFor = {
                 'datavalue'        : true,
+                'title'            : true,
                 'minvalue'         : true,
                 'maxvalue'         : true,
                 'type'             : true,
@@ -72,7 +73,7 @@ WM.module('wm.widgets.basic')
                             return;
                         }
                         decimalCount = getDecimalCount(scope.displayformat);
-                        value = (circle.value() * 100).toFixed(decimalCount);
+                        value = scope.title || (circle.value() * 100).toFixed(decimalCount);
                         circle.setText(value);
                     }
                 });
@@ -117,6 +118,7 @@ WM.module('wm.widgets.basic')
                 case 'datavalue':
                 case 'minvalue':
                 case 'maxvalue':
+                case 'title':
                 case 'captionplacement':
                     debouncedRender($is);
                     break;
