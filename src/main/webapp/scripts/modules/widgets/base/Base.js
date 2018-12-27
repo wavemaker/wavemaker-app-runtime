@@ -1497,7 +1497,8 @@ WM.module('wm.widgets.base', [])
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
                         "margin": {"type": "string", "widget": "box-model"},
-                        "formWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true}
+                        "formWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true},
+                        "validationMessages": {"type": "object", "bindable": "out-bound", "isList": true, "widget": "string"}
                     },
                     'wm.layouts.form.mobile': {
                         "captionwidth": {"type": "string", "widget": "device-config", "value": "xs-4 sm-4 md-4 lg-4", "showindesigner": true, "widthHeader": "Column Width", "deviceHeader": "Device", "deviceSizes": columnWidths}
@@ -1552,7 +1553,8 @@ WM.module('wm.widgets.base', [])
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
                         "margin": {"type": "string", "widget": "box-model"},
-                        "formWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true}
+                        "formWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true},
+                        "validationMessages": {"type": "object", "bindable": "out-bound", "isList": true, "widget": "string"}
                     },
                     'wm.layouts.liveform.mobile': {
                         "captionwidth": {"type": "string", "widget": "device-config", "value": "xs-4 sm-4 md-4 lg-4", "showindesigner": true, "widthHeader": "Column Width", "deviceHeader": "Device", "deviceSizes": columnWidths}
