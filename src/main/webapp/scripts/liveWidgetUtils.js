@@ -502,7 +502,10 @@ WM.module('wm.widgets.live')
                     'accessroles'   :   attrs.accessroles,
                     'shortcutkey'   :   attrs.shortcutkey,
                     'disabled'      :   attrs.disabled || 'false',
-                    'tabindex'      :   attrs.tabindex ? +attrs.tabindex : undefined
+                    'tabindex'      :   attrs.tabindex ? +attrs.tabindex : undefined,
+                    'widgetType'    :   attrs.widgetType || 'button',
+                    'hyperlink'     :   attrs.hyperlink,
+                    'target'        :   attrs.target
                 };
             }
 
@@ -526,7 +529,7 @@ WM.module('wm.widgets.live')
                     'disabled'               :  attrs.disabled || 'false',
                     'class'                  :  attrs.class,
                     'columnwidth'            :  attrs.columnwidth || '30px'
-                }
+                };
             }
 
             /*Returns step attribute value based on input type*/
