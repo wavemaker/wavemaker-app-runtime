@@ -524,7 +524,7 @@ WM.module('wm.widgets.live')
                     'title'                  :   _.isUndefined(attrs.title) ? (attrs.displayName || '') : attrs.title,
                     'show'                   :  _.isUndefined(attrs.show) ? 'true' : (attrs.show || 'false'),
                     'disabled'               :  attrs.disabled || 'false',
-                    'class'                  :  attrs.class || 'btn-transparent',
+                    'class'                  :  attrs.class,
                     'columnwidth'            :  attrs.columnwidth || '30px'
                 }
             }
