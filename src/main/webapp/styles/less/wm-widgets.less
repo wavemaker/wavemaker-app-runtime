@@ -299,7 +299,7 @@ app-page-outlet.page-load-in-progress {
       display: block;
       position: relative;
       width: 100%;
-      .calc('height', ~"calc(100% - 36px)");;
+      .calc('height', ~"calc(100% - 36px)");
       overflow: auto;
       max-height: initial;
       top: 0 !important;
@@ -2430,7 +2430,8 @@ If the height and width are not specified the video takes the height of the post
     // Fix for height of input box in pagination.
     .app-datagrid-paginator  {
       .app-datanavigator a:focus {
-        outline: 1px solid #1794ef !important;
+        box-shadow: inset 0px 0px 0px 1px #1794ef;
+        -ms-box-shadow: inset 0px 0px 0px 1px #1794ef;
       }
     }
   }
@@ -2574,6 +2575,10 @@ If the height and width are not specified the video takes the height of the post
         .table-condensed {
           .sort-buttons-container {
             bottom: 0.2em;
+          }
+          .form-control {
+            height: auto;
+            padding: 2px 4px;
           }
         }
       }
