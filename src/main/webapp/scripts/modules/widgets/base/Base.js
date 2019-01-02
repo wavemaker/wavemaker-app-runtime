@@ -1617,6 +1617,7 @@ WM.module('wm.widgets.base', [])
                         "exportformat": {"type": "list", "widget": "select-all", "options": ["EXCEL", "CSV"], "showindesigner": true},
                         "exportdatasize": {"type": "number",  "value": 100, "showindesigner": true},
                         "margin": {"type": "string", "widget": "box-model", "show": false}, //Deprecated margin property for data table
+                        "currentItem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
 
                         /* Events */
                         "onClick": {"type": "event", "show": false, "options": widgetEventOptions, "widget": "eventlist"},
