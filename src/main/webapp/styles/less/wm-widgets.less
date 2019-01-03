@@ -2576,9 +2576,14 @@ If the height and width are not specified the video takes the height of the post
           .sort-buttons-container {
             bottom: 0.2em;
           }
-          .form-control {
-            height: auto;
+          .form-control, .input-group-btn .btn {
+            height: 26px;
             padding: 2px 4px;
+          }
+          .input-group.date {
+            .model-holder[bsdatepicker] {
+              min-height: auto;
+            }
           }
         }
       }
