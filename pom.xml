@@ -58,7 +58,7 @@
         <freemarker.version>2.3.23</freemarker.version>
         <antlr.version>4.7</antlr.version>
         <wm.parser.directory>${project.build.sourceDirectory}/com/wavemaker/runtime/data/filter/parser/antlr4</wm.parser.directory>
-
+        <xerces.version>2.12.0</xerces.version>
     </properties>
 
     <modules>
@@ -552,16 +552,6 @@
                 <groupId>net.sf.jmimemagic</groupId>
                 <artifactId>jmimemagic</artifactId>
                 <version>${mimemagic.version}</version>
-                <exclusions>
-                    <!-- jmimemagic has dependency on xerces version 2.4.0
-                         and jasperreports also has transitive dependency on xerces version 2.9.1
-                         so excluding from jmimemagic dependency list
-                    -->
-                    <exclusion>
-                        <groupId>xerces</groupId>
-                        <artifactId>xercesImpl</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.poi</groupId>
@@ -778,10 +768,6 @@
                 <version>1.0.2.RELEASE</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>xerces</groupId>
-                        <artifactId>xercesImpl</artifactId>
-                    </exclusion>
-                    <exclusion>
                         <groupId>xalan</groupId>
                         <artifactId>xalan</artifactId>
                     </exclusion>
@@ -897,6 +883,17 @@
                 <version>${antlr.version}</version>
             </dependency>
 
+            <!-- jmimemagic has dependency on xerces version 2.4.0
+                 and jasperreports also has transitive dependency on xerces version 2.9.1
+                 antisamy dependending on version 2.8.1
+                 spring-security-saml-core also depends on xerces.
+                 We'll depend the latest version 2.12.0 as there is a fix for memory leak(https://issues.apache.org/jira/browse/XERCESJ-1667)                 
+            -->
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>${xerces.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
