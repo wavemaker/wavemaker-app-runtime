@@ -19,6 +19,7 @@ WM.module('wm.layouts.containers')
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.containers', 'wm.menu.dataProps']),
                 menuDataProps = _.keys(PropertiesFactory.getPropertiesOf('', ['wm.menu.dataProps'])),
+                menuDataHideProps = ['addchild'],
                 defaultDataset = 'Link 1, Link 2, Link 3',
                 notifyFor = {
                     'dataset'      : true,
@@ -31,7 +32,7 @@ WM.module('wm.layouts.containers')
                     'orderby'      : true
                 };
 
-            menuDataProps.push('orderby', 'autoclose', 'itembadge');
+            menuDataProps.push('orderby', 'autoclose', 'itembadge', 'autoopen');
 
             function getNodes($is, nv) {
                 var nodes = [];
@@ -85,7 +86,7 @@ WM.module('wm.layouts.containers')
                         userRole      = $is.userrole;
 
                     $is.nodes = $is.nodes.reduce(function (result, node, index) {
-                        var menuAttrs = {}
+                        var menuAttrs = {};
                         if (Utils.validateAccessRoles(node[userRole])) {
                             result.push(node);
                             var $a            = WM.element('<a class="app-anchor"></a>'),
@@ -170,7 +171,7 @@ WM.module('wm.layouts.containers')
                     if (variable && variable.category === 'wm.LiveVariable') {
                         nv = nv.data;
                     }
-                    WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.binddataset);
+                    WidgetUtilService.updateWidgetProps($is, !!$is.binddataset, menuDataProps, menuDataHideProps);
                     // do not break here. continue with the next steps.
                 case 'scopedataset':
                     if(!nv) {
@@ -242,7 +243,7 @@ WM.module('wm.layouts.containers')
 
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
-                        WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.binddataset);
+                        WidgetUtilService.updateWidgetProps($is, !!$is.binddataset, menuDataProps, menuDataHideProps);
 
                         $is.$on('$destroy', $rs.$on('page-transition-end', function () {
                             $el.find('li.app-nav-item.active').removeClass('active');

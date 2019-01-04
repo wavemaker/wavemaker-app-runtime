@@ -267,7 +267,7 @@ WM.module('wm.widgets.basic')
                     $is.nodes = getNodes($is, $el, newVal.data || newVal);
                     $is._selectNode = undefined;
                     $is.renderTree($el, $is, attrs);
-                    WidgetUtilService.updateWidgetProps($is, treeDataProps, !!$is.binddataset);
+                    WidgetUtilService.updateWidgetProps($is, !!$is.binddataset, treeDataProps);
                     break;
                 case 'nodeicon':
                 case 'nodelabel':
@@ -407,7 +407,7 @@ WM.module('wm.widgets.basic')
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
 
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
-                        WidgetUtilService.updateWidgetProps($is, treeDataProps, !!$is.binddataset);
+                        WidgetUtilService.updateWidgetProps($is, !!$is.binddataset, treeDataProps);
 
                         if (!attrs.widgetid && attrs.scopedataset) {
                             $is.$watch('scopedataset', function (newVal) {

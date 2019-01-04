@@ -126,7 +126,7 @@ WM.module('wm.widgets.form')
                 if (CONSTANTS.isRunMode && newVal) {
                     scope.menuItems = getMenuItems(newVal.data || newVal, scope);
                 }
-                WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.binddataset);
+                WidgetUtilService.updateWidgetProps(scope, !!scope.binddataset, menuDataProps);
                 break;
             case 'linktarget':
                 scope.linktarget = newVal;
@@ -259,7 +259,7 @@ WM.module('wm.widgets.form')
                         }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                        WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.binddataset);
+                        WidgetUtilService.updateWidgetProps(scope, !!scope.binddataset, menuDataProps);
                         if (!scope.widgetid && attrs.scopedataset) {
                             $timeout(function () {
                                 scope.$watch('scopedataset', function (newVal) {
