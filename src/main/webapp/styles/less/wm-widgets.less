@@ -3947,7 +3947,7 @@ If the height and width are not specified the video takes the height of the post
       }
     }
 
-    /*** circle progress bar ***/
+    /*** progress circle bar ***/
     .app-progress.circle.progress {
       width: 100%;
       background-color: transparent;
@@ -3961,9 +3961,14 @@ If the height and width are not specified the video takes the height of the post
           stroke-linecap: round;
         }
       }
-      .show-percent:after {
-        content: ' %';
-        font-size: 0.7em;
+      .progress-text {
+        font-family: 'Helvetica', 'sans-serif';
+        font-size: 1.5rem;
+        color: #464646;
+        &.show-percent:after {
+          content: ' %';
+          font-size: 0.7em;
+        }
       }
       circle-progress > svg {
         circle:last-of-type {

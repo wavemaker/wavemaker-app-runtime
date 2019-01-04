@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
             '<div class="progress app-progress circle" ng-class="strokeColor" title="{{hint}}" init-widget apply-styles></div>'
         );
     }])
-    .directive('wmCircleProgress', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
+    .directive('wmProgressCircle', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.progress.circle', ['wm.base', 'wm.base.events']),
             notifyFor = {
@@ -102,9 +102,8 @@ WM.module('wm.widgets.basic')
             }
 
             if (progressBar.text) {
-                progressBar.text.style.fontFamily = 'Helvetica, sans-serif';
-                progressBar.text.style.fontSize = '2rem';
-                progressBar.text.className = (_.includes(scope.displayformat, '%') ? ' show-percent' : '');
+                progressBar.text.style.color = null;
+                progressBar.text.className = 'progress-text ' + (_.includes(scope.displayformat, '%') ? 'show-percent' : '');
             }
             progressBar.animate(percent);
         }
