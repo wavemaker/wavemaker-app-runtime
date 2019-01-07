@@ -78,7 +78,7 @@ WM.module('wm.layouts.containers')
                 switch (key) {
                 case 'actions':
                     scope.itemlabel = scope.itemlabel || scope.displayfield;
-                    WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.bindactions);
+                    WidgetUtilService.updateWidgetProps(scope, !!scope.bindactions, menuDataProps);
                     break;
                 case 'iconurl':
                     scope.iconsrc = Utils.getImageUrl(newVal);
@@ -198,7 +198,7 @@ WM.module('wm.layouts.containers')
                             /* register the property change handler */
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
                             WidgetUtilService.postWidgetCreate($is, $el, attrs);
-                            WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.bindactions);
+                            WidgetUtilService.updateWidgetProps($is, !!$is.bindactions, menuDataProps);
 
                             if (!$is.widgetid) {
                                 $is.onKeypress = function (args) {

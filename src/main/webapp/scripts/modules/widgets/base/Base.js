@@ -3356,11 +3356,16 @@ WM.module('wm.widgets.base', [])
              * @param menuDataProps List of widget properties.
              * @param show {boolean} true to show and false to hide.
              */
-            function updateWidgetProps(scope, menuDataProps, show) {
+            function updateWidgetProps(scope, show, propsToShow, propsToHide) {
                 var wProps = scope.widgetProps;
-                _.forEach(menuDataProps, function (value) {
+                _.forEach(propsToShow, function (value) {
                     if (wProps[value]) {
                         wProps[value].show = show;
+                    }
+                });
+                _.forEach(propsToHide, function (value) {
+                    if (wProps[value]) {
+                        wProps[value].show = !show;
                     }
                 });
                 // to refresh the properties panel.

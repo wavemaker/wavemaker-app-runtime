@@ -129,7 +129,7 @@ WM.module('wm.layouts.containers')
             switch (key) {
             case 'scopedataset':
             case 'dataset':
-                WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.binddataset);
+                WidgetUtilService.updateWidgetProps(scope, !!scope.binddataset, menuDataProps);
                 //break statement is intentionally removed for the flow
             case 'itemicon':
             case 'itemclass':
@@ -170,7 +170,7 @@ WM.module('wm.layouts.containers')
 
                     WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, $el, attrs);
-                    WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.binddataset);
+                    WidgetUtilService.updateWidgetProps(scope, !!scope.binddataset, menuDataProps);
 
                     //Set hasOnBeforeNavigate only when there is onBeforenavigate event on the widget
                     scope.hasOnBeforeNavigate = !!attrs.onBeforenavigate;

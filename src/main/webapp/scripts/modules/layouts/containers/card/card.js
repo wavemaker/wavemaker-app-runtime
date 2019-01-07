@@ -47,7 +47,7 @@ WM.module('wm.layouts.containers')
         function propertyChangeHandler($is, key) {
             switch (key) {
             case 'actions':
-                WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.bindactions);
+                WidgetUtilService.updateWidgetProps($is, !!$is.bindactions, menuDataProps);
             case 'subheading':
             case 'iconclass':
             case 'iconurl':
@@ -87,7 +87,7 @@ WM.module('wm.layouts.containers')
 
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    WidgetUtilService.updateWidgetProps(scope, menuDataProps, !!scope.bindactions);
+                    WidgetUtilService.updateWidgetProps(scope, !!scope.bindactions, menuDataProps);
                 }
             }
         };
