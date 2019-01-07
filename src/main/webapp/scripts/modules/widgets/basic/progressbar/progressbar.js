@@ -10,7 +10,7 @@ WM.module('wm.widgets.basic')
                 '</div>'
             );
     }])
-    .directive('wmProgress', [
+    .directive('wmProgressBar', [
         'PropertiesFactory',
         'WidgetUtilService',
         '$interval',
@@ -20,7 +20,7 @@ WM.module('wm.widgets.basic')
         function (PropertiesFactory, WidgetUtilService, $interval, Utils, CONSTANTS) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.progress', ['wm.base', 'wm.base.events']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.progress.bar', ['wm.base', 'wm.base.events']),
                 notifyFor = {
                     'datavalue'       : true,
                     'minvalue'        : true,
@@ -376,12 +376,12 @@ WM.module('wm.widgets.basic')
                         <wm-label caption="Type:"></wm-label>
                         <wm-checkbox scopedatavalue="show"></wm-text>
                     </wm-composite>
-                    <wm-progress type="bind:type"
+                    <wm-progress-bar type="bind:type"
                         height="24" datavalue="20"
                         on-click="f('click')"
                         on-dblclick="f('dblclick')"
                         show="bind:show">
-                    </wm-progress>
+                    </wm-progress-bar>
                     <br>
                     <div>single click count: {{clickCount}}</div>
                     <div>dbl click count: {{dblclickCount}}</div>
@@ -389,10 +389,10 @@ WM.module('wm.widgets.basic')
                 </fieldset>
                 <fieldset>
                     <legend>Multi ProgressBar</legend>
-                     <wm-progress type="bind:mutibarDataset.type"
+                     <wm-progress-bar type="bind:mutibarDataset.type"
                          height="24" dataset="bind:multibarDataset"
                          datavalue="bind:multibarDataset.value">
-                     </wm-progress>
+                     </wm-progress-bar>
                 </fieldset>
             </div>
         </file>

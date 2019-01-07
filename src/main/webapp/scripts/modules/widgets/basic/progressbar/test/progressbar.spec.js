@@ -9,13 +9,13 @@ describe("Testing Basic Widget: progress", function () {
         iScope,
         widget = {},
         markup =
-            '<wm-progress name="Progress name" type="success" hint="Progress hint" ' +
+            '<wm-progress-bar name="Progress name" type="success" hint="Progress hint" ' +
             'width="200px" height="20px" datavalue="40" minvalue="0" maxvalue="100" ' +
             'displayformat="percentage" pollinterval="10" show="true"' +
             'on-click="eventHandler()" on-dblclick="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()">' +
-            '</wm-progress>';
+            '</wm-progress-bar>';
 
-    widget.type = 'wm-progress'; // type of the widget
+    widget.type = 'wm-progress-bar'; // type of the widget
     widget.widgetSelector = 'element'; // perform common widget tests on this element
     widget.$unCompiled = WM.element(markup);
 
@@ -33,7 +33,7 @@ describe("Testing Basic Widget: progress", function () {
     commonWidgetTests_verifyStyles(widget);
     commonWidgetTests_verifyBasicEvents(widget);
 
-    /*Custom Test Suite for wm-progress widget.*/
+    /*Custom Test Suite for wm-progress-bar widget.*/
     describe('Executing widget specific tests: ' + widget.type, function () {
         beforeEach(function () {
 

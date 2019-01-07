@@ -18,7 +18,7 @@ WM.module('wm.widgets.basic')
             '                               {{instance.progressLabel}}</label>' +
             '                       </div>' +
             '                   </div>' +
-            '                   <wm-progress minvalue="{{instance.min}}" maxvalue="{{instance.max}}" datavalue="{{instance.value}}" />' +
+            '                   <wm-progress-bar minvalue="{{instance.min}}" maxvalue="{{instance.max}}" datavalue="{{instance.value}}" />' +
             '                   <button class="btn btn-secondary pull-right stop-btn" ng-if="instance.onStop" ng-click="instance.onStop();">' +
             '                       {{instance.stopButtonLabel}}' +
             '                   </button>' +
