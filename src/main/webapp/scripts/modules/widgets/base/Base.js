@@ -2118,7 +2118,7 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE}
                     },
-                    "wm.progress": {
+                    "wm.progress.bar": {
                         "hint": {"type": "string", "bindable": "in-bound"},
                         "minvalue": {"type": "number", "value": 0, "bindable": "in-bound"},
                         "maxvalue": {"type": "number", "value": 100, "bindable": "in-bound"},

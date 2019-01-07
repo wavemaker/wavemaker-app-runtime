@@ -104,6 +104,7 @@ WM.module('wm.widgets.basic')
             if (progressBar.text) {
                 progressBar.text.style.color = null;
                 progressBar.text.className = 'progress-text ' + (_.includes(scope.displayformat, '%') ? 'show-percent' : '');
+                progressBar.text.style.display = scope.captionplacement === 'inside' ? 'block' : 'none';
             }
             progressBar.animate(percent);
         }
