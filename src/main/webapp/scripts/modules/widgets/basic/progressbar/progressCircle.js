@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/circle-progress.html',
-            '<div class="progress app-progress circle" ng-class="strokeColor" title="{{hint}}" init-widget apply-styles></div>'
+            '<div class="progress app-progress circle" init-widget apply-styles></div>'
         );
     }])
     .directive('wmProgressCircle', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
@@ -23,10 +23,10 @@ WM.module('wm.widgets.basic')
             /* map of type and classes to be applied*/
             CLASSES = {
                 'default'        : '',
-                'success'        : 'progress-bar-success',
-                'info'           : 'progress-bar-info',
-                'warning'        : 'progress-bar-warning',
-                'danger'         : 'progress-bar-danger'
+                'success'        : 'progress-circle-success',
+                'info'           : 'progress-circle-info',
+                'warning'        : 'progress-circle-warning',
+                'danger'         : 'progress-circle-danger'
             },
             debouncedRender;
 
@@ -47,12 +47,24 @@ WM.module('wm.widgets.basic')
             }
         }
 
-        function getCircleProgressBar(scope) {
+        function togglePercent($is) {
+            var progressBar = getCircleProgressBar($is);
+            var textClass;
+            if(!progressBar.text) {
+                return;
+            }
+            if (!$is.bindtitle && !$is.title) {
+                textClass = _.includes($is.displayformat, '%') ? 'show-percent' : '';
+            }
+            progressBar.text.className = 'progress-text ' + textClass;
+        }
+
+        function getCircleProgressBar($is) {
             var progressBarEl;
-            if (!scope.circularProgressbar) {
-                progressBarEl = scope.$element;
+            if (!$is.circularProgressbar) {
+                progressBarEl = $is.$element;
                 progressBarEl.empty();
-                scope.circularProgressbar = new ProgressBar.Circle(progressBarEl[0], {
+                $is.circularProgressbar = new ProgressBar.Circle(progressBarEl[0], {
                     color: '#aaa',
                     strokeWidth: 5,
                     trailWidth: 5,
@@ -64,35 +76,35 @@ WM.module('wm.widgets.basic')
                     text: {
                         autoStyleContainer: false
                     },
-                    from: { color: '#333', value: scope.minvalue },
-                    to: { color: '#333', value: scope.maxvalue },
+                    from: { color: '#333', value: $is.minvalue },
+                    to: { color: '#333', value: $is.maxvalue },
                     // Set default step function for all animate calls
                     step: function(state, circle) {
                         var decimalCount, value;
-                        if (scope.captionplacement !== 'inside') {
+                        if ($is.captionplacement !== 'inside') {
                             return;
                         }
-                        decimalCount = getDecimalCount(scope.displayformat);
-                        value = scope.title || (circle.value() * 100).toFixed(decimalCount);
+                        decimalCount = getDecimalCount($is.displayformat);
+                        value = $is.title || (circle.value() * 100).toFixed(decimalCount);
                         circle.setText(value);
                     }
                 });
             }
-            return scope.circularProgressbar;
+            return $is.circularProgressbar;
         }
 
-        function render(scope) {
-            var datavalue = scope.datavalue,
+        function render($is) {
+            var datavalue = $is.datavalue,
                 percent = '',
                 isPercentage = isPercentageValue(datavalue),
-                progressBar = getCircleProgressBar(scope);
+                progressBar = getCircleProgressBar($is);
 
             if (isPercentage) {
                 datavalue = _.toNumber(datavalue.replace('%', ''));
                 percent = datavalue / 100;
             } else {
                 datavalue = _.toNumber(datavalue);
-                percent = (datavalue - scope.minvalue) / (scope.maxvalue - scope.minvalue);
+                percent = (datavalue - $is.minvalue) / ($is.maxvalue - $is.minvalue);
             }
 
             if ( _.isNaN(percent)) {
@@ -103,18 +115,19 @@ WM.module('wm.widgets.basic')
 
             if (progressBar.text) {
                 progressBar.text.style.color = null;
-                progressBar.text.className = 'progress-text ' + (_.includes(scope.displayformat, '%') ? 'show-percent' : '');
-                progressBar.text.style.display = scope.captionplacement === 'inside' ? 'block' : 'none';
+                progressBar.text.style.display = $is.captionplacement === 'inside' ? 'block' : 'none';
             }
+            togglePercent($is);
             progressBar.animate(percent);
         }
 
-        function propertyChangeHandler($is, element, key, nv) {
-            var progressBar;
+        function propertyChangeHandler($is, element, key, nv, ov) {
             switch (key) {
                 case 'type':
-                    $is.strokeColor = CLASSES[nv];
+                    element.removeClass(CLASSES[ov]).addClass(CLASSES[nv]);
                     break;
+                case 'hint':
+                    element.attr('title', nv);
                 case 'datavalue':
                 case 'minvalue':
                 case 'maxvalue':
@@ -123,10 +136,7 @@ WM.module('wm.widgets.basic')
                     debouncedRender($is);
                     break;
                 case 'displayformat':
-                    progressBar = getCircleProgressBar($is);
-                    if (progressBar && progressBar.text) {
-                        progressBar.text.className =  (_.includes(nv, '%') ? ' show-percent' : '');
-                    }
+                    debouncedRender($is);
                     break;
             }
 
