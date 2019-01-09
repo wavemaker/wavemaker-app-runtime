@@ -146,7 +146,7 @@ WM.module('wm.widgets.basic')
                     progressBarWidth = displayValue = (scope.datavalue || '0%');
                 } else {
                     if (WM.isDefined(scope.datavalue)) {
-                        displayValue = scope.datavalue * 100 / (scope.maxvalue - scope.minvalue);
+                        displayValue = (scope.datavalue - scope.minvalue) * 100 / (scope.maxvalue - scope.minvalue);
                         progressBarWidth = displayValue + '%';
                     } else {
                         displayValue = progressBarWidth = 0;
@@ -154,23 +154,18 @@ WM.module('wm.widgets.basic')
                 }
 
                 progressBarEl.css('width', progressBarWidth);
-                if (!$label.length || (newDatavalue !== oldDatavalue)) {
-                    // support for percentage / absolute displayformat in old project.
-                    if (attrs.displayformat === DISPLAY_FORMAT.PERCENTAGE) {
-                        displayValue = progressBarWidth;
-                    } else if (attrs.displayformat !== DISPLAY_FORMAT.ABSOLUTE) {
-                        displayValue = (displayValue.toFixed(getDecimalCount(scope.displayformat)));
+                if (!isValueAPercentage) {
+                    displayValue = (displayValue.toFixed(getDecimalCount(scope.displayformat)));
 
-                        if (_.includes(scope.displayformat, '%')) {
-                            displayValue = displayValue + '%';
-                        }
+                    if (_.includes(scope.displayformat, '%')) {
+                        displayValue = displayValue + '%';
                     }
+                }
 
-                    if ($label.length) {
-                        $label.text(displayValue).attr('data-caption-placement', scope.captionplacement);
-                    } else {
-                        WM.element('<span class="app-progress-label"></span>').text(displayValue).attr('data-caption-placement', scope.captionplacement).appendTo(progressBarEl);
-                    }
+                if ($label.length) {
+                    $label.text(displayValue).attr('data-caption-placement', scope.captionplacement);
+                } else {
+                    WM.element('<span class="app-progress-label"></span>').text(displayValue).attr('data-caption-placement', scope.captionplacement).appendTo(progressBarEl);
                 }
             }
 
