@@ -53,7 +53,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.LRUMap;
 import com.sun.jndi.ldap.Connection;
 import com.sun.jndi.ldap.LdapClient;
 import com.sun.jndi.ldap.LdapPoolManager;
@@ -74,8 +76,8 @@ import com.wavemaker.commons.util.WMUtils;
 public class CleanupListener implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(CleanupListener.class);
-    
-    private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer.getInteger("wm.app.maxWaitTimeRunningThreads", 5000); 
+
+    private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer.getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
 
     private boolean isSharedLib() {
         return WMUtils.isSharedLibSetup();
@@ -103,7 +105,7 @@ public class CleanupListener implements ServletContextListener {
                     Thread.currentThread().setContextClassLoader(XSSFPicture.class.getClassLoader());
                     logger.info("warming up poi prototype field");
                     final Method prototype = findMethod(XSSFPicture.class, "prototype");
-                    if(prototype!=null) {
+                    if (prototype != null) {
                         prototype.invoke(null);
                     }
                 } finally {
@@ -125,7 +127,8 @@ public class CleanupListener implements ServletContextListener {
             deRegisterOracleDiagnosabilityMBean(getAppClassLoader());
             typeFactoryClearTypeCache(getAppClassLoader());
             resourceManagerClearPropertiesCache();
-            //clearCacheSourceAbstractClassGenerator();
+            jacksonAnnotationIntrospectorClearAnnotationTypes(getAppClassLoader());
+            //clearCacheSourceAbstractClassGenerator()
             clearLdapThreadConnections(getAppClassLoader());
             cleanupMBeanNotificationListeners(getAppClassLoader());
             cleanupJULIReferences(getAppClassLoader());
@@ -139,6 +142,41 @@ public class CleanupListener implements ServletContextListener {
             logger.info("Clean Up Successful!");
         } catch (Exception e) {
             logger.info("Failed to clean up some things on app undeploy", e);
+        }
+    }
+
+    private void jacksonAnnotationIntrospectorClearAnnotationTypes(ClassLoader classLoader) {
+        /*
+        *  ObjectMapper which comes from the shared classloader, is the parent classloader for all deployed applications.
+        *  It is having a static reference to JacksonAnnotationIntrospector" instance.
+        *  JacksonAnnotationIntrospector object is having a map, which is holding reference to custom annotation classes used in the application.
+        *  As parent class loader is holding the references to custom annotations used in child classloader, this is preventing the garbage collection of child
+        *  classloader even after undeploying the application.
+        *
+        *   Fix:
+        *   This cleanup task that removes all the entries from the map declared in JacksonAnnotationIntrospector object.
+        *   This removes all the references (from parent classloader) to the custom annotation classes used in the child class loader(deployed applications).
+        *
+        * */
+        if (isSharedLib()) {
+            String className = "com.fasterxml.jackson.databind.ObjectMapper";
+            try {
+                Class klass = ClassLoaderUtils.findLoadedClass(classLoader.getParent(), className);
+                if (klass != null) {
+                    logger.info("Attempting to clear annotation map from {} JacksonAnnotationIntrospector class instance", klass);
+                    Field defaultAnnotationIntrospectorField = klass.getDeclaredField("DEFAULT_ANNOTATION_INTROSPECTOR");
+                    defaultAnnotationIntrospectorField.setAccessible(true);
+                    JacksonAnnotationIntrospector jacksonAnnotationIntrospector = (JacksonAnnotationIntrospector) defaultAnnotationIntrospectorField.get(null);
+                    Field annotaionsInsideField = jacksonAnnotationIntrospector.getClass().getDeclaredField("_annotationsInside");
+                    annotaionsInsideField.setAccessible(true);
+                    LRUMap lruMap = (LRUMap) annotaionsInsideField.get(jacksonAnnotationIntrospector);
+                    if (lruMap != null) {
+                        lruMap.clear();
+                    }
+                }
+            } catch (Throwable e) {
+                logger.warn("Failed to Clear annotationsMap  from {}", className, e);
+            }
         }
     }
 
@@ -208,7 +246,7 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
-    private static void deRegisterOracleDiagnosabilityMBean(String nameValue) 
+    private static void deRegisterOracleDiagnosabilityMBean(String nameValue)
             throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         final Hashtable<String, String> keys = new Hashtable<>();
@@ -278,11 +316,11 @@ public class CleanupListener implements ServletContextListener {
             Field levelObjectField = findField(klass, "levelObject");
             Field mirroredLevelField = findField(klass, "mirroredLevel");
             synchronized (klass) {
-                if(nameToKnownLevelsField!=null) {
+                if (nameToKnownLevelsField != null) {
                     Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
                     removeTCLKnownLevels(classLoader, nameToKnownLevels, levelObjectField, mirroredLevelField);
                 }
-                if(intToKnownLevelsField!=null){
+                if (intToKnownLevelsField != null) {
                     Map<Object, List> intToKnownLevels = (Map<Object, List>) intToKnownLevelsField.get(null);
                     removeTCLKnownLevels(classLoader, intToKnownLevels, levelObjectField, mirroredLevelField);
                 }
@@ -295,7 +333,7 @@ public class CleanupListener implements ServletContextListener {
     }
 
     private static void removeTCLKnownLevels(ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
-            Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
+                                             Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
         Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
         Iterator<Map.Entry<Object, List>> mapEntryIterator = entrySet.iterator();
         while (mapEntryIterator.hasNext()) {
@@ -352,19 +390,19 @@ public class CleanupListener implements ServletContextListener {
         Class<ResourceManager> klass = ResourceManager.class;
         try {
             Field propertiesCache = findField(klass, "propertiesCache");
-            if (propertiesCache != null){
+            if (propertiesCache != null) {
                 WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache
                         .get(null);
-            if (!map.isEmpty()) {
-                logger.info("Clearing propertiesCache from ");
-                map.clear();
+                if (!map.isEmpty()) {
+                    logger.info("Clearing propertiesCache from ");
+                    map.clear();
+                }
             }
-        }
         } catch (Throwable e) {
             logger.warn("Failed to clear propertiesCache from {}", klass, e);
         }
     }
-    
+
     private void clearLdapThreadConnections(ClassLoader classLoader) {
         List<Thread> threads = getThreads(classLoader);
         for (Thread thread : threads) {
@@ -425,7 +463,7 @@ public class CleanupListener implements ServletContextListener {
             logger.warn("Failed to de-register drivers", e);
         }
     }
-    
+
     public static void deregisterSecurityProviders(ClassLoader classLoader) {
         logger.info("Attempting to deregister any security providers registered by webapp");
         Provider[] providers = Security.getProviders();
@@ -435,7 +473,7 @@ public class CleanupListener implements ServletContextListener {
                 Security.removeProvider(provider.getName());
             }
         }
-        
+
     }
 
     /**
@@ -464,7 +502,7 @@ public class CleanupListener implements ServletContextListener {
                         StackTraceElement[] stackTrace = thread.getStackTrace();
                         Throwable throwable = new IllegalThreadStateException("Thread [" + thread.getName() + "] is Still running");
                         throwable.setStackTrace(stackTrace);
-                        logger.warn("Thread {} is still alive after waiting for {} and will mostly probably create a memory leak", thread.getName(), 
+                        logger.warn("Thread {} is still alive after waiting for {} and will mostly probably create a memory leak", thread.getName(),
                                 waitTimeOutInMillis, throwable);
                     }
                 }
@@ -500,11 +538,12 @@ public class CleanupListener implements ServletContextListener {
             logger.warn("Couldn't stop timer thread {} as one of newTasksMayBeScheduled/queue fields are not present in the class {}", thread, thread
                     .getClass().getName());
         }
-        
+
     }
 
     /**
-     * returns threads running in the given in class loader context or whose class is loaded from given class loader 
+     * returns threads running in the given in class loader context or whose class is loaded from given class loader
+     *
      * @param classLoader
      * @return
      */
@@ -542,11 +581,11 @@ public class CleanupListener implements ServletContextListener {
             }
         }
     }
-    
+
     private static ClassLoader getAppClassLoader() {
         return Thread.currentThread().getContextClassLoader();
     }
-    
+
     private static Field findField(Class klass, String name) {
         Field field = ReflectionUtils.findField(klass, name);
         if (field != null) {
