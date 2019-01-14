@@ -79,7 +79,7 @@ fragment ALPHABET : ('_'|'a'..'z'|'A'..'Z');
 fragment ALPHA_NUMERIC : ( ALPHABET | NUMBER );
 fragment STRING : (ESCAPE_QUOTE|ALL_BUT_QUOTE)* ; // all the content which can be inside singlequotes, this includes escaped singlequotes.
 fragment EQ : '=';
-fragment NE : '!=';
+fragment NE : '!=' | '<>';
 fragment LT : '<';
 fragment LE : '<=';
 fragment GT : '>';
