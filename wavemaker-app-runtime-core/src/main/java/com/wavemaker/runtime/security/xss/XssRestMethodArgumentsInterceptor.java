@@ -75,7 +75,7 @@ public class XssRestMethodArgumentsInterceptor implements RestMethodArgumentsInt
         Object encoded = value;
         boolean modified = false;
 
-        if (value != null && !(manipulatedObjects.contains(value) || isExcludedClass(value))) {
+        if (value != null && !(value instanceof Number) && !(manipulatedObjects.contains(value) || isExcludedClass(value))) {
             final Class<?> valueClass = value.getClass();
             manipulatedObjects.add(value);
 
