@@ -91,7 +91,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
 
         sortValidator.validate(validPageable, historyClass);
 
-        final SelectQueryBuilder builder = new SelectQueryBuilder(historyClass)
+        final SelectQueryBuilder builder = new SelectQueryBuilder(historyClass, hqlSanitize)
                 .withFilter(query);
         periodClauses.forEach(builder::withPeriodClause);
 
@@ -108,7 +108,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
 
         sortValidator.validate(validPageable, historyClass);
 
-        final SelectQueryBuilder builder = new SelectQueryBuilder(historyClass)
+        final SelectQueryBuilder builder = new SelectQueryBuilder(historyClass, hqlSanitize)
                 .withFilterConditions(identifier);
         periodClauses.forEach(builder::withPeriodClause);
 
@@ -121,7 +121,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
     @Override
     public int update(
             final Map<String, Object> identifier, final PeriodClause periodClause, final E entity) {
-        UpdateQueryBuilder builder = new UpdateQueryBuilder(historyClass);
+        UpdateQueryBuilder builder = new UpdateQueryBuilder(historyClass, hqlSanitize);
 
         builder.withFilterConditions(identifier);
         builder.withPeriodClause(periodClause);
@@ -141,7 +141,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
     @Override
     public int update(
             final PeriodClause periodClause, final String filter, final E entity) {
-        UpdateQueryBuilder builder = new UpdateQueryBuilder(historyClass);
+        UpdateQueryBuilder builder = new UpdateQueryBuilder(historyClass, hqlSanitize);
 
         builder.withFilter(filter);
         builder.withPeriodClause(periodClause);
@@ -160,7 +160,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
 
     @Override
     public int delete(final Map<String, Object> identifier, final PeriodClause periodClause) {
-        DeleteQueryBuilder builder = new DeleteQueryBuilder(historyClass);
+        DeleteQueryBuilder builder = new DeleteQueryBuilder(historyClass, hqlSanitize);
 
         builder.withFilterConditions(identifier);
         builder.withPeriodClause(periodClause);
@@ -170,7 +170,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
 
     @Override
     public int delete(final PeriodClause periodClause, final String filter) {
-        DeleteQueryBuilder builder = new DeleteQueryBuilder(historyClass);
+        DeleteQueryBuilder builder = new DeleteQueryBuilder(historyClass, hqlSanitize);
 
         builder.withFilter(filter);
         builder.withPeriodClause(periodClause);
