@@ -11,8 +11,8 @@ import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
  * @since 8/5/18
  */
 public class DeleteQueryBuilder extends QueryBuilder<DeleteQueryBuilder> {
-    public DeleteQueryBuilder(final Class<?> entityClass) {
-        super(entityClass);
+    public DeleteQueryBuilder(final Class<?> entityClass, boolean hqlSanitize) {
+        super(entityClass, hqlSanitize);
     }
 
     public WMQueryInfo build() {

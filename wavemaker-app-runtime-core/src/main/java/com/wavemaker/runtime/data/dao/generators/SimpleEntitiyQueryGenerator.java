@@ -16,10 +16,13 @@ public class SimpleEntitiyQueryGenerator<E, I> implements EntityQueryGenerator<E
     private final Class<E> entityClass;
 
     private final IdentifierStrategy<E, I> identifierStrategy;
+    private final boolean hqlSanitize;
 
     @SuppressWarnings("unchecked")
-    public SimpleEntitiyQueryGenerator(final Class<E> entityClass) {
+    public SimpleEntitiyQueryGenerator(final Class<E> entityClass, boolean hqlSanitize) {
         this.entityClass = entityClass;
+        this.hqlSanitize = hqlSanitize;
+
 
         if (entityClass.isAnnotationPresent(IdClass.class)) {
             final IdClass idClass = entityClass.getAnnotation(IdClass.class);
@@ -31,7 +34,7 @@ public class SimpleEntitiyQueryGenerator<E, I> implements EntityQueryGenerator<E
 
     @Override
     public SelectQueryBuilder findById(final I identifier) {
-        SelectQueryBuilder builder = SelectQueryBuilder.newBuilder(entityClass);
+        SelectQueryBuilder builder = SelectQueryBuilder.newBuilder(entityClass, hqlSanitize);
 
         builder.withFilterConditions(identifierStrategy.extract(identifier));
 
@@ -40,19 +43,19 @@ public class SimpleEntitiyQueryGenerator<E, I> implements EntityQueryGenerator<E
 
     @Override
     public SelectQueryBuilder findBy(final Map<String, Object> fieldValueMap) {
-        return SelectQueryBuilder.newBuilder(entityClass)
+        return SelectQueryBuilder.newBuilder(entityClass, hqlSanitize)
                 .withFilterConditions(fieldValueMap);
     }
 
     @Override
     public SelectQueryBuilder searchByQuery(final String query) {
-        return SelectQueryBuilder.newBuilder(entityClass)
+        return SelectQueryBuilder.newBuilder(entityClass, hqlSanitize)
                 .withFilter(query);
     }
 
     @Override
     public SelectQueryBuilder getAggregatedValues(final AggregationInfo aggregationInfo) {
-        return SelectQueryBuilder.newBuilder(entityClass)
+        return SelectQueryBuilder.newBuilder(entityClass, hqlSanitize)
                 .withAggregationInfo(aggregationInfo);
     }
 }
