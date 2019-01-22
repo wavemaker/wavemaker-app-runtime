@@ -2944,6 +2944,8 @@ WM.module('wm.widgets.table')
                             'minvalue'          : isNaN(+attrs.minvalue) ? attrs.minvalue : +attrs.minvalue,
                             'maxvalue'          : isNaN(+attrs.maxvalue) ? attrs.maxvalue : +attrs.maxvalue,
                             'maxchars'          : isNaN(+attrs.maxchars) ? attrs.maxchars : +attrs.maxchars,
+                            'editinputtype'     : attrs.editinputtype || 'text',
+                            'filterinputtype'   : attrs.filterinputtype || 'text'
                         };
 
                         _.forEach(columnProperties, function (key) {
