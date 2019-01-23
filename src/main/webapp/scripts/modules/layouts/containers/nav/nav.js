@@ -19,6 +19,9 @@ WM.module('wm.layouts.containers')
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.containers', 'wm.menu.dataProps']),
                 menuDataProps = _.keys(PropertiesFactory.getPropertiesOf('', ['wm.menu.dataProps'])),
+                menuDataHideProps = ['addchild'],
+                defaultDataset = 'Link 1, Link 2, Link 3',
+                isDefaultDataset = false,
                 notifyFor = {
                     'dataset'      : true,
                     'scopedataset' : true,
@@ -83,6 +86,7 @@ WM.module('wm.layouts.containers')
                         childrenField = $is.itemchildren || 'children',
                         userRole      = $is.userrole;
 
+                    labelField = isDefaultDataset ? 'label' : $is.itemlabel;
                     $is.nodes = $is.nodes.reduce(function (result, node, index) {
                         var menuAttrs = {}
                         if (Utils.validateAccessRoles(node[userRole])) {
@@ -166,16 +170,19 @@ WM.module('wm.layouts.containers')
                 switch (key) {
                 case 'dataset':
                     variable = $s.Variables[Utils.getVariableName($is, $s)];
-                    if (variable && variable.category === 'wm.LiveVariable') {
-                        nv = nv.data;
+                    if (variable && _.includes(['wm.LiveVariable', 'wm.ServiceVariable'], variable.category)) {
+                        nv = _.isEmpty(nv.data) ? defaultDataset : nv.data;
                     }
                     WidgetUtilService.updateWidgetProps($is, menuDataProps, !!$is.binddataset);
                     // do not break here. continue with the next steps.
                 case 'scopedataset':
+                    isDefaultDataset = nv === defaultDataset;
                     $is.nodes = getNodes($is, nv);
                     constructNav($el, $is, attrs);
                     if ($is.widgetid) {
                         $rs.$emit('nav-dataset-modified', {'widgetName': $is.name});
+                        // show Representation Data tag if dataset value is same as default value.
+                        (defaultDataset !== nv) ? $el.removeAttr('data-evaluated-dataset') : $el.attr('data-evaluated-dataset', '');
                     }
                     break;
                 case 'itemicon':
@@ -231,7 +238,8 @@ WM.module('wm.layouts.containers')
                     },
 
                     'post': function ($is, $el, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, $el.scope(), $is, $el, attrs);
+                        var onPropertyChange = propertyChangeHandler.bind(undefined, $el.scope(), $is, $el, attrs),
+                            variable;
 
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
@@ -288,6 +296,16 @@ WM.module('wm.layouts.containers')
                             //this hides type and layout properties only for top-nav
                             $is.widgetProps.type.show = false;
                             $is.widgetProps.layout.show = false;
+                        }
+                        if($is.widgetid) {
+                            // When nav widget is bound to service variable set default nav items.
+                            var $s = $el.scope();
+                            variable = $s.Variables[Utils.getVariableName($is, $s)];
+                            if (variable && variable.category === 'wm.ServiceVariable') {
+                                $is.dataset = defaultDataset;
+                            } else if ($el.children('[widgetid]').length) {
+                                $el.removeAttr('data-evaluated-dataset');
+                            }
                         }
                     }
                 }
