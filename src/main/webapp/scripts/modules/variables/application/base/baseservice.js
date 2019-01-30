@@ -1797,6 +1797,12 @@ wm.variables.services.Variables = [
                 /* remove the variables in namespace from the variable collection*/
                 delete self.variableCollection[namespace];
                 delete self.variableCollection[scopeId];
+                // remove the destroyed scope references from map, to be garbage collected
+                _.forEach(pageScopeMap, function(v,k) {
+                    if(v.$$destroyed) {
+                        delete pageScopeMap[k];
+                    }
+                });
             },
 
             //Trigger error handler before discarding queued requests
