@@ -193,4 +193,6 @@
         </constructor-arg>
     </bean>
 
+    <bean id="webProcessController" class="com.wavemaker.runtime.webprocess.controller.WebProcessController"/>
+
 </beans>
