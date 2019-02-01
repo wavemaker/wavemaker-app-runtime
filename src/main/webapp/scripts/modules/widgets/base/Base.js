@@ -1868,6 +1868,7 @@ WM.module('wm.widgets.base', [])
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE},
                         "onSelectionlimitexceed" : {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onReorder" : {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onSelect" : {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "pagesize": {"type": "number", "value": 20},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "selectionlimit": {"type": "number", "bindable": "in-bound"},
