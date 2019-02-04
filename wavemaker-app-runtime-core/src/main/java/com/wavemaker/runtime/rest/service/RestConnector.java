@@ -122,7 +122,7 @@ public class RestConnector {
         WMRestTemplate wmRestTemplate = new WMRestTemplate() {
 
             @Override
-            protected <T> ResponseExtractor<ResponseEntity<T>> responseEntityExtractor(Type responseType) {
+            public <T> ResponseExtractor<ResponseEntity<T>> responseEntityExtractor(Type responseType) {
                 return (responseExtractor != null) ? responseExtractor : super.responseEntityExtractor(responseType);
             }
         };

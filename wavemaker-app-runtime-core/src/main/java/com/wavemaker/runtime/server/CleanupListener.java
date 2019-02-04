@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
-
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
@@ -47,7 +46,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.xssf.usermodel.XSSFPicture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +133,7 @@ public class CleanupListener implements ServletContextListener {
             deregisterSecurityProviders(getAppClassLoader());
             stopRunningThreads(getAppClassLoader(), MAX_WAIT_TIME_FOR_RUNNING_THREADS);
             //Release all open references for logging
-            LogFactory.release(getAppClassLoader());
+//            LogFactory.release(getAppClassLoader());
 
             // flush all of the Introspector's internal caches
             Introspector.flushCaches();
