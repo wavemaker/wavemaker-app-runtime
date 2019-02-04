@@ -18,8 +18,6 @@ package com.wavemaker.runtime.security.token;
 import java.util.Collection;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +33,7 @@ import com.wavemaker.commons.model.security.TokenAuthConfig;
 import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.token.exception.TokenGenerationException;
-import com.wavemaker.runtime.security.token.repository.InMemoryPersistentAuthTokenRepository;
-import com.wavemaker.runtime.security.token.repository.PersistentAuthTokenRepository;
+import com.wavemaker.runtime.security.token.repository.WMTokenRepository;
 import com.wavemaker.runtime.util.MessageDigestUtil;
 
 /**
@@ -59,33 +56,23 @@ public class WMTokenBasedAuthenticationService {
     @Autowired
     private TokenAuthConfig tokenAuthConfig;
 
+    @Autowired
+    private WMTokenRepository tokenRepository;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(WMTokenBasedAuthenticationService.class);
 
-    public static final int DEFAULT_VALIDITY_SECONDS = 1800;
+    public static final int DEFAULT_VALIDITY_SECONDS = WMTokenRepository.DEFAULT_VALIDITY_SECONDS;
     public static final String DEFAULT_KEY = "WM_TOKEN";
 
     private int tokenValiditySeconds = DEFAULT_VALIDITY_SECONDS;
     private String key = DEFAULT_KEY;
 
-    private PersistentAuthTokenRepository<String, WMUser> persistentAuthTokenRepository;
 
     public WMTokenBasedAuthenticationService() {
     }
 
     public WMTokenBasedAuthenticationService(int tokenValiditySeconds) {
         this.tokenValiditySeconds = tokenValiditySeconds;
-    }
-
-    public WMTokenBasedAuthenticationService(PersistentAuthTokenRepository<String, WMUser> tokenRepository) {
-        this.persistentAuthTokenRepository = tokenRepository;
-    }
-
-    @PostConstruct
-    protected void init() {
-        this.tokenValiditySeconds = tokenAuthConfig.getTokenValiditySeconds();
-        if (persistentAuthTokenRepository == null) {
-            persistentAuthTokenRepository = new InMemoryPersistentAuthTokenRepository(tokenValiditySeconds);
-        }
     }
 
     public Token generateToken(Authentication successfulAuthentication) {
@@ -105,14 +92,14 @@ public class WMTokenBasedAuthenticationService {
         Token token = new Token(signatureValue);
 
         WMUser wmUser = toWMUser(successfulAuthentication);
-        persistentAuthTokenRepository.addToken(token.getWmAuthToken(), wmUser);
+        tokenRepository.addToken(token.getWmAuthToken(), wmUser);
 
         return token;
 
     }
 
     public Authentication getAuthentication(Token token) {
-        WMUser wmUser = persistentAuthTokenRepository.getAuthentication(token.getWmAuthToken());
+        WMUser wmUser = tokenRepository.loadUser(token.getWmAuthToken());
         return toAuthentication(wmUser);
     }
 
