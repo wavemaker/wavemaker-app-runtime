@@ -23,10 +23,19 @@ wm.variables.services.VariableService = function (BaseService) {
          * @param {function} failureCallback to be called on failure
          */
         create: function (params, successCallback, failureCallback) {
+            var action = 'addAppVariables',
+                urlParams = {
+                    projectId: params.projectId
+                };
+
+            if (params.pageName !== 'App') {
+                action = 'addPageVariables';
+                urlParams.pageName = params.pageName;
+            }
             BaseService.send({
                 target: 'VariableService',
-                action: params.pageName === 'App' ? 'addAppVariables' : 'addPageVariables',
-                urlParams: params,
+                action: action,
+                urlParams: urlParams,
                 data: params.data
             }, successCallback, failureCallback);
         },
@@ -44,10 +53,20 @@ wm.variables.services.VariableService = function (BaseService) {
          * @param {function} failureCallback to be called on failure
          */
         get: function (params, successCallback, failureCallback) {
+            var action = 'getAppVariables',
+                urlParams = {
+                projectId: params.projectId
+            };
+
+            if (params.pageName !== 'App') {
+                action = 'getPageVariables';
+                urlParams.pageName = params.pageName;
+            }
+
             BaseService.send({
                 target: 'VariableService',
-                action: params.pageName === 'App' ? 'getAppVariables' : 'getPageVariables',
-                urlParams: params
+                action: action,
+                urlParams: urlParams
             }, successCallback, failureCallback);
         },
         /**
@@ -64,10 +83,19 @@ wm.variables.services.VariableService = function (BaseService) {
          * @param {function} failureCallback to be called on failure
          */
         update: function (params, successCallback, failureCallback) {
+            var action = 'updateAppVariables',
+                urlParams = {
+                    projectId: params.projectId
+                };
+
+            if (params.pageName !== 'App') {
+                action = 'updatePageVariables';
+                urlParams.pageName = params.pageName;
+            }
             BaseService.send({
                 target: 'VariableService',
-                action: params.pageName === 'App' ? 'updateAppVariables' : 'updatePageVariables',
-                urlParams: params,
+                action: action,
+                urlParams: urlParams,
                 data: params.data
             }, successCallback, failureCallback);
         },
@@ -85,10 +113,22 @@ wm.variables.services.VariableService = function (BaseService) {
          * @param {function} failureCallback to be called on failure
          */
         move: function (params, successCallback, failureCallback) {
+            var action = 'moveAppVariables',
+                urlParams = {
+                    projectId: params.projectId
+                };
+
+            if (params.pageName !== 'App') {
+                action = 'movePageVariables';
+                urlParams.pageName = params.pageName;
+            } else {
+                urlParams.toPage = params.toPage
+            }
+
             BaseService.send({
                 target: 'VariableService',
-                action: params.pageName === 'App' ? 'moveAppVariables' : 'movePageVariables',
-                urlParams: params,
+                action: action,
+                urlParams: urlParams,
                 data: params.data
             }, successCallback, failureCallback);
         },
@@ -106,10 +146,20 @@ wm.variables.services.VariableService = function (BaseService) {
          * @param {function} failureCallback to be called on failure
          */
         delete: function (params, successCallback, failureCallback) {
+            var action = 'deleteAppVariables',
+                urlParams = {
+                    projectId: params.projectId,
+                    deletedNames: params.deletedNames
+                };
+
+            if (params.pageName !== 'App') {
+                action = 'deletePageVariables';
+                urlParams.pageName = params.pageName;
+            }
             BaseService.send({
                 target: 'VariableService',
-                action: params.pageName === 'App' ? 'deleteAppVariables' : 'deletePageVariables',
-                urlParams: params
+                action: action,
+                urlParams: urlParams
             }, successCallback, failureCallback);
         },
         /**
