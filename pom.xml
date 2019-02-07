@@ -269,7 +269,7 @@
                 <plugin>
                     <groupId>com.mycila.maven-license-plugin</groupId>
                     <artifactId>maven-license-plugin</artifactId>
-                    <version>1.10.0.0</version>
+                    <version>1.9.9.9</version>
                     <configuration>
                         <header>${license.header.file}</header>
                         <strictCheck>true</strictCheck>
