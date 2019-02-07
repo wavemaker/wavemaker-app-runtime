@@ -136,11 +136,11 @@ wm.variables.constant('VARIABLE_SERVICE_URLS', {
             method: 'PUT'
         },
         deleteAppVariables: {
-            url: 'services/projects/:projectId/variables?variableNames[]=:deletedNames',
+            url: 'services/projects/:projectId/variables?variableNames=:deletedNames',
             method: 'DELETE'
         },
         deletePageVariables: {
-            url: 'services/projects/:projectId/pages/:pageName/variables?variableNames[]=:deletedNames',
+            url: 'services/projects/:projectId/pages/:pageName/variables?variableNames=:deletedNames',
             method: 'DELETE'
         },
         moveAppVariables: {
