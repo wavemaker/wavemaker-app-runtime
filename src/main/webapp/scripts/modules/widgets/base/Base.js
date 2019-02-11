@@ -875,7 +875,8 @@ WM.module('wm.widgets.base', [])
                         "autofocus": {"type": "boolean", "value": false },
                         "onFocus": {"show": false},
                         "onBlur": {"show": false},
-                        "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "debouncetime": {"type": "number", "value": "250", "show": true}
                     },
 
 
@@ -1987,7 +1988,8 @@ WM.module('wm.widgets.base', [])
                         "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
-                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "debouncetime": {"type": "number", "value": "250", "show": true}
                     },
                     "wm.chart": {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -2200,7 +2202,7 @@ WM.module('wm.widgets.base', [])
                     "multiple", "maxsize", "inputposition", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen", "enablefullswipe",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "disableprevious", "disabledone", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
-                    "xpadding", "ypadding", "interaction", "autoopen", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchon", "position",
+                    "xpadding", "ypadding", "interaction", "autoopen", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchon", "position", "debouncetime",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "selectionlimit", "formposition", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard", "barcodeformat", "minchars"], "parent": "properties"},
                 {"name": "popoverbehavior", "properties": ["popoverplacement", "contentanimation", "popoverarrow", "popoverautoclose"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign", "ondemandmessage"], "parent": "properties"},
