@@ -188,7 +188,6 @@ WM.module('wm.utils', [])
                 'DEVICE'          : [{'name' : 'cordova-plugin-device', 'spec': '2.0.2'}],
                 'APPVERSION'      : [{'name' : 'cordova-plugin-app-version', 'spec': '0.1.9'}],
                 'WHITELIST'       : [{'name' : 'cordova-plugin-whitelist', 'spec': '1.3.3'}],
-                'COMPAT'          : [{'name' : 'cordova-plugin-compat', 'spec': '1.2.0'}],
                 'INAPPBROWSER'    : [{'name' : 'cordova-plugin-inappbrowser', 'spec' : '3.0.0'}],
                 'STATUSBAR'       : [{'name' : 'cordova-plugin-statusbar', 'spec' : '2.4.2'}],
                 'OFFLINE_DB'      : [{'name' : 'cordova-sqlite-storage', 'spec' : 'https://github.com/wavemaker/Cordova-sqlite-storage.git#2cb6cd5'}],
