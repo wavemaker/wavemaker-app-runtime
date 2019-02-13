@@ -29,8 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.ResponseExtractor;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.UnAuthorizedResourceAccessException;
@@ -71,11 +69,11 @@ public class RestRuntimeService {
 
     @Autowired
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
+
     @PostConstruct
     public void init() {
         restRuntimeServiceCacheHelper.setPropertyPlaceHolderReplacementHelper(propertyPlaceHolderReplacementHelper);
     }
-
 
 
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData) {
@@ -110,28 +108,33 @@ public class RestRuntimeService {
             logger.debug("Rest service request details {}", httpRequestDetails.toString());
         }
 
-        new RestConnector().invokeRestCall(httpRequestDetails, new ResponseExtractor() {
-            @Override
-            public Object extractData(ClientHttpResponse response) throws IOException {
-                HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
+        new RestConnector().invokeRestCall(httpRequestDetails, (response) -> {
+            HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
+            try {
                 httpResponseDetails.setStatusCode(response.getRawStatusCode());
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.putAll(response.getHeaders());
-                httpResponseDetails.setHeaders(httpHeaders);
                 httpResponseDetails.setBody(response.getBody());
+            } catch (IOException e) {
+                throw new WMRuntimeException(e);
+            }
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.putAll(response.getHeaders());
+            httpResponseDetails.setHeaders(httpHeaders);
 
-                HttpResponseProcessorContext httpResponseProcessorContext = new HttpResponseProcessorContext(httpServletRequest, httpResponseDetails, httpRequestDetails, httpRequestData);
-                List<HttpResponseProcessor> httpResponseProcessors = restRuntimeConfig.getHttpResponseProcessorList();
-                for (HttpResponseProcessor httpResponseProcessor : httpResponseProcessors) {
-                    logger.debug("Executing the httpResponseProcessor {} on the context {}", httpResponseProcessor, context);
-                    httpResponseProcessor.process(httpResponseProcessorContext);
-                }
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails.toString());
-                }
+            HttpResponseProcessorContext httpResponseProcessorContext = new HttpResponseProcessorContext(httpServletRequest, httpResponseDetails, httpRequestDetails, httpRequestData);
+            List<HttpResponseProcessor> httpResponseProcessors = restRuntimeConfig.getHttpResponseProcessorList();
+            for (HttpResponseProcessor httpResponseProcessor : httpResponseProcessors) {
+                logger.debug("Executing the httpResponseProcessor {} on the context {}", httpResponseProcessor, context);
+                httpResponseProcessor.process(httpResponseProcessorContext);
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails.toString());
+            }
+            try {
                 HttpRequestUtils.writeResponse(httpResponseDetails, httpServletResponse);
-                return null;
+            } catch (IOException e) {
+                throw new WMRuntimeException(e);
             }
         });
     }

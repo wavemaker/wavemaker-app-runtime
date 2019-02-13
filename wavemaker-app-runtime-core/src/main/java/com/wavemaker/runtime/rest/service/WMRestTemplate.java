@@ -15,9 +15,15 @@
  */
 package com.wavemaker.runtime.rest.service;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.function.Consumer;
 
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.Nullable;
+import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
@@ -31,6 +37,7 @@ import com.wavemaker.runtime.util.WMRuntimeUtils;
 public class WMRestTemplate extends RestTemplate {
 
     private UriTemplateHandler uriTemplateHandler = new CustomUriTemplateHandler();
+    private Consumer<ClientHttpResponse> extractDataConsumer;
 
     public WMRestTemplate() {
         super(WMRuntimeUtils.getMessageConverters());
@@ -48,9 +55,49 @@ public class WMRestTemplate extends RestTemplate {
         return responseEntityExtractor(responseType);
     }
 
+    public void setExtractDataConsumer(Consumer<ClientHttpResponse> extractDataConsumer) {
+        this.extractDataConsumer = extractDataConsumer;
+    }
+
+    @Override
+    public <T> ResponseExtractor<ResponseEntity<T>> responseEntityExtractor(Type responseType) {
+        return new WmResponseEntityResponseExtractor<>(responseType);
+    }
+
     @Override
     public UriTemplateHandler getUriTemplateHandler() {
         return this.uriTemplateHandler;
+    }
+
+    /**
+     * Response extractor for {@link HttpEntity}.
+     */
+    private class WmResponseEntityResponseExtractor<T> implements ResponseExtractor<ResponseEntity<T>> {
+
+        @Nullable
+        private final HttpMessageConverterExtractor<T> delegate;
+
+        public WmResponseEntityResponseExtractor(@Nullable Type responseType) {
+            if (responseType != null && Void.class != responseType) {
+                this.delegate = new HttpMessageConverterExtractor<>(responseType, getMessageConverters());
+            } else {
+                this.delegate = null;
+            }
+        }
+
+        @Override
+        public ResponseEntity<T> extractData(ClientHttpResponse response) throws IOException {
+            if (extractDataConsumer != null) {
+                response = new WmBufferingClientHttpResponseWrapper(response);
+                extractDataConsumer.accept(response);
+            }
+            if (this.delegate != null) {
+                T body = this.delegate.extractData(response);
+                return ResponseEntity.status(response.getRawStatusCode()).headers(response.getHeaders()).body(body);
+            } else {
+                return ResponseEntity.status(response.getRawStatusCode()).headers(response.getHeaders()).build();
+            }
+        }
     }
 
 }

@@ -16,9 +16,9 @@
 package com.wavemaker.runtime.rest.service;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -45,9 +45,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.ResponseExtractor;
 
 import com.wavemaker.commons.proxy.AppPropertiesConstants;
 import com.wavemaker.commons.rest.error.WMDefaultResponseErrorHandler;
@@ -63,38 +62,39 @@ import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 public class RestConnector {
 
 
-    private static CloseableHttpClient defaultHttpClient;
     private static final int MAX_TOTAL = 100;
     private static final int DEFAULT_MAX_PER_ROUTE = 50;
-
     private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
+    private static CloseableHttpClient defaultHttpClient;
 
-    public void invokeRestCall(HttpRequestDetails httpRequestDetails, ResponseExtractor responseExtractor) {
+    public void invokeRestCall(HttpRequestDetails httpRequestDetails, Consumer<ClientHttpResponse> extractDataConsumer) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
-        getResponseEntity(httpRequestDetails, httpClientContext, null, responseExtractor);
+        WMRestTemplate wmRestTemplate = new WMRestTemplate();
+        wmRestTemplate.setExtractDataConsumer(extractDataConsumer);
+        getResponseEntity(httpRequestDetails, httpClientContext, null, wmRestTemplate);
     }
 
     public HttpResponseDetails invokeRestCall(HttpRequestDetails httpRequestDetails) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
-        ResponseEntity<byte[]> responseEntity = getResponseEntity(httpRequestDetails, httpClientContext, byte[].class, null);
+        ResponseEntity<byte[]> responseEntity = getResponseEntity(httpRequestDetails, httpClientContext, byte[].class, new WMRestTemplate());
         return getHttpResponseDetails(responseEntity);
     }
 
     public <T> ResponseEntity<T> invokeRestCall(HttpRequestDetails httpRequestDetails, Class<T> t) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
-        return getResponseEntity(httpRequestDetails, httpClientContext, t, null);
+        return getResponseEntity(httpRequestDetails, httpClientContext, t, new WMRestTemplate());
     }
 
     private <T> ResponseEntity<T> getResponseEntity(
             final HttpRequestDetails httpRequestDetails, final HttpClientContext
-            httpClientContext, Class<T> t, final ResponseExtractor responseExtractor) {
+            httpClientContext, Class<T> t, final WMRestTemplate wmRestTemplate) {
 
         String endpointAddress = httpRequestDetails.getEndpointAddress();
         HttpMethod httpMethod = HttpMethod.valueOf(httpRequestDetails.getMethod());
         logger.debug("Sending {} request to URL {}", httpMethod, endpointAddress);
 
         CloseableHttpClient httpClient = getHttpClient();
-        
+
 
         final RequestConfig requestConfig = RequestConfig.custom()
                 .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
@@ -119,15 +119,9 @@ public class RestConnector {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.putAll(httpRequestDetails.getHeaders());
 
-        WMRestTemplate wmRestTemplate = new WMRestTemplate() {
-
-            @Override
-            public <T> ResponseExtractor<ResponseEntity<T>> responseEntityExtractor(Type responseType) {
-                return (responseExtractor != null) ? responseExtractor : super.responseEntityExtractor(responseType);
-            }
-        };
         wmRestTemplate.setRequestFactory(clientHttpRequestFactory);
-        wmRestTemplate.setErrorHandler(getExceptionHandler());
+        wmRestTemplate.setErrorHandler(new WMRestServicesErrorHandler());
+
         HttpEntity requestEntity;
         com.wavemaker.commons.web.http.HttpMethod wmHttpMethod = com.wavemaker.commons.web.http.HttpMethod.valueOf(httpRequestDetails.getMethod());
         if (wmHttpMethod.isRequestBodySupported() && httpRequestDetails.getBody() != null) {
@@ -137,20 +131,6 @@ public class RestConnector {
         }
         return wmRestTemplate.exchange(endpointAddress, httpMethod, requestEntity, t);
     }
-
-
-    class WMRestServicesErrorHandler extends WMDefaultResponseErrorHandler {
-
-        @Override
-        protected boolean hasError(HttpStatus statusCode) {
-            return false;
-        }
-    }
-
-    public ResponseErrorHandler getExceptionHandler() {
-        return new WMRestServicesErrorHandler();
-    }
-
 
     private CloseableHttpClient getHttpClient() {
         synchronized (RestConnector.class) {
@@ -208,5 +188,13 @@ public class RestConnector {
         byte[] bytes = (responseEntity.getBody() != null) ? responseEntity.getBody() : new byte[0];
         httpResponseDetails.setBody(new ByteArrayInputStream(bytes));
         return httpResponseDetails;
+    }
+
+    class WMRestServicesErrorHandler extends WMDefaultResponseErrorHandler {
+
+        @Override
+        protected boolean hasError(HttpStatus statusCode) {
+            return false;
+        }
     }
 }
