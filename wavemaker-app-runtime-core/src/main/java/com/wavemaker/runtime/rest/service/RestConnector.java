@@ -47,6 +47,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.ResponseErrorHandler;
 
 import com.wavemaker.commons.proxy.AppPropertiesConstants;
 import com.wavemaker.commons.rest.error.WMDefaultResponseErrorHandler;
@@ -120,7 +121,7 @@ public class RestConnector {
         httpHeaders.putAll(httpRequestDetails.getHeaders());
 
         wmRestTemplate.setRequestFactory(clientHttpRequestFactory);
-        wmRestTemplate.setErrorHandler(new WMRestServicesErrorHandler());
+        wmRestTemplate.setErrorHandler(getExceptionHandler());
 
         HttpEntity requestEntity;
         com.wavemaker.commons.web.http.HttpMethod wmHttpMethod = com.wavemaker.commons.web.http.HttpMethod.valueOf(httpRequestDetails.getMethod());
@@ -130,6 +131,10 @@ public class RestConnector {
             requestEntity = new HttpEntity(httpHeaders);
         }
         return wmRestTemplate.exchange(endpointAddress, httpMethod, requestEntity, t);
+    }
+
+    public ResponseErrorHandler getExceptionHandler() {
+        return new WMRestServicesErrorHandler();
     }
 
     private CloseableHttpClient getHttpClient() {
