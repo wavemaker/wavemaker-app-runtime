@@ -2649,11 +2649,30 @@ WM.module('wm.utils', [])
         //Adding default headers required for the ajax request
         function addDefaultHeaders(xhr) {
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            // Fetching Platform Version and set as a header
+            var pfVerHeader = getPlatformVersionHeader();
+            if (pfVerHeader) {
+                xhr.setRequestHeader(pfVerHeader.header, pfVerHeader.value);
+            }
             //While sending a explict ajax request xsrf token need to be added manually
             var xsrfCookieValue = getCookieByName($http.defaults.xsrfCookieName);
             if (xsrfCookieValue) {
                 xhr.setRequestHeader($http.defaults.xsrfHeaderName, xsrfCookieValue);
             }
+        }
+
+        /**
+         * This function is used to get platform version header details to set while making xhr calls
+         * @returns {{header: string, value: *}} | null
+         */
+        function getPlatformVersionHeader() {
+            if ($rootScope.project && $rootScope.project.platformVersion) {
+                return {
+                    header: CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION,
+                    value: $rootScope.project.platformVersion
+                }
+            }
+            return null;
         }
 
         //Format value for datetime types
@@ -3213,6 +3232,7 @@ WM.module('wm.utils', [])
         this.isInsecureContentRequest   = isInsecureContentRequest;
         this.isValidAppServerUrl        = isValidAppServerUrl;
         this.addDefaultHeaders          = addDefaultHeaders;
+        this.getPlatformVersionHeader   = getPlatformVersionHeader;
         this.formatDate                 = formatDate;
         this.getBlob                    = getBlob;
         this.getMetaDataFromData        = getMetaDataFromData;
