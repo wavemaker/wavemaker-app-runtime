@@ -165,12 +165,6 @@ wm.modules.wmCommon.services.BaseService = [
                     config.headers = config.headers || {};
                     config.headers['X-Requested-With'] = 'XMLHttpRequest';
 
-                    // Fetching Platform Version and set as a header
-                    var pfVerHeader = Utils.getPlatformVersionHeader();
-                    if (pfVerHeader) {
-                        config.headers[pfVerHeader.header] = pfVerHeader.value;
-                    }
-
                     // Passing the xsrf cookie in the request header for mobile when xsrf is enabled.
                     if (CONSTANTS.hasCordova) {
                         config = Utils.addXsrfCookieHeader(config);
