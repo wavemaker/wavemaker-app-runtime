@@ -777,7 +777,7 @@ wm.variables.services.$liveVariable = [
                             var ruleObj = {
                                 'target': filterName,
                                 'type': type,
-                                'matchMode': filterObj.matchMode || (isStringType(type) ? "startignorecase" : "exact"),
+                                'matchMode': filterObj.matchMode || variable.matchMode || (isStringType(type) ? "anywhereignorecase" : "startignorecase"),
                                 'value': filterObj.value,
                                 'required': filterObj.required || false
                             };
