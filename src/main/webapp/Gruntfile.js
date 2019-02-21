@@ -44,7 +44,8 @@ module.exports = function (grunt) {
         less: {
             dev: {
                 files: {
-                    '<%= config.tmp %>/styles/css/wm-style.css': '<%= config.styles %>/less/wm-runtime.less'
+                    '<%= config.tmp %>/styles/css/wm-style.css': '<%= config.styles %>/less/wm-runtime.less',
+                    '<%= config.tmp %>/styles/css/wm-mobile.css': '<%= config.styles %>/less/wm-mobile.less'
                 }
             }
         },
@@ -187,7 +188,16 @@ module.exports = function (grunt) {
                     {
                         src : '<%= config.tmp %>/styles/css/wm-style.css',
                         dest : '<%= config.mobile %>/styles/css/wm-style.css'
+                    },
+                    {
+                        src : '<%= config.tmp %>/styles/css/wm-mobile.css',
+                        dest : '<%= config.application %>/styles/css/wm-mobile.css'
+                    },
+                    {
+                        src : '<%= config.tmp %>/styles/css/wm-mobile.css',
+                        dest : '<%= config.mobile %>/styles/css/wm-mobile.css'
                     }
+
 
                 ]
             }
@@ -256,7 +266,8 @@ module.exports = function (grunt) {
                     report: 'min'
                 },
                 'files': {
-                    '<%= config.tmp %>/styles/css/wm-style.css': '<%= config.tmp %>/styles/css/wm-style.css'
+                    '<%= config.tmp %>/styles/css/wm-style.css': '<%= config.tmp %>/styles/css/wm-style.css',
+                    '<%= config.tmp %>/styles/css/wm-mobile.css': '<%= config.tmp %>/styles/css/wm-mobile.css'
                 }
             }
         },

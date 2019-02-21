@@ -1,0 +1,60 @@
+/*Returns Width and Height of an element*/
+.width-height(@width: 100%, @height: 100%) {
+  width: @width;
+  height: @height;
+}
+
+/*To show ellipsis for longer text*/
+.ellipsis(@width) {
+  width: @width;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.border-radius(@radius: 5px) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  -ms-border-radius: @radius;
+  -o-border-radius: @radius;
+  border-radius: @radius;
+}
+
+//Use variables in property names (with hack)
+.calc(@prop, @val) {
+  Ignore: ~"a;@{prop}: -webkit-@{val}";
+  Ignore: ~"a;@{prop}: -moz-@{val}";
+  Ignore: ~"a;@{prop}: -ms-@{val}";
+  Ignore: ~"a;@{prop}: -o-@{val}";
+  Ignore: ~"a;@{prop}: @{val}";
+}
+
+/*The text of the element and sub-elements will appear as if they cannot be selected.*/
+.user-select-none() {
+  -webkit-user-select: none; /* Chrome all / Safari all */
+  -moz-user-select: none; /* Firefox all */
+  -ms-user-select: none; /* IE 10+ */
+  -o-user-select: none; /*Opera*/
+  user-select: none;
+}
+
+.ie-background-none() {
+  /* For IE 6 - 7 */
+  filter: progid:DXImageTransform.Microsoft.Shadow(enabled=false);
+  /* For IE8, IE9 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(enabled=false)";
+
+}
+/*Setting background to none does not remove gradient background in IE9. Hence, another mixin is used to solve this.
+This mixin removes background from IE & all other browsers so that they are consistent */
+.remove-background() {
+  background: none;
+  .ie-background-none();
+}
+
+/*Background images for studio*/
+.background-image(@image-name, @repeat: no-repeat, @background-position-x: center, @background-position-y: center) {
+  background-image: url("@{wm-image-base-url}/@{image-name}");
+  background-repeat: @repeat;
+  background-position: @background-position-x @background-position-y;
+}
