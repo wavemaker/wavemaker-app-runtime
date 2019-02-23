@@ -163,7 +163,7 @@ wm.modules.wmCommon.services.BaseService = [
                     config.headers['X-Requested-With'] = 'XMLHttpRequest';
 
                     // set platformVersion as custom header(X-WM-Platform-Version) if present for all XHR calls
-                    var platformVersion = getCustomHeaderVal(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION);
+                    var platformVersion = Utils.getCustomHeaderVal(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION);
                     if (platformVersion) {
                         config.headers[CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION] = platformVersion;
                     }

@@ -2693,15 +2693,18 @@ WM.module('wm.utils', [])
          * @returns {*}
          */
         function getCustomHeaderVal(headerName) {
+            var headerValue = null;
             switch (headerName) {
                 case CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION:
                     if ($rootScope.project && $rootScope.project.platformVersion) {
-                        return $rootScope.project.platformVersion;
+                        headerValue = $rootScope.project.platformVersion;
                     }
                     break;
                 default:
-                    return null;
+                    //do nothing;
+                    break;
             }
+            return headerValue;
         }
 
         //Format value for datetime types
@@ -3341,7 +3344,7 @@ WM.module('wm.utils', [])
         this.isInsecureContentRequest   = isInsecureContentRequest;
         this.isValidAppServerUrl        = isValidAppServerUrl;
         this.addDefaultHeaders          = addDefaultHeaders;
-        this.getPlatformVersionHeader   = getPlatformVersionHeader;
+        this.getCustomHeaderVal         = getCustomHeaderVal;
         this.formatDate                 = formatDate;
         this.getBlob                    = getBlob;
         this.getMetaDataFromData        = getMetaDataFromData;
