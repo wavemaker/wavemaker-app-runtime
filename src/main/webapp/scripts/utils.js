@@ -2649,10 +2649,10 @@ WM.module('wm.utils', [])
         //Adding default headers required for the ajax request
         function addDefaultHeaders(xhr) {
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            // Fetching Platform Version and set as a header
-            var pfVerHeader = getPlatformVersionHeader();
-            if (pfVerHeader) {
-                xhr.setRequestHeader(pfVerHeader.header, pfVerHeader.value);
+            // set platformVersion as custom header(X-WM-Platform-Version) if present for all XHR calls
+            var platformVersion = getCustomHeaderVal(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION);
+            if (platformVersion) {
+                xhr.setRequestHeader(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION, platformVersion);
             }
             //While sending a explict ajax request xsrf token need to be added manually
             var xsrfCookieValue = getCookieByName($http.defaults.xsrfCookieName);
@@ -2662,17 +2662,20 @@ WM.module('wm.utils', [])
         }
 
         /**
-         * This function is used to get platform version header details to set while making xhr calls
-         * @returns {{header: string, value: *}} | null
+         * This function is used to get custom header value to set while making xhr calls
+         * @param headerName
+         * @returns {*}
          */
-        function getPlatformVersionHeader() {
-            if ($rootScope.project && $rootScope.project.platformVersion) {
-                return {
-                    header: CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION,
-                    value: $rootScope.project.platformVersion
-                }
+        function getCustomHeaderVal(headerName) {
+            switch (headerName) {
+                case CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION:
+                    if ($rootScope.project && $rootScope.project.platformVersion) {
+                        return $rootScope.project.platformVersion;
+                    }
+                    break;
+                default:
+                    return null;
             }
-            return null;
         }
 
         //Format value for datetime types
