@@ -162,10 +162,10 @@ wm.modules.wmCommon.services.BaseService = [
                     config.headers = config.headers || {};
                     config.headers['X-Requested-With'] = 'XMLHttpRequest';
 
-                    // Fetching Platform Version and set as a header
-                    var pfVerHeader = Utils.getPlatformVersionHeader();
-                    if (pfVerHeader) {
-                        config.headers[pfVerHeader.header] = pfVerHeader.value;
+                    // set platformVersion as custom header(X-WM-Platform-Version) if present for all XHR calls
+                    var platformVersion = getCustomHeaderVal(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION);
+                    if (platformVersion) {
+                        config.headers[CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION] = platformVersion;
                     }
 
                     // Passing the xsrf cookie in the request header for mobile when xsrf is enabled.
