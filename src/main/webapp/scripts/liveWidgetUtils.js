@@ -597,7 +597,7 @@ WM.module('wm.widgets.live')
                     formEvents.push('onSubmit');
                 }
                 evtTypes          = _.pull(getEventTypes(), formEvents);
-                excludeProperties = formEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxplaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'value',
+                excludeProperties = formEvents.concat(['caption', 'type', 'show', 'maxplaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'value',
                     'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted', 'dataoptions']);
                 fieldKeys         = _.pullAll(_.keys(fieldDef), excludeProperties);
                 _.forEach(fieldKeys, function (field) {
@@ -670,7 +670,7 @@ WM.module('wm.widgets.live')
                         '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxplaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
                 } else {
                     fieldDef.placeholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.placeholder) ? defaultPlaceholder : fieldDef.placeholder);
-                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef) + ' scopedatavalue="formFields[' + index + '].value" placeholder="' + fieldDef.placeholder + '"' + readonly + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '>';
+                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef) + ' scopedatavalue="formFields[' + index + '].value" ' + readonly + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '>';
                 }
                 return template;
             }

@@ -832,11 +832,6 @@ WM.module('wm.widgets.base')
                                 }
                             });
 
-                            // if the placeholder is bound, empty the placeholder value
-                            // otherwise the placeholder will display the bound expr in run mode
-                            if (attrs.placeholder && _.startsWith(attrs.placeholder, 'bind:')) {
-                                attrs.$set('placeholder', '');
-                            }
 
                             // update the binded properties in isolateScope
                             delayed.forEach(function (prop) {
