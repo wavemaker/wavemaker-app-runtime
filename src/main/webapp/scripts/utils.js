@@ -2674,11 +2674,36 @@ WM.module('wm.utils', [])
         //Adding default headers required for the ajax request
         function addDefaultHeaders(xhr) {
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            // set platformVersion as custom header(X-WM-Platform-Version) if present for all XHR calls
+            var platformVersion = getCustomHeaderVal(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION);
+            if (platformVersion) {
+                xhr.setRequestHeader(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION, platformVersion);
+            }
             //While sending a explict ajax request xsrf token need to be added manually
             var xsrfCookieValue = getCookieByName($http.defaults.xsrfCookieName);
             if (xsrfCookieValue) {
                 xhr.setRequestHeader($http.defaults.xsrfHeaderName, xsrfCookieValue);
             }
+        }
+
+        /**
+         * This function is used to get custom header value to set while making xhr calls
+         * @param headerName
+         * @returns {*}
+         */
+        function getCustomHeaderVal(headerName) {
+            var headerValue = null;
+            switch (headerName) {
+                case CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION:
+                    if ($rootScope.project && $rootScope.project.platformVersion) {
+                        headerValue = $rootScope.project.platformVersion;
+                    }
+                    break;
+                default:
+                    //do nothing;
+                    break;
+            }
+            return headerValue;
         }
 
         //Format value for datetime types
@@ -3318,6 +3343,7 @@ WM.module('wm.utils', [])
         this.isInsecureContentRequest   = isInsecureContentRequest;
         this.isValidAppServerUrl        = isValidAppServerUrl;
         this.addDefaultHeaders          = addDefaultHeaders;
+        this.getCustomHeaderVal         = getCustomHeaderVal;
         this.formatDate                 = formatDate;
         this.getBlob                    = getBlob;
         this.getMetaDataFromData        = getMetaDataFromData;

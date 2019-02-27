@@ -79,6 +79,17 @@
             </properties>
         </profile>
         <profile>
+            <id>release-version-setter</id>
+            <activation>
+                <property>
+                    <name>!release.version</name>
+                </property>
+            </activation>
+            <properties>
+                <release.version>${project.version}</release.version>
+            </properties>
+        </profile>
+        <profile>
             <id>Snapshot</id>
             <activation>
                 <property>
@@ -269,7 +280,7 @@
                 <plugin>
                     <groupId>com.mycila.maven-license-plugin</groupId>
                     <artifactId>maven-license-plugin</artifactId>
-                    <version>1.9.9.9</version>
+                    <version>1.9.0</version>
                     <configuration>
                         <header>${license.header.file}</header>
                         <strictCheck>true</strictCheck>
