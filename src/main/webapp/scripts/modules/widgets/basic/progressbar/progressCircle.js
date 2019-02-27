@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/circle-progress.html',
-            '<div class="progress app-progress circle" init-widget apply-styles></div>'
+            '<div init-widget apply-styles></div>'
         );
     }])
     .directive('wmProgressCircle', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
@@ -153,6 +153,8 @@ WM.module('wm.widgets.basic')
                     $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function ($is, element, attrs) {
+                    // adding default class through script to avoid showing them in the "class name" property of widget.
+                    element.addClass('progress app-progress circle');
                     debouncedRender = _.debounce(render, 100);
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, element), $is, notifyFor);
                     WidgetUtilService.postWidgetCreate($is, element, attrs);
