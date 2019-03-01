@@ -83,6 +83,10 @@ WM.module('wm.utils', [])
                     }
                 }
             },
+            operators = ['+', '-', '*', '/', '=', '<', '>', '&', '|', '^', '(', ')', '!', '%', '[', ']', '{','}',',', ';'],
+            bindExpressionRegEx = new RegExp('[?:(' +
+                operators.map(function(op) { return '\\' + op; }).join('|')
+                + ')]', 'g'),
             isI18nResourceFolder = function(path) {
                 return _.includes(path, '/i18n');
             },
@@ -3204,6 +3208,13 @@ WM.module('wm.utils', [])
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+        /**
+         * function which splits the expression based on Operators
+         * @param string, string which will be split
+         * @returns a list of strings after splitting based on Operators**/
+        function splitExpression(expression) {
+            return expression && expression.split(bindExpressionRegEx);
+        }
 
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
@@ -3372,4 +3383,5 @@ WM.module('wm.utils', [])
         this.getDecodedData             = getDecodedData;
         this.getStudioUrl               = getStudioUrl;
         this.escapeHtml                 = escapeHtml;
+        this.splitExpression            = splitExpression;
     }]);
