@@ -2650,9 +2650,11 @@ WM.module('wm.utils', [])
         function addDefaultHeaders(xhr) {
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             // set platformVersion as custom header(X-WM-Platform-Version) if present for all XHR calls
-            var platformVersion = getCustomHeaderVal(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION);
-            if (platformVersion) {
-                xhr.setRequestHeader(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION, platformVersion);
+            if(!CONSTANTS.isRunMode) {
+                var platformVersion = getCustomHeaderVal(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION);
+                if (platformVersion) {
+                    xhr.setRequestHeader(CONSTANTS.CUSTOM_HTTP_HEADERS.WM_PLATFORM_VERSION, platformVersion);
+                }
             }
             //While sending a explict ajax request xsrf token need to be added manually
             var xsrfCookieValue = getCookieByName($http.defaults.xsrfCookieName);
