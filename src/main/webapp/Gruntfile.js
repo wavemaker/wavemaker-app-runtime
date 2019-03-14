@@ -45,7 +45,7 @@ module.exports = function (grunt) {
             dev: {
                 files: {
                     '<%= config.tmp %>/styles/css/wm-style.css': '<%= config.styles %>/less/wm-runtime.less',
-                    '<%= config.tmp %>/styles/css/wm-mobile.css': '<%= config.styles %>/less/wm-mobile.less'
+                    '<%= config.tmp %>/styles/css/wm-responsive.css': '<%= config.styles %>/less/wm-responsive.less'
                 }
             }
         },
@@ -190,12 +190,12 @@ module.exports = function (grunt) {
                         dest : '<%= config.mobile %>/styles/css/wm-style.css'
                     },
                     {
-                        src : '<%= config.tmp %>/styles/css/wm-mobile.css',
-                        dest : '<%= config.application %>/styles/css/wm-mobile.css'
+                        src : '<%= config.tmp %>/styles/css/wm-responsive.css',
+                        dest : '<%= config.application %>/styles/css/wm-responsive.css'
                     },
                     {
-                        src : '<%= config.tmp %>/styles/css/wm-mobile.css',
-                        dest : '<%= config.mobile %>/styles/css/wm-mobile.css'
+                        src : '<%= config.tmp %>/styles/css/wm-responsive.css',
+                        dest : '<%= config.mobile %>/styles/css/wm-responsive.css'
                     }
 
 
@@ -267,7 +267,7 @@ module.exports = function (grunt) {
                 },
                 'files': {
                     '<%= config.tmp %>/styles/css/wm-style.css': '<%= config.tmp %>/styles/css/wm-style.css',
-                    '<%= config.tmp %>/styles/css/wm-mobile.css': '<%= config.tmp %>/styles/css/wm-mobile.css'
+                    '<%= config.tmp %>/styles/css/wm-responsive.css': '<%= config.tmp %>/styles/css/wm-responsive.css'
                 }
             }
         },
