@@ -5,11 +5,11 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/message.html',
-            '<p init-widget apply-styles class="alert app-message" ng-class="messageClass">' +
-                '<i title="{{type}} Alert" class="{{type}} icon {{messageIconClass}}"></i>' +
-                '<span ng-bind-html="messageContent"></span>' +
-                '<button title="Close" type="button" class="btn-transparent close" ng-hide="hideclose">&times;</button>' +
-            '</p>'
+            '<div init-widget apply-styles class="alert app-message" ng-class="messageClass">' +
+            '<div><i title="{{type}} Alert" class="{{type}} icon {{messageIconClass}}"></i></div>' +
+            '<div><span ng-bind-html="messageContent"></span></div>' +
+            '<div><button title="Close" type="button" class="btn-transparent close" >&times;</button></div>' +
+            '</div>'
             );
     }])
     .directive('wmMessage', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce, Utils) {

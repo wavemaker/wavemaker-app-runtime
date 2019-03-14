@@ -2105,6 +2105,18 @@ body.modal-open {
   position: relative;
   &.alert {
     word-break: break-word;
+    div {
+      padding: 0 1%;
+      box-sizing: border-box;
+      vertical-align:top;
+      display: inline-block;
+    }
+    div:nth-child(1), div:nth-child(3) {
+      width: 7%;
+    }
+    div:nth-child(2) {
+      width: 86%;
+    }
   }
   .icon {
     display: inline-block;
