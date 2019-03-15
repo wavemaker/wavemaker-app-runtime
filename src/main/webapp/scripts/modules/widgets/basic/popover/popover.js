@@ -55,14 +55,17 @@ WM.module('wm.widgets.basic')
                                 $is.widgetProps.content.show = false;
                                 $is.widgetProps.onLoad.show  = false;
                                 $rs.$emit('set-markup-attr', $is.widgetid, {'content': ''});
+                                $is.content = '';
                             } else {
                                 $is.widgetProps.onLoad.show  = true;
                                 $is.widgetProps.content.show = true;
                                 $is.widgetProps.inlinecontent.show = false;
                             }
                         }
-
-                        transcludeContent($el, slotContent.cloneNode(true));
+                        // compile wm-param only when we select partial(content property)
+                        if ($is.content) {
+                            transcludeContent($el, slotContent.cloneNode(true));
+                        }
                         break;
                     case 'iconclass':
                         /*showing icon when iconurl is not set*/
