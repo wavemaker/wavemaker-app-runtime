@@ -37,7 +37,12 @@ public class WMAuthentication extends AbstractAuthenticationToken {
         this.principal = authenticationSource.getName();
         this.authenticationSource = authenticationSource;
         if (authenticationSource.getPrincipal() instanceof WMUser) {
-            this.userId = ((WMUser) authenticationSource.getPrincipal()).getUserId();
+            WMUser wmUser = (WMUser) authenticationSource.getPrincipal();
+            this.userId = wmUser.getUserId();
+            Map<String, Object> customAttributes = wmUser.getCustomAttributes();
+            for (Map.Entry<String, Object> entry : customAttributes.entrySet()) {
+                addAttribute(entry.getKey(), entry.getValue(), Attribute.AttributeScope.ALL);
+            }
         }
         setAuthenticated(true);
         this.loginTime = System.currentTimeMillis();
