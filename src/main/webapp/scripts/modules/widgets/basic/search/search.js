@@ -232,7 +232,7 @@ WM.module('wm.widgets.basic')
             }
 
             // to filter & set the dataset property of the search widget
-            function setDataSet(data, $is, element) {
+            function setDataSet(data, $is, element, datasetAttrs) {
                 var dataSet,
                     defaultLabel;
                 // sanity check for data availability
@@ -252,6 +252,15 @@ WM.module('wm.widgets.basic')
                         defaultLabel = _.get($is.widgetProps, ['displaylabel', 'options', 1]);
                         $is.displaylabel = defaultLabel;
                         $rs.$emit('set-markup-attr', $is.widgetid, {'displaylabel': defaultLabel});
+                    }
+                    // show the matchmode only when livevariables are bound.
+                    $is.widgetProps.matchmode.show = false;
+                    var isBoundToVariable = Utils.stringStartsWith((datasetAttrs || $is.binddataset), 'bind:Variables.');
+                    if (isBoundToVariable) {
+                        var variable = getVariable($is, element.scope());
+                        if (variable && variable.category === 'wm.LiveVariable') {
+                            $is.widgetProps.matchmode.show = true;
+                        }
                     }
                 }
 
@@ -406,7 +415,7 @@ WM.module('wm.widgets.basic')
                 switch (key) {
                 case 'dataset':
                     // set the datatSet of the widget
-                    setDataSet(newVal, $is, element);
+                    setDataSet(newVal, $is, element, attrs.dataset);
                     break;
                     case 'type':
                     //To avoid overridding check for that attribute

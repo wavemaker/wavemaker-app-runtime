@@ -71,6 +71,38 @@ WM.module('wm.widgets.base', [])
             zindexRegex    = '(^$|auto|initial|inherit|^[0-9]+$)',
             maxRatingRegex = '^(?:10|[1-9])$|^bind.*$',
             roles = [],
+            matchModes = [{
+                    'labelkey': "LABEL_STARTS_WITH_IGNORE_CASE",
+                    'value': 'startignorecase'
+                },
+                {
+                    'labelkey': "LABEL_STARTS_WITH",
+                    'value': 'start'
+                },
+                {
+                    'labelkey': "LABEL_ENDS_WITH_IGNORE_CASE",
+                    'value': 'endignorecase'
+                },
+                {
+                    'labelkey': "LABEL_ENDS_WITH",
+                    'value': 'end'
+                },
+                {
+                    'labelkey': "LABEL_CONTAINS_IGNORE_CASE",
+                    'value': 'anywhereignorecase'
+                },
+                {
+                    'labelkey': "LABEL_CONTAINS",
+                    'value': 'anywhere'
+                },
+                {
+                    'labelkey': "LABEL_IS_EQUAL_WITH_IGNORE_CASE",
+                    'value': 'exactignorecase'
+                },
+                {
+                    'labelkey': "LABEL_IS_EQUAL",
+                    'value': 'exact'
+            }],
             numberFormatOptions = [
                 {
                     "namekey": "LABEL_DECIMAL_DIGITS",
@@ -1989,7 +2021,8 @@ WM.module('wm.widgets.base', [])
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "debouncetime": {"type": "number", "value": "250", "show": true}
+                        "debouncetime": {"type": "number", "value": "250", "show": true},
+                        "matchmode": {"type": "select-by-object", "options": matchModes, "value": "startignorecase", "show": false}
                     },
                     "wm.chart": {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -2188,7 +2221,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},
                 {"name": "partialparams", "properties": [], "parent": "properties"},
                 {"name": "display", "properties": ["modal", "vertical", "avatar"], "parent": "properties"},
-                {"name": "dataset", "properties": ["service", "operation", "dataset", "options",  "hyperlink", "formfield", "metadata", "searchkey", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderby", "compareby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "nodeid", "nodeaction", "nodeclick", "thumbnailurl", "mediaurl"], "parent": "properties"},
+                {"name": "dataset", "properties": ["service", "operation", "dataset", "options",  "hyperlink", "formfield", "metadata", "searchkey", "matchmode", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderby", "compareby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "nodeid", "nodeaction", "nodeclick", "thumbnailurl", "mediaurl"], "parent": "properties"},
                 {"name": "values", "properties": ["datavalue", "defaultvalue", "maxdefaultvalue", "formdata", "discretevalues", "integervalues", "minimum", "maximum", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
