@@ -2112,10 +2112,10 @@ body.modal-open {
       display: inline-block;
     }
     div:nth-child(1), div:nth-child(3) {
-      width: 7%;
+      width: 20px;
     }
     div:nth-child(2) {
-      width: 86%;
+      .calc('width', ~"calc(100% - 40px)");
     }
   }
   .icon {
