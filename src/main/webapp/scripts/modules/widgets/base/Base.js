@@ -679,8 +679,8 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.time": {
                         "placeholder": {"type": "string", "value": "Select time", "bindable": "in-bound"},
-                        "mintime": {"type": "string"},
-                        "maxtime": {"type": "string"},
+                        "mintime": {"type": "string", "bindable": "in-bound"},
+                        "maxtime": {"type": "string", "bindable": "in-bound"},
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
