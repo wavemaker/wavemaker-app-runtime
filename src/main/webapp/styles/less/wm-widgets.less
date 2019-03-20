@@ -3471,6 +3471,19 @@ If the height and width are not specified the video takes the height of the post
 
     // Custom styles for form widgets within liveform and livefilter
     .wm-app {
+      // overriding bootstrap input group sizes
+      .app-timeinput, .app-datetime {
+        &.input-group-lg .form-control {
+          font-size: 16px;
+          line-height: 1.3333333;
+          border-radius: 0px;
+        }
+        &.input-group-sm .form-control {
+          font-size: 11px;
+          line-height: 1.5;
+          border-radius: 0px;
+        }
+      }
       .app-liveform, .app-livefilter {
         .form-control {
           border-radius: 0;
