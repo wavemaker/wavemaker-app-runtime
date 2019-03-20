@@ -1992,7 +1992,7 @@ WM.module('wm.utils', [])
             } else {
                 /*if the value is in HH:mm:ss format, it returns a wrong date. So append the date to the given value to get date*/
                 if (!(new Date(val).getTime())) {
-                    val = moment().format('YYYY-MM-DD') + ' ' + val;
+                    val = moment((moment().format('YYYY-MM-DD') + ' ' + val), 'YYYY-MM-DD HH:mm:ss A');
                 }
             }
             return new Date(moment(val).valueOf());
