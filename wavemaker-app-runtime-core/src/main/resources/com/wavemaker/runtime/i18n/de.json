@@ -48,6 +48,7 @@
   "LABEL_STARTS_WITH_IGNORECASE": "Beginnt mit Ignorieren",
   "LABEL_TOTAL_RECORDS": "Gesamtsätze",
   "MESSAGE_DELETE_RECORD": "Datensatz löschen",
+  "MESSAGE_DELETE_RECORD_SUCCESS": "Rekord erfolgreich gelöscht",
   "MESSAGE_ERROR_CONTENT_DISPLAY": "Inhalt kann nicht im Entwurfsmodus für angezeigt werden",
   "MESSAGE_LOADING": "Laden ...",
   "MESSAGE_NO_CHANGES": "Es wurden keine Änderungen festgestellt",
