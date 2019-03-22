@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.security.token;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -134,7 +135,8 @@ public class WMTokenBasedAuthenticationService {
                 return toWMUser(username, "", authenticationSource.getAuthorities());
             }
 
-        } else if (authenticationSource instanceof CasAuthenticationToken) {
+        } else if (Objects.equals(authenticationSource.getClass().getName(),"org.springframework.security.cas.authentication.CasAuthenticationToken")) {
+            //TODO find a better way
             CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken) authenticationSource;
             if (casAuthenticationToken.getPrincipal() instanceof WMUser) {
                 return (WMUser) casAuthenticationToken.getPrincipal();
