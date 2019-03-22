@@ -255,11 +255,14 @@ WM.module('wm.widgets.basic')
                     }
                     // show the matchmode only when livevariables are bound.
                     $is.widgetProps.matchmode.show = false;
+                    $rs.$emit('set-markup-attr', $is.widgetid, {'matchmode': ''});
+
                     var isBoundToVariable = Utils.stringStartsWith((datasetAttrs || $is.binddataset), 'bind:Variables.');
                     if (isBoundToVariable) {
                         var variable = getVariable($is, element.scope());
                         if (variable && variable.category === 'wm.LiveVariable') {
                             $is.widgetProps.matchmode.show = true;
+                            $rs.$emit('set-markup-attr', $is.widgetid, {'matchmode': 'startignorecase'});
                         }
                     }
                 }
