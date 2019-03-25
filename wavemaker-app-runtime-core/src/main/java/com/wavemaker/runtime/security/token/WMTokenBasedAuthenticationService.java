@@ -16,15 +16,12 @@
 package com.wavemaker.runtime.security.token;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -122,30 +119,9 @@ public class WMTokenBasedAuthenticationService {
 
     protected WMUser toWMUser(final Authentication authentication) {
         Authentication authenticationSource = ((WMAuthentication) authentication).getAuthenticationSource();
-        if (authenticationSource instanceof UsernamePasswordAuthenticationToken) {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) authenticationSource;
-            if (usernamePasswordAuthenticationToken.getPrincipal() instanceof WMUser) {
-                return (WMUser) usernamePasswordAuthenticationToken.getPrincipal();
-            } else if (usernamePasswordAuthenticationToken.getPrincipal() instanceof UserDetails) {
-                UserDetails userDetails = (UserDetails) usernamePasswordAuthenticationToken.getPrincipal();
-                String password = userDetails.getPassword() == null ? "" : userDetails.getPassword();
-                return toWMUser(userDetails.getUsername(), password, userDetails.getAuthorities());
-            } else {
-                String username = (String) usernamePasswordAuthenticationToken.getPrincipal();
-                return toWMUser(username, "", authenticationSource.getAuthorities());
-            }
-
-        } else if (Objects.equals(authenticationSource.getClass().getName(),"org.springframework.security.cas.authentication.CasAuthenticationToken")) {
-            //TODO find a better way
-            CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken) authenticationSource;
-            if (casAuthenticationToken.getPrincipal() instanceof WMUser) {
-                return (WMUser) casAuthenticationToken.getPrincipal();
-            }
-        } else if (authenticationSource instanceof RememberMeAuthenticationToken) {
-            RememberMeAuthenticationToken rememberMeAuthenticationToken = (RememberMeAuthenticationToken) authenticationSource;
-            String username = (String) rememberMeAuthenticationToken.getPrincipal();
-            String password = (String) rememberMeAuthenticationToken.getCredentials();
-            return toWMUser(username, password, authenticationSource.getAuthorities());
+        if (authentication instanceof WMAuthentication) {
+            String username = (String) authentication.getPrincipal();
+            return toWMUser(username, "", authentication.getAuthorities());
         }
         throw new TokenGenerationException("Unknown authentication,failed to build token for current user");
     }
