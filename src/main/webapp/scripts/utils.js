@@ -2573,6 +2573,10 @@ WM.module('wm.utils', [])
                 exportOptions = options.defaultParams || defaultParams,
                 deferred = $q.defer();
 
+            if (options.params.vcsBranch) {
+                exportOptions.vcsRef = options.params.vcsBranch;
+            }
+
             $rootScope.isStudioDisabled = true;
 
             cb(exportOptions)
