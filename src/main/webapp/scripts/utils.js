@@ -3142,13 +3142,16 @@ WM.module('wm.utils', [])
                 isWMO = hostname.indexOf('wavemakeronline.com') !== -1,
                 baseUrl;
 
-            if (isWMO) {
+            /*if (isWMO) {
                 baseUrl = 'https://www.wavemaker.com/learn';
                 studioVersion = '/' + studioVersion;
             } else {
                 baseUrl = origin + '/wavemaker-learn';
                 studioVersion = '';
-            }
+            }*/
+            //for ent release temp fix. Always point to wavemaker.com
+            baseUrl = 'https://www.wavemaker.com/learn';
+            studioVersion = '/' + studioVersion;
             _.forEach(docLinks,function(value, link){
                 docLinks[link] = baseUrl + replace(value, _.set({}, 'studio.version', studioVersion));
             });
