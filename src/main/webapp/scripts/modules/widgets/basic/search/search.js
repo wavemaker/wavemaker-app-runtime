@@ -232,7 +232,7 @@ WM.module('wm.widgets.basic')
             }
 
             // to filter & set the dataset property of the search widget
-            function setDataSet(data, $is, element, datasetAttrs) {
+            function setDataSet(data, $is, element, datasetAttrs, matchmodeAttr) {
                 var dataSet,
                     defaultLabel;
                 // sanity check for data availability
@@ -255,14 +255,18 @@ WM.module('wm.widgets.basic')
                     }
                     // show the matchmode only when livevariables are bound.
                     $is.widgetProps.matchmode.show = false;
-                    $rs.$emit('set-markup-attr', $is.widgetid, {'matchmode': ''});
 
                     var isBoundToVariable = Utils.stringStartsWith((datasetAttrs || $is.binddataset), 'bind:Variables.');
                     if (isBoundToVariable) {
                         var variable = getVariable($is, element.scope());
                         if (variable && variable.category === 'wm.LiveVariable') {
                             $is.widgetProps.matchmode.show = true;
-                            $rs.$emit('set-markup-attr', $is.widgetid, {'matchmode': 'startignorecase'});
+                            // set default matchmode when no value is set.
+                            if (!matchmodeAttr) {
+                                $rs.$emit('set-markup-attr', $is.widgetid, {'matchmode': 'startignorecase'});
+                            }
+                        } else if (matchmodeAttr) { // empty matchmode when dataset is set other than liveVariable
+                            $rs.$emit('set-markup-attr', $is.widgetid, {'matchmode': ''});
                         }
                     }
                 }
@@ -418,7 +422,7 @@ WM.module('wm.widgets.basic')
                 switch (key) {
                 case 'dataset':
                     // set the datatSet of the widget
-                    setDataSet(newVal, $is, element, attrs.dataset);
+                    setDataSet(newVal, $is, element, attrs.dataset, attrs.matchmode);
                     break;
                     case 'type':
                     //To avoid overridding check for that attribute
