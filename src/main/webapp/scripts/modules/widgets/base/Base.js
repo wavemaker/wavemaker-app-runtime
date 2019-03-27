@@ -908,7 +908,8 @@ WM.module('wm.widgets.base', [])
                         "onFocus": {"show": false},
                         "onBlur": {"show": false},
                         "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "debouncetime": {"type": "number", "value": "250", "show": true}
+                        "debouncetime": {"type": "number", "value": "250", "show": true},
+                        "matchmode": {"type": "select-by-object", "options": matchModes, "value": "startignorecase", "show": false}
                     },
 
 
@@ -1265,8 +1266,9 @@ WM.module('wm.widgets.base', [])
                         "backgroundrepeat": {"type": "list", "options": ["no-repeat", "repeat", "repeat-x", "repeat-y"]},
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
-                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]}
-
+                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
+                        "debouncetime": {"type": "number", "value": "250", "show": true},
+                        "matchmode": {"type": "select-by-object", "options": matchModes, "value": "startignorecase", "show": false}
                     },
                     'wm.layouts.listtemplate': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32}

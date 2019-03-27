@@ -1263,6 +1263,24 @@ WM.module('wm.widgets.live')
                             //Show limit if dataset is not bound
                             wdgtProperties.limit.show = true;
                         }
+                        if (scope.widget === 'autocomplete') {
+                            wdgtProperties.matchmode.show = false;
+                            var isBoundToVariable = Utils.stringStartsWith(scope.binddataset, 'bind:Variables.');
+                            if (isBoundToVariable) {
+                                var matchModeAttr = element.attr('matchmode');
+                                var variable = _.get(eleScope.Variables, Utils.getVariableName(scope));
+                                if (variable && variable.category === 'wm.LiveVariable') {
+                                    wdgtProperties.matchmode.show = true;
+                                    // set default matchmode when no value is set.
+                                    if (!matchModeAttr) {
+                                        $rs.$emit('set-markup-attr', scope.widgetid, {'matchmode': 'startignorecase'});
+                                    }
+                                } else if (matchModeAttr) { // empty matchmode when dataset is set other than liveVariable
+                                    $rs.$emit('set-markup-attr', scope.widgetid, {'matchmode': ''});
+                                }
+                            }
+                        }
+
                         //Refresh the properties panel sub group show/false as limit property is updated
                         scope.$emit('wms:refresh-properties-panel');
                         //For checkboxset and radioset, compile the field again to reflect the change in studio mode

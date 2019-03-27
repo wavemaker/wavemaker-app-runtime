@@ -52,7 +52,7 @@ WM.module('wm.layouts.containers')
                         '</ul>' +
                     '</div>' +
                     '<div class="mobile-navbar-center search-container">' +
-                        '<wm-search query="query" dataset="{{binddataset}}" searchkey="{{searchkey}}" displaylabel="{{displaylabel}}" datafield="{{datafield}}" displayimagesrc="{{displayimagesrc}}" datavalue="bind:datavalue" on-submit="onSubmission($event)" placeholder="{{searchplaceholder}}" navsearchbar="true" readonly="{{readonlySearchBar}}"></wm-search>' +
+                        '<wm-search query="query" dataset="{{binddataset}}" searchkey="{{searchkey}}" matchmode="{{matchmode}}" displaylabel="{{displaylabel}}" datafield="{{datafield}}" displayimagesrc="{{displayimagesrc}}" datavalue="bind:datavalue" on-submit="onSubmission($event)" placeholder="{{searchplaceholder}}" navsearchbar="true" readonly="{{readonlySearchBar}}"></wm-search>' +
                     '</div>' +
                     '<div class="mobile-navbar-right">' +
                         '<ul class="nav navbar-nav navbar-right">' +
@@ -72,9 +72,9 @@ WM.module('wm.layouts.containers')
         'CONSTANTS',
         'Utils',
         'NavigationService',
-        '$window',
+        '$rootScope',
 
-        function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, NavigationService, $window) {
+        function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, NavigationService, $rs) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mobile.navbar', ['wm.base']),
@@ -147,13 +147,28 @@ WM.module('wm.layouts.containers')
             }
 
             // Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler($is, key, newVal) {
+            function propertyChangeHandler($is, $el, key, newVal) {
                 switch (key) {
                 case 'imgsrc':
                     $is.imagesrc = Utils.getImageUrl(newVal);
                     break;
                 case 'dataset':
                     $is._dataset = newVal.data;
+                    var isBoundToVariable = Utils.stringStartsWith($is.binddataset, 'bind:Variables.');
+                    if (isBoundToVariable) {
+                        var variable = _.get($is.Variables, Utils.getVariableName($is));
+                        $is.widgetProps.matchmode.show = false;
+                        var matchModeAttr = $el.attr('matchmode');
+                        if (variable && variable.category === 'wm.LiveVariable') {
+                            $is.widgetProps.matchmode.show = true;
+                            // set default matchmode when no value is set.
+                            if (!matchModeAttr) {
+                                $rs.$emit('set-markup-attr', scope.widgetid, {'matchmode': 'startignorecase'});
+                            }
+                        } else if (matchModeAttr) { // empty matchmode when dataset is set other than liveVariable
+                            $rs.$emit('set-markup-attr', scope.widgetid, {'matchmode': ''});
+                        }
+                    }
                     break;
                 case 'defaultview':
                     $is.showSearchbar = (newVal === 'searchview');
@@ -215,7 +230,7 @@ WM.module('wm.layouts.containers')
                         }
 
                         // Register the property change handler
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el), $is, notifyFor);
                         /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
                          * style declarations.*/
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
