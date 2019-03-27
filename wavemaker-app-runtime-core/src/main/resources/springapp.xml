@@ -48,6 +48,11 @@
 
     <bean id="cacheControlFilter" class="com.wavemaker.runtime.web.filter.CacheControlFilter"/>
 
+    <bean id="cacheFilterConfigFactory" class="com.wavemaker.runtime.filter.etag.CacheFilterConfigFactoryBean"/>
+    <bean id="eTagFilter" class="com.wavemaker.commons.web.filter.EtagFilter"/>
+
+    <bean id="cacheManagementFilter" class="com.wavemaker.runtime.web.filter.CacheManagementFilter"/>
+
     <bean id="languagePreferenceFilter" class="com.wavemaker.runtime.web.filter.LanguagePreferenceFilter"/>
 
     <bean id="handlerExceptionResolver"
@@ -125,7 +130,7 @@
         <property name="enableGZipCompression" value="${app.web.compression.enabled}"/>
         <property name="minCompressSize" value="${app.web.compression.minsize}"/>
         <property name="includeMimeTypes" value="${app.web.compression.mimetypes.includePatterns}"/>
-        <property name="excludeMimeTypes" value="${app.web.compression.mimetypes.excludePatterns}"/>
+        <property name="excludeMimeTypes" value="${app.web.compression.mimetypes.cacheEnabledPatterns}"/>
     </bean>
 
 
