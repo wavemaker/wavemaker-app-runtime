@@ -28,7 +28,7 @@ public class CacheFilterConfigFactoryBean implements FactoryBean<CacheFilterConf
     public CacheFilterConfig getObject() throws Exception {
         CacheFilterConfig cacheFilterConfig = new CacheFilterConfig();
         if ("angular".equals(buildMode) && StringUtils.isNotBlank(buildArgs)) {
-            if (buildArgs.contains("prod")) {
+            if (buildArgs.contains("--prod=true")) {
                 cacheFilterConfig.setCacheRequestMatcher(getOrRequestMatcher(Arrays.asList("/ng-bundle/**")));
             }
         }
