@@ -232,7 +232,7 @@ WM.module('wm.widgets.basic')
             }
 
             // to filter & set the dataset property of the search widget
-            function setDataSet(data, $is, element, datasetAttrs, matchmodeAttr) {
+            function setDataSet(data, $is, element, datasetAttrs) {
                 var dataSet,
                     defaultLabel;
                 // sanity check for data availability
@@ -259,6 +259,7 @@ WM.module('wm.widgets.basic')
                     var isBoundToVariable = Utils.stringStartsWith((datasetAttrs || $is.binddataset), 'bind:Variables.');
                     if (isBoundToVariable) {
                         var variable = getVariable($is, element.scope());
+                        var matchmodeAttr = element.attr('matchmode');
                         if (variable && variable.category === 'wm.LiveVariable') {
                             $is.widgetProps.matchmode.show = true;
                             // set default matchmode when no value is set.
@@ -422,7 +423,7 @@ WM.module('wm.widgets.basic')
                 switch (key) {
                 case 'dataset':
                     // set the datatSet of the widget
-                    setDataSet(newVal, $is, element, attrs.dataset, attrs.matchmode);
+                    setDataSet(newVal, $is, element, attrs.dataset);
                     break;
                     case 'type':
                     //To avoid overridding check for that attribute

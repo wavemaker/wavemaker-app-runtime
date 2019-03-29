@@ -104,12 +104,15 @@ WM.module('wm.layouts.containers')
                     wp.searchplaceholder.show     = wp.dataset.show           =
                     wp.searchkey.show             = wp.displaylabel.show      =
                     wp.displayimagesrc.show       = wp.datafield.show         =
-                    wp.datavalue.show             = bool;
+                    wp.datavalue.show             = wp.debouncetime.show      = bool;
                 if (wp.scopedataset) {
                     wp.scopedataset.show          = bool;
                 }
                 if (wp.scopedatavalue) {
                     wp.scopedatavalue.show    = bool;
+                }
+                if (wp.matchmode) {
+                    wp.matchmode.show = false;
                 }
                 if ($is.active) {
                     $is.$emit('wms:refresh-properties-panel');
@@ -163,10 +166,10 @@ WM.module('wm.layouts.containers')
                             $is.widgetProps.matchmode.show = true;
                             // set default matchmode when no value is set.
                             if (!matchModeAttr) {
-                                $rs.$emit('set-markup-attr', scope.widgetid, {'matchmode': 'startignorecase'});
+                                $rs.$emit('set-markup-attr', $is.widgetid, {'matchmode': 'startignorecase'});
                             }
                         } else if (matchModeAttr) { // empty matchmode when dataset is set other than liveVariable
-                            $rs.$emit('set-markup-attr', scope.widgetid, {'matchmode': ''});
+                            $rs.$emit('set-markup-attr', $is.widgetid, {'matchmode': ''});
                         }
                     }
                     break;

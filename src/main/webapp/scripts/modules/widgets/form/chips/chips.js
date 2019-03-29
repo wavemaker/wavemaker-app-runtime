@@ -748,8 +748,28 @@ WM.module('wm.widgets.form')
                 $s.isWidgetInsideCanvas = !!widgetId;
             }
 
+            function updateMatchModeAttr($s, $el) {
+                // show the matchmode only when livevariables are bound.
+                $s.widgetProps.matchmode.show = false;
+
+                var isBoundToVariable = Utils.stringStartsWith($s.binddataset, 'bind:Variables.');
+                if (isBoundToVariable) {
+                    var variable = _.get($el.scope(), ['Variables', Utils.getVariableName($s, $el.scope())]);
+                    var matchmodeAttr = $el.attr('matchmode');
+                    if (variable && variable.category === 'wm.LiveVariable') {
+                        $s.widgetProps.matchmode.show = true;
+                        // set default matchmode when no value is set.
+                        if (!matchmodeAttr) {
+                            $rs.$emit('set-markup-attr', $s.widgetid, {'matchmode': 'startignorecase'});
+                        }
+                    } else if (matchmodeAttr) { // empty matchmode when dataset is set other than liveVariable
+                        $rs.$emit('set-markup-attr', $s.widgetid, {'matchmode': ''});
+                    }
+                }
+            }
+
             // Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler($s, $el, key, val) {
+            function propertyChangeHandler($s, $el, attrs, key, val) {
                 var isSortable;
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
@@ -757,6 +777,7 @@ WM.module('wm.widgets.form')
                     $s.displayOptions = $s.displayOptions.length ? [] : $s.displayOptions;
                     addDatasetToDisplayOptions($s, $el, $s.dataset);
                     updateSelectedChips($s, $el);
+                    updateMatchModeAttr($s, $el);
                     break;
                 case 'displayfield':
                 case 'datafield':
@@ -894,7 +915,7 @@ WM.module('wm.widgets.form')
                         }
                         // register the property change handler
                         $s._chipClass   = getEvalFn(attrs.chipclass);
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $s, $el), $s, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $s, $el, attrs), $s, notifyFor);
                         WidgetUtilService.postWidgetCreate($s, $el, attrs);
                     }
                 }
