@@ -1,8 +1,10 @@
 package com.wavemaker.runtime.filter.gzip;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -27,10 +29,21 @@ public class GZipCompressionFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+
         if (isGzipCompressionRequired(httpServletRequest, httpServletResponse)) {
-            GZipServletResponseWrapper gZipResponseWrapper = new GZipServletResponseWrapper(filterConfig, httpServletResponse);
-            chain.doFilter(request, gZipResponseWrapper);
-            gZipResponseWrapper.close();
+            String accessingResource = httpServletRequest.getRequestURI().substring(httpServletRequest.getContextPath().length());
+            String resourceGzip = accessingResource.replaceAll("(.*)(\\..*)", "$1.gz$2");
+
+            File gzFile = new File(getServletContext().getRealPath(resourceGzip));
+            if (gzFile.exists() && gzFile.isFile()) {
+                RequestDispatcher requestDispatcher = httpServletRequest.getRequestDispatcher("/" + resourceGzip);
+                httpServletResponse.addHeader(HttpHeaders.CONTENT_ENCODING, "gzip");
+                requestDispatcher.forward(httpServletRequest, httpServletResponse);
+            } else {
+                GZipServletResponseWrapper gZipResponseWrapper = new GZipServletResponseWrapper(filterConfig, httpServletResponse);
+                chain.doFilter(request, gZipResponseWrapper);
+                gZipResponseWrapper.close();
+            }
         } else {
             chain.doFilter(request, response);
         }
@@ -42,11 +55,7 @@ public class GZipCompressionFilter extends GenericFilterBean {
             return false;
         }
 
-        if (!isGzipAccepted(httpServletRequest)) {
-            return false;
-        }
-
-        return true;
+        return isGzipAccepted(httpServletRequest);
     }
 
     private boolean isGzipAccepted(HttpServletRequest httpServletRequest) {
