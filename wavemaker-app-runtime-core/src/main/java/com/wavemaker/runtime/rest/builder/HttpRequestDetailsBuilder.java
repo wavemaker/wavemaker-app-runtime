@@ -120,6 +120,7 @@ public class HttpRequestDetailsBuilder {
                     throw new IllegalStateException();
                 }
                 inputStream = message.getInputStream();
+                setHeaders(message.getHttpHeaders());
             } else {
                 Message message = HttpRequestUtils.getJsonMessage(requestBody);
                 inputStream = message.getInputStream();
