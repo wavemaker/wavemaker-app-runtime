@@ -761,6 +761,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "COLUMN_SERVER_PROPERTIES": {
         "DATE"      : "Current Date",
         "TIME"      : "Current Time",
+        "TIMESTAMP" : "Current Timestamp",
         "DATE_TIME" : "Current Datetime",
         "USER_ID"   : "LoggedIn UserId",
         "USER_NAME" : "LoggedIn Username"
