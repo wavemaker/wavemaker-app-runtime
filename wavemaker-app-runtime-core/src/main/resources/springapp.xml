@@ -130,7 +130,7 @@
         <property name="enableGZipCompression" value="${app.web.compression.enabled}"/>
         <property name="minCompressSize" value="${app.web.compression.minsize}"/>
         <property name="includeMimeTypes" value="${app.web.compression.mimetypes.includePatterns}"/>
-        <property name="excludeMimeTypes" value="${app.web.compression.mimetypes.cacheEnabledPatterns}"/>
+        <property name="excludeMimeTypes" value="${app.web.compression.mimetypes.excludePatterns}"/>
     </bean>
 
 
