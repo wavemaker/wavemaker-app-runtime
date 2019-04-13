@@ -34,6 +34,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "type": {"type": "list", "widgettype": "typeahead", "options": {"string": "LABEL_STRING", "boolean": "LABEL_BOOLEAN", "number": "LABEL_NUMBER", "date": "LABEL_DATE", "entry": "LABEL_ENTRY"}, "value": "string", "required": true},
                     "isList": {"type": "boolean", "value": false},
+                    "twoWayBinding": {"type": "boolean", "hide": true, "value": false},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "editJson": {"type": "json"},
                     "isBound": {"type": "boolean"},
