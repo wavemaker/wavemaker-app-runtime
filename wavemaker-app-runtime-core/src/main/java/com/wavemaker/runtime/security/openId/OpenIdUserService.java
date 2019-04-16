@@ -15,6 +15,8 @@ import org.springframework.util.CollectionUtils;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 
 /**
+ * Loads authorities associated with the authenticated user, using {@link AuthoritiesProvider} class.
+ *
  * Created by srujant on 8/8/18.
  */
 public class OpenIdUserService extends OidcUserService {

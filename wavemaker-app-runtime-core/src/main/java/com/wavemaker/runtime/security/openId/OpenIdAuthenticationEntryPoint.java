@@ -16,6 +16,9 @@ import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND
 import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
 
 /**
+ * Authentication entryPoint to redirect application to {@link OpenIDAuthorizationRequestRedirectFilter}.
+ * Request is commenced to this entryPoint if OpenId security is configured in the application.
+ *
  * Created by srujant on 2/8/18.
  */
 public class OpenIdAuthenticationEntryPoint implements SSOEntryPoint {

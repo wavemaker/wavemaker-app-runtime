@@ -30,6 +30,8 @@ import com.wavemaker.commons.auth.openId.OpenIdConstants;
 
 
 /**
+ * This class get's the id_token from the Identity provider using the code sent by the authorization server and returns
+ * {@link WMAuthenticationToken} on successful authentication by the Identity provider.
  * Created by srujant on 6/8/18.
  */
 public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
