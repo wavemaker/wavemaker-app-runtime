@@ -55,11 +55,14 @@ public class WMCsrfFilter extends OncePerRequestFilter {
         }
         CsrfToken csrfToken = this.tokenRepository.loadToken(request);
         final boolean missingToken = csrfToken == null;
-        String actualToken = request.getHeader(csrfToken.getHeaderName());
-        if (actualToken == null) {
-            actualToken = request.getParameter(csrfToken.getParameterName());
+        String actualToken = null;
+        if (!missingToken) {
+            actualToken = request.getHeader(csrfToken.getHeaderName());
+            if (actualToken == null) {
+                actualToken = request.getParameter(csrfToken.getParameterName());
+            }
         }
-        if (csrfToken == null || !csrfToken.getToken().equals(actualToken)) {
+        if (missingToken || !csrfToken.getToken().equals(actualToken)) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Invalid CSRF token found for "
                         + UrlUtils.buildFullRequestUrl(request));
