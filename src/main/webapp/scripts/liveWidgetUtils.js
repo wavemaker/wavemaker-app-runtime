@@ -1263,7 +1263,7 @@ WM.module('wm.widgets.live')
                             //Show limit if dataset is not bound
                             wdgtProperties.limit.show = true;
                         }
-                        if (scope.widget === 'autocomplete') {
+                        if (scope.widget === 'autocomplete' || scope.widget === 'chips') {
                             wdgtProperties.matchmode.show = false;
                             var isBoundToVariable = Utils.stringStartsWith(scope.binddataset, 'bind:Variables.');
                             if (isBoundToVariable) {
