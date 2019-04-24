@@ -262,11 +262,11 @@ WM.module('wm.widgets.dialog')
                             <wm-message type="error" caption="{{errMsg}}" show="{{showErrMsg}}" class="app-logindialog-message" hide-close="true"></wm-message>
                             <wm-composite>
                                 <wm-label caption="Username" class="col-md-4"></wm-label>
-                                <wm-text placeholder="Enter username" class="app-logindialog-username"></wm-text>
+                                <wm-text placeholder="Enter username" class="app-logindialog-username" updateon="default"></wm-text>
                             </wm-composite>
                             <wm-composite widget="text">
                                 <wm-label caption="Password" class="col-md-4"></wm-label>
-                                <wm-text type="password" placeholder="Enter password" class="app-logindialog-password"></wm-text>
+                                <wm-text type="password" placeholder="Enter password" class="app-logindialog-password" updateon="default"></wm-text>
                             </wm-composite>
                         </wm-form>
                         <wm-dialogactions>
