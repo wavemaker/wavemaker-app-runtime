@@ -273,7 +273,7 @@ public class WMObjectMapper extends ObjectMapper {
     public <T> T readValue(InputStream src, JavaType valueType) throws IOException {
         if (String.class.equals(valueType.getRawClass())) {
             StringWriter stringWriter = new StringWriter();
-            IOUtils.copy(src, stringWriter, Charset.defaultCharset());
+            IOUtils.copy(src, stringWriter, Charset.forName("UTF-8"));
             return (T) stringWriter.toString();
         }
         return readMapper.readValue(src, valueType);
