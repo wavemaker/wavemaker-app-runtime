@@ -23,21 +23,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.validations.DbValidationsConstants;
 import com.wavemaker.commons.wrapper.StringWrapper;
-import com.wavemaker.runtime.data.model.DesignServiceResponse;
-import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
-import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.ExportedFileContentWrapper;
@@ -74,25 +68,6 @@ public class AppRuntimeController {
         }
         response.getWriter().write("var _WM_APP_PROPERTIES = " + JSONUtils.toJSON(applicationProperties, true) + ";");
         response.getWriter().flush();
-    }
-
-    // XXX restrict this method in app runtime.
-    @RequestMapping(method = RequestMethod.POST, value = "/{serviceId}/queries/test_run")
-    public DesignServiceResponse testRunQuery(
-            @PathVariable("serviceId") String serviceId, MultipartHttpServletRequest request, Pageable pageable) {
-        return appRuntimeService.testRunQuery(serviceId, request, pageable);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "{serviceId}/procedures/test_run")
-    public DesignServiceResponse testRunProcedure(
-            @PathVariable("serviceId") String serviceId, @RequestBody RuntimeProcedure procedure) {
-        return appRuntimeService.testRunProcedure(serviceId, procedure);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/{serviceId}/queries/execute")
-    public Object executeQuery(
-            @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query, Pageable pageable) {
-        return appRuntimeService.executeQuery(serviceId, query, pageable);
     }
 
     @RequestMapping(value = "/application/validations", method = RequestMethod.GET)

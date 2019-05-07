@@ -23,6 +23,7 @@ import org.hibernate.query.Query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
@@ -33,6 +34,7 @@ import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.runtime.data.util.HQLQueryUtils;
+import com.wavemaker.runtime.util.MultipartQueryUtils;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -55,6 +57,14 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
         }
 
         return meta;
+    }
+
+    @Override
+    public DesignServiceResponse testRunQuery(
+            final String serviceId, final MultipartHttpServletRequest request, final Pageable pageable) {
+        RuntimeQuery query = MultipartQueryUtils.readContent(request, RuntimeQuery.class);
+        MultipartQueryUtils.setMultiparts(query.getParameters(), request.getMultiFileMap());
+        return testRunQuery(serviceId, query, pageable);
     }
 
     @Override
