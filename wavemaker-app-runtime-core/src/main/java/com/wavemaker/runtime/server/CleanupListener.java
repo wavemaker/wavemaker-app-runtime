@@ -63,6 +63,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.commons.util.WMUtils;
+import com.wavemaker.runtime.RuntimeEnvironment;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
@@ -75,7 +76,8 @@ public class CleanupListener implements ServletContextListener {
 
     private static Logger logger;
 
-    private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer.getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
+    private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer
+            .getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
 
     private boolean isSharedLib() {
         return WMUtils.isSharedLibSetup();
@@ -88,6 +90,9 @@ public class CleanupListener implements ServletContextListener {
         System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
         System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
         warmUpPoiInParentClassLoader();
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            event.getServletContext().setInitParameter("spring.profiles.active", "wm_preview");
+        }
     }
 
     /*
@@ -146,27 +151,32 @@ public class CleanupListener implements ServletContextListener {
 
     private void jacksonAnnotationIntrospectorClearAnnotationTypes(ClassLoader classLoader) {
         /*
-        *  ObjectMapper which comes from the shared classloader, is the parent classloader for all deployed applications.
-        *  It is having a static reference to JacksonAnnotationIntrospector" instance.
-        *  JacksonAnnotationIntrospector object is having a map, which is holding reference to custom annotation classes used in the application.
-        *  As parent class loader is holding the references to custom annotations used in child classloader, this is preventing the garbage collection of child
-        *  classloader even after undeploying the application.
-        *
-        *   Fix:
-        *   This cleanup task that removes all the entries from the map declared in JacksonAnnotationIntrospector object.
-        *   This removes all the references (from parent classloader) to the custom annotation classes used in the child class loader(deployed applications).
-        *
-        * */
+         *  ObjectMapper which comes from the shared classloader, is the parent classloader for all deployed applications.
+         *  It is having a static reference to JacksonAnnotationIntrospector" instance.
+         *  JacksonAnnotationIntrospector object is having a map, which is holding reference to custom annotation classes used in the application.
+         *  As parent class loader is holding the references to custom annotations used in child classloader, this is preventing the garbage collection of child
+         *  classloader even after undeploying the application.
+         *
+         *   Fix:
+         *   This cleanup task that removes all the entries from the map declared in JacksonAnnotationIntrospector object.
+         *   This removes all the references (from parent classloader) to the custom annotation classes used in the child class loader(deployed applications).
+         *
+         * */
         if (isSharedLib()) {
             String className = "com.fasterxml.jackson.databind.ObjectMapper";
             try {
                 Class klass = ClassLoaderUtils.findLoadedClass(classLoader.getParent(), className);
                 if (klass != null) {
-                    logger.info("Attempting to clear annotation map from {} JacksonAnnotationIntrospector class instance", klass);
-                    Field defaultAnnotationIntrospectorField = klass.getDeclaredField("DEFAULT_ANNOTATION_INTROSPECTOR");
+                    logger.info(
+                            "Attempting to clear annotation map from {} JacksonAnnotationIntrospector class instance",
+                            klass);
+                    Field defaultAnnotationIntrospectorField = klass
+                            .getDeclaredField("DEFAULT_ANNOTATION_INTROSPECTOR");
                     defaultAnnotationIntrospectorField.setAccessible(true);
-                    JacksonAnnotationIntrospector jacksonAnnotationIntrospector = (JacksonAnnotationIntrospector) defaultAnnotationIntrospectorField.get(null);
-                    Field annotaionsInsideField = jacksonAnnotationIntrospector.getClass().getDeclaredField("_annotationsInside");
+                    JacksonAnnotationIntrospector jacksonAnnotationIntrospector = (JacksonAnnotationIntrospector) defaultAnnotationIntrospectorField
+                            .get(null);
+                    Field annotaionsInsideField = jacksonAnnotationIntrospector.getClass()
+                            .getDeclaredField("_annotationsInside");
                     annotaionsInsideField.setAccessible(true);
                     LRUMap lruMap = (LRUMap) annotaionsInsideField.get(jacksonAnnotationIntrospector);
                     if (lruMap != null) {
@@ -233,7 +243,8 @@ public class CleanupListener implements ServletContextListener {
             } catch (InstanceNotFoundException e) {
                 logger.debug("Oracle OracleDiagnosabilityMBean {} not found", mBeanName, e);
                 //Trying with different mBeanName as some versions of oracle driver uses the second formula for mBeanName
-                mBeanName = classLoader.getClass().getName() + "@" + Integer.toHexString(classLoader.hashCode()).toLowerCase();
+                mBeanName = classLoader.getClass().getName() + "@" + Integer.toHexString(classLoader.hashCode())
+                        .toLowerCase();
                 try {
                     deRegisterOracleDiagnosabilityMBean(mBeanName);
                 } catch (InstanceNotFoundException e1) {
@@ -267,22 +278,29 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
-    private static void cleanupNotificationListener(ClassLoader classLoader, PlatformManagedObject platformManagedObject) {
+    private static void cleanupNotificationListener(
+            ClassLoader classLoader, PlatformManagedObject platformManagedObject) {
         try {
             NotificationEmitter notificationEmitter = (NotificationEmitter) platformManagedObject;
             Field listenerListField = findField(notificationEmitter.getClass(), "listenerList");
             if (listenerListField == null) {
-                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unrecognized.notificationEmitter"), notificationEmitter.getClass().getName());
+                throw new WMRuntimeException(
+                        MessageResource.create("com.wavemaker.runtime.unrecognized.notificationEmitter"),
+                        notificationEmitter.getClass().getName());
             }
-            List listenerInfoList = (List) listenerListField.get(notificationEmitter);//This object would be List<ListenerInfo>
+            List listenerInfoList = (List) listenerListField
+                    .get(notificationEmitter);//This object would be List<ListenerInfo>
             for (Object o : listenerInfoList) {
                 Field listenerField = findField(o.getClass(), "listener");
                 if (listenerListField == null) {
-                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unrecognizedListenerInfo"), o.getClass().getName());
+                    throw new WMRuntimeException(
+                            MessageResource.create("com.wavemaker.runtime.unrecognizedListenerInfo"),
+                            o.getClass().getName());
                 }
                 NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
                 if (notificationListener.getClass().getClassLoader() == classLoader) {
-                    logger.info("Removing registered mBean notification listener {}", notificationListener.getClass().getName());
+                    logger.info("Removing registered mBean notification listener {}",
+                            notificationListener.getClass().getName());
                     notificationEmitter.removeNotificationListener(notificationListener);
                 }
             }
@@ -295,10 +313,13 @@ public class CleanupListener implements ServletContextListener {
                 logger.warn("Failed to find loaded class for class {}", className, e1);
             }
             if (loadedClass == null) {
-                logger.info("MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
+                logger.info(
+                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
                 logger.trace("Exception Stack trace", e);
             } else {
-                logger.warn("MBean clean up is not successful, any uncleared notification listeners might create a memory leak", e);
+                logger.warn(
+                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak",
+                        e);
             }
         }
     }
@@ -331,8 +352,9 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
-    private static void removeTCLKnownLevels(ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
-                                             Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
+    private static void removeTCLKnownLevels(
+            ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
+            Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
         Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
         Iterator<Map.Entry<Object, List>> mapEntryIterator = entrySet.iterator();
         while (mapEntryIterator.hasNext()) {
@@ -441,7 +463,7 @@ public class CleanupListener implements ServletContextListener {
              * So calling it twice so that the second call to getDrivers will actually return all the drivers visible to the caller class loader.
              * Synchronizing the process to prevent a rare case where the second call to getDrivers method actually registers the unwanted driver
              * because of registerDriver from some other thread between the two getDrivers call
-            */
+             */
             Enumeration<Driver> drivers;
             synchronized (DriverManager.class) {
                 Enumeration<Driver> ignoreDrivers = DriverManager.getDrivers();
@@ -468,7 +490,8 @@ public class CleanupListener implements ServletContextListener {
         Provider[] providers = Security.getProviders();
         for (Provider provider : providers) {
             if (provider.getClass().getClassLoader() == classLoader) {
-                logger.info("De registering security provider {} with name {} which is registered in the class loader", provider, provider.getName());
+                logger.info("De registering security provider {} with name {} which is registered in the class loader",
+                        provider, provider.getName());
                 Security.removeProvider(provider.getName());
             }
         }
@@ -499,9 +522,12 @@ public class CleanupListener implements ServletContextListener {
                 for (Thread thread : runningThreads) {
                     if (thread.isAlive()) {
                         StackTraceElement[] stackTrace = thread.getStackTrace();
-                        Throwable throwable = new IllegalThreadStateException("Thread [" + thread.getName() + "] is Still running");
+                        Throwable throwable = new IllegalThreadStateException(
+                                "Thread [" + thread.getName() + "] is Still running");
                         throwable.setStackTrace(stackTrace);
-                        logger.warn("Thread {} is still alive after waiting for {} and will mostly probably create a memory leak", thread.getName(),
+                        logger.warn(
+                                "Thread {} is still alive after waiting for {} and will mostly probably create a memory leak",
+                                thread.getName(),
                                 waitTimeOutInMillis, throwable);
                     }
                 }
@@ -534,8 +560,10 @@ public class CleanupListener implements ServletContextListener {
                 logger.warn("Failed to stop timer thread {}", thread, e);
             }
         } else {
-            logger.warn("Couldn't stop timer thread {} as one of newTasksMayBeScheduled/queue fields are not present in the class {}", thread, thread
-                    .getClass().getName());
+            logger.warn(
+                    "Couldn't stop timer thread {} as one of newTasksMayBeScheduled/queue fields are not present in the class {}",
+                    thread, thread
+                            .getClass().getName());
         }
 
     }
