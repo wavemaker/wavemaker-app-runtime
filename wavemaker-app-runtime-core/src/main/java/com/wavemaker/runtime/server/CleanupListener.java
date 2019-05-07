@@ -73,7 +73,7 @@ import com.wavemaker.commons.util.WMUtils;
  */
 public class CleanupListener implements ServletContextListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(CleanupListener.class);
+    private static Logger logger;
 
     private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer.getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
 
@@ -83,6 +83,7 @@ public class CleanupListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
+        init();
         //properties set to time out LDAP connections automatically
         System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
         System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
@@ -598,5 +599,11 @@ public class CleanupListener implements ServletContextListener {
             method.setAccessible(true);
         }
         return method;
+    }
+
+    private void init() {
+        if (logger == null) {
+            logger = LoggerFactory.getLogger(CleanupListener.class);
+        }
     }
 }
