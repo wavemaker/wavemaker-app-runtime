@@ -47,14 +47,13 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.logging.LogFactory;
 import org.apache.poi.xssf.usermodel.XSSFPicture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.LRUMap;
 import com.sun.jndi.ldap.Connection;
 import com.sun.jndi.ldap.LdapClient;
 import com.sun.jndi.ldap.LdapPoolManager;
@@ -64,7 +63,6 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.commons.util.WMUtils;
-import com.wavemaker.runtime.RuntimeEnvironment;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
@@ -76,119 +74,71 @@ import com.wavemaker.runtime.RuntimeEnvironment;
 public class CleanupListener implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(CleanupListener.class);
-
-    private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer
-            .getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
+    
+    private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer.getInteger("wm.app.maxWaitTimeRunningThreads", 5000); 
 
     private boolean isSharedLib() {
         return WMUtils.isSharedLibSetup();
     }
 
-    /**
-     * De Registers the mbean registered by the oracle driver
+    @Override
+    public void contextInitialized(ServletContextEvent event) {
+        //properties set to time out LDAP connections automatically
+        System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
+        System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
+        warmUpPoiInParentClassLoader();
+    }
+
+    /*
+        In XSSFPicture, while creating prototype it internally using current app class loader references, due to this
+         app classloader was not cleared event after app undeploy.
+        To fix memory leak caused by first time initialization from Web app, We are loading prototype through
+        common class loader.
      */
-    public static void deRegisterOracleDiagnosabilityMBean(ClassLoader classLoader) {
-        String mBeanName = classLoader.getClass().getName() + "@" + Integer.toHexString(classLoader.hashCode());
+    private void warmUpPoiInParentClassLoader() {
         try {
-            try {
-                deRegisterOracleDiagnosabilityMBean(mBeanName);
-            } catch (InstanceNotFoundException e) {
-                logger.debug("Oracle OracleDiagnosabilityMBean {} not found", mBeanName, e);
-                //Trying with different mBeanName as some versions of oracle driver uses the second formula for mBeanName
-                mBeanName = classLoader.getClass().getName() + "@" + Integer.toHexString(classLoader.hashCode())
-                        .toLowerCase();
+            ClassLoader currentCL = getAppClassLoader();
+            if (currentCL != XSSFPicture.class.getClassLoader()) {
                 try {
-                    deRegisterOracleDiagnosabilityMBean(mBeanName);
-                } catch (InstanceNotFoundException e1) {
-                    logger.debug("Oracle OracleDiagnosabilityMBean {} also not found", mBeanName);
+                    Thread.currentThread().setContextClassLoader(XSSFPicture.class.getClassLoader());
+                    logger.info("warming up poi prototype field");
+                    final Method prototype = findMethod(XSSFPicture.class, "prototype");
+                    if(prototype!=null) {
+                        prototype.invoke(null);
+                    }
+                } finally {
+                    Thread.currentThread().setContextClassLoader(currentCL);
                 }
             }
         } catch (Throwable e) {
-            logger.error("Oracle JMX unregistration error", e);
+            logger.warn("Failed to initialize prototype method", e);
         }
     }
 
-    private static void deRegisterOracleDiagnosabilityMBean(String nameValue)
-            throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
-        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        final Hashtable<String, String> keys = new Hashtable<>();
-        keys.put("type", "diagnosability");
-        keys.put("name", nameValue);
-        mbs.unregisterMBean(new ObjectName("com.oracle.jdbc", keys));
-        logger.info("Deregistered OracleDiagnosabilityMBean {}", nameValue);
-    }
-
-    private static void cleanupNotificationListener(
-            ClassLoader classLoader, PlatformManagedObject platformManagedObject) {
+    @Override
+    public void contextDestroyed(ServletContextEvent event) {
         try {
-            NotificationEmitter notificationEmitter = (NotificationEmitter) platformManagedObject;
-            Field listenerListField = findField(notificationEmitter.getClass(), "listenerList");
-            if (listenerListField == null) {
-                throw new WMRuntimeException(
-                        MessageResource.create("com.wavemaker.runtime.unrecognized.notificationEmitter"),
-                        notificationEmitter.getClass().getName());
-            }
-            List listenerInfoList = (List) listenerListField
-                    .get(notificationEmitter);//This object would be List<ListenerInfo>
-            for (Object o : listenerInfoList) {
-                Field listenerField = findField(o.getClass(), "listener");
-                if (listenerListField == null) {
-                    throw new WMRuntimeException(
-                            MessageResource.create("com.wavemaker.runtime.unrecognizedListenerInfo"),
-                            o.getClass().getName());
-                }
-                NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
-                if (notificationListener.getClass().getClassLoader() == classLoader) {
-                    logger.info("Removing registered mBean notification listener {}",
-                            notificationListener.getClass().getName());
-                    notificationEmitter.removeNotificationListener(notificationListener);
-                }
-            }
+            /**
+             * De registering it at the start so that preceding clean up tasks may clean any references created by loading unwanted classes by this call.
+             */
+            deregisterDrivers(getAppClassLoader());
+            deRegisterOracleDiagnosabilityMBean(getAppClassLoader());
+            typeFactoryClearTypeCache(getAppClassLoader());
+            resourceManagerClearPropertiesCache();
+            //clearCacheSourceAbstractClassGenerator();
+            clearLdapThreadConnections(getAppClassLoader());
+            cleanupMBeanNotificationListeners(getAppClassLoader());
+            cleanupJULIReferences(getAppClassLoader());
+            deregisterSecurityProviders(getAppClassLoader());
+            stopRunningThreads(getAppClassLoader(), MAX_WAIT_TIME_FOR_RUNNING_THREADS);
+            //Release all open references for logging
+            LogFactory.release(getAppClassLoader());
+
+            // flush all of the Introspector's internal caches
+            Introspector.flushCaches();
+            logger.info("Clean Up Successful!");
         } catch (Exception e) {
-            String className = "oracle.jdbc.driver.BlockSource";
-            Class loadedClass = null;
-            try {
-                loadedClass = ClassLoaderUtils.findLoadedClass(classLoader, className);
-            } catch (Exception e1) {
-                logger.warn("Failed to find loaded class for class {}", className, e1);
-            }
-            if (loadedClass == null) {
-                logger.info(
-                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
-                logger.trace("Exception Stack trace", e);
-            } else {
-                logger.warn(
-                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak",
-                        e);
-            }
-        }
-    }
-
-    /**
-     * Clears up the juli references for the given class loader
-     */
-    public static void cleanupJULIReferences(ClassLoader classLoader) {
-        String className = "java.util.logging.Level$KnownLevel";
-        try {
-            Class klass = Class.forName(className, true, classLoader);
-            Field nameToKnownLevelsField = findField(klass, "nameToLevels");
-            Field intToKnownLevelsField = findField(klass, "intToLevels");
-            Field levelObjectField = findField(klass, "levelObject");
-            Field mirroredLevelField = findField(klass, "mirroredLevel");
-            synchronized (klass) {
-                if (nameToKnownLevelsField != null) {
-                    Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
-                    removeTCLKnownLevels(classLoader, nameToKnownLevels, levelObjectField, mirroredLevelField);
-                }
-                if (intToKnownLevelsField != null) {
-                    Map<Object, List> intToKnownLevels = (Map<Object, List>) intToKnownLevelsField.get(null);
-                    removeTCLKnownLevels(classLoader, intToKnownLevels, levelObjectField, mirroredLevelField);
-                }
-
-
-            }
-        } catch (Exception e) {
-            logger.warn("Failed to clean up juli references in the class " + className, e);
+            logger.info("Failed to clean up some things on app undeploy", e);
         }
     }
 
@@ -235,8 +185,116 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
-    private static void removeTCLKnownLevels(
-            ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
+    /**
+     * De Registers the mbean registered by the oracle driver
+     */
+    public static void deRegisterOracleDiagnosabilityMBean(ClassLoader classLoader) {
+        String mBeanName = classLoader.getClass().getName() + "@" + Integer.toHexString(classLoader.hashCode());
+        try {
+            try {
+                deRegisterOracleDiagnosabilityMBean(mBeanName);
+            } catch (InstanceNotFoundException e) {
+                logger.debug("Oracle OracleDiagnosabilityMBean {} not found", mBeanName, e);
+                //Trying with different mBeanName as some versions of oracle driver uses the second formula for mBeanName
+                mBeanName = classLoader.getClass().getName() + "@" + Integer.toHexString(classLoader.hashCode()).toLowerCase();
+                try {
+                    deRegisterOracleDiagnosabilityMBean(mBeanName);
+                } catch (InstanceNotFoundException e1) {
+                    logger.debug("Oracle OracleDiagnosabilityMBean {} also not found", mBeanName);
+                }
+            }
+        } catch (Throwable e) {
+            logger.error("Oracle JMX unregistration error", e);
+        }
+    }
+
+    private static void deRegisterOracleDiagnosabilityMBean(String nameValue) 
+            throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        final Hashtable<String, String> keys = new Hashtable<>();
+        keys.put("type", "diagnosability");
+        keys.put("name", nameValue);
+        mbs.unregisterMBean(new ObjectName("com.oracle.jdbc", keys));
+        logger.info("Deregistered OracleDiagnosabilityMBean {}", nameValue);
+    }
+
+    /**
+     * Clears any notification listeners registered with memory mx bean
+     * For example Oracle's BlockSource creates an mbean listener which needs to be deregistered
+     */
+    public static void cleanupMBeanNotificationListeners(ClassLoader classLoader) {
+        cleanupNotificationListener(classLoader, ManagementFactory.getMemoryMXBean());
+        List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
+        for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMXBeans) {
+            cleanupNotificationListener(classLoader, garbageCollectorMXBean);
+        }
+    }
+
+    private static void cleanupNotificationListener(ClassLoader classLoader, PlatformManagedObject platformManagedObject) {
+        try {
+            NotificationEmitter notificationEmitter = (NotificationEmitter) platformManagedObject;
+            Field listenerListField = findField(notificationEmitter.getClass(), "listenerList");
+            if (listenerListField == null) {
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unrecognized.notificationEmitter"), notificationEmitter.getClass().getName());
+            }
+            List listenerInfoList = (List) listenerListField.get(notificationEmitter);//This object would be List<ListenerInfo>
+            for (Object o : listenerInfoList) {
+                Field listenerField = findField(o.getClass(), "listener");
+                if (listenerListField == null) {
+                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unrecognizedListenerInfo"), o.getClass().getName());
+                }
+                NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
+                if (notificationListener.getClass().getClassLoader() == classLoader) {
+                    logger.info("Removing registered mBean notification listener {}", notificationListener.getClass().getName());
+                    notificationEmitter.removeNotificationListener(notificationListener);
+                }
+            }
+        } catch (Exception e) {
+            String className = "oracle.jdbc.driver.BlockSource";
+            Class loadedClass = null;
+            try {
+                loadedClass = ClassLoaderUtils.findLoadedClass(classLoader, className);
+            } catch (Exception e1) {
+                logger.warn("Failed to find loaded class for class {}", className, e1);
+            }
+            if (loadedClass == null) {
+                logger.info("MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
+                logger.trace("Exception Stack trace", e);
+            } else {
+                logger.warn("MBean clean up is not successful, any uncleared notification listeners might create a memory leak", e);
+            }
+        }
+    }
+
+    /**
+     * Clears up the juli references for the given class loader
+     */
+    public static void cleanupJULIReferences(ClassLoader classLoader) {
+        String className = "java.util.logging.Level$KnownLevel";
+        try {
+            Class klass = Class.forName(className, true, classLoader);
+            Field nameToKnownLevelsField = findField(klass, "nameToLevels");
+            Field intToKnownLevelsField = findField(klass, "intToLevels");
+            Field levelObjectField = findField(klass, "levelObject");
+            Field mirroredLevelField = findField(klass, "mirroredLevel");
+            synchronized (klass) {
+                if(nameToKnownLevelsField!=null) {
+                    Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
+                    removeTCLKnownLevels(classLoader, nameToKnownLevels, levelObjectField, mirroredLevelField);
+                }
+                if(intToKnownLevelsField!=null){
+                    Map<Object, List> intToKnownLevels = (Map<Object, List>) intToKnownLevelsField.get(null);
+                    removeTCLKnownLevels(classLoader, intToKnownLevels, levelObjectField, mirroredLevelField);
+                }
+
+
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to clean up juli references in the class " + className, e);
+        }
+    }
+
+    private static void removeTCLKnownLevels(ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
             Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
         Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
         Iterator<Map.Entry<Object, List>> mapEntryIterator = entrySet.iterator();
@@ -267,29 +325,117 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
+    /**
+     * Added by akritim
+     * To clear TypeFactory's TypeCache
+     */
+    private void typeFactoryClearTypeCache(ClassLoader classLoader) {
+        if (isSharedLib()) {
+            String className = "com.fasterxml.jackson.databind.type.TypeFactory";
+            try {
+                Class klass = ClassLoaderUtils.findLoadedClass(classLoader.getParent(), className);
+                if (klass != null) {
+                    logger.info("Attempt to clear typeCache from {} class instance", klass);
+                    TypeFactory.defaultInstance().clearCache();
+                }
+            } catch (Throwable e) {
+                logger.warn("Failed to Clear TypeCache from {}", className, e);
+            }
+        }
+    }
+
+    /**
+     * Added by akritim
+     * To clear ResourceManager's PropertiesCache
+     */
+    private void resourceManagerClearPropertiesCache() {
+        Class<ResourceManager> klass = ResourceManager.class;
+        try {
+            Field propertiesCache = findField(klass, "propertiesCache");
+            if (propertiesCache != null){
+                WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache
+                        .get(null);
+            if (!map.isEmpty()) {
+                logger.info("Clearing propertiesCache from ");
+                map.clear();
+            }
+        }
+        } catch (Throwable e) {
+            logger.warn("Failed to clear propertiesCache from {}", klass, e);
+        }
+    }
+    
+    private void clearLdapThreadConnections(ClassLoader classLoader) {
+        List<Thread> threads = getThreads(classLoader);
+        for (Thread thread : threads) {
+            if (isAliveAndNotCurrentThread(thread)) {
+                try {
+                    if (thread.getName().startsWith("Thread-")) {
+                        Field targetField = findField(Thread.class, "target");
+                        Runnable runnable = (Runnable) targetField.get(thread);
+                        if (runnable != null && runnable instanceof Connection) {
+                            logger.info("Interrupting LDAP connection thread");
+                            Connection conn = (Connection) runnable;
+                            WMIOUtils.closeSilently(conn.inStream);
+                            WMIOUtils.closeSilently(conn.outStream);
+                            Field parent = findField(Connection.class, "parent");
+                            LdapClient ldapClient = (LdapClient) parent.get(conn);
+                            ldapClient.closeConnection();
+                            LdapPoolManager.expire(3000);
+                        }
+                    }
+                } catch (Throwable t) {
+                    logger.warn("Failed to stop the thread {} properly", thread, t);
+                }
+            }
+        }
+    }
+
+    /**
+     * de-registers the JDBC drivers registered visible to this class loader from DriverManager
+     * Added by akritim
+     */
+    private void deregisterDrivers(ClassLoader classLoader) {
+        try {
+
+            /*
+             * DriverManager.getDrivers() has the side effect of registering driver classes
+             * which are there in other class loaders(and registered with DriverManager) but not yet loaded in the caller class loader.
+             * So calling it twice so that the second call to getDrivers will actually return all the drivers visible to the caller class loader.
+             * Synchronizing the process to prevent a rare case where the second call to getDrivers method actually registers the unwanted driver
+             * because of registerDriver from some other thread between the two getDrivers call
+            */
+            Enumeration<Driver> drivers;
+            synchronized (DriverManager.class) {
+                Enumeration<Driver> ignoreDrivers = DriverManager.getDrivers();
+                drivers = DriverManager.getDrivers();
+            }
+            while (drivers.hasMoreElements()) {
+                Driver driver = drivers.nextElement();
+                if (driver.getClass().getClassLoader() == classLoader) {
+                    logger.info("De Registering the driver {}", driver.getClass().getCanonicalName());
+                    try {
+                        DriverManager.deregisterDriver(driver);
+                    } catch (SQLException e1) {
+                        logger.warn("Failed to de-register driver ", driver.getClass().getCanonicalName(), e1);
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            logger.warn("Failed to de-register drivers", e);
+        }
+    }
+    
     public static void deregisterSecurityProviders(ClassLoader classLoader) {
         logger.info("Attempting to deregister any security providers registered by webapp");
         Provider[] providers = Security.getProviders();
         for (Provider provider : providers) {
             if (provider.getClass().getClassLoader() == classLoader) {
-                logger.info("De registering security provider {} with name {} which is registered in the class loader",
-                        provider, provider.getName());
+                logger.info("De registering security provider {} with name {} which is registered in the class loader", provider, provider.getName());
                 Security.removeProvider(provider.getName());
             }
         }
-
-    }
-
-    /**
-     * Clears any notification listeners registered with memory mx bean
-     * For example Oracle's BlockSource creates an mbean listener which needs to be deregistered
-     */
-    public static void cleanupMBeanNotificationListeners(ClassLoader classLoader) {
-        cleanupNotificationListener(classLoader, ManagementFactory.getMemoryMXBean());
-        List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
-        for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMXBeans) {
-            cleanupNotificationListener(classLoader, garbageCollectorMXBean);
-        }
+        
     }
 
     /**
@@ -316,12 +462,9 @@ public class CleanupListener implements ServletContextListener {
                 for (Thread thread : runningThreads) {
                     if (thread.isAlive()) {
                         StackTraceElement[] stackTrace = thread.getStackTrace();
-                        Throwable throwable = new IllegalThreadStateException(
-                                "Thread [" + thread.getName() + "] is Still running");
+                        Throwable throwable = new IllegalThreadStateException("Thread [" + thread.getName() + "] is Still running");
                         throwable.setStackTrace(stackTrace);
-                        logger.warn(
-                                "Thread {} is still alive after waiting for {} and will mostly probably create a memory leak",
-                                thread.getName(),
+                        logger.warn("Thread {} is still alive after waiting for {} and will mostly probably create a memory leak", thread.getName(), 
                                 waitTimeOutInMillis, throwable);
                     }
                 }
@@ -354,17 +497,14 @@ public class CleanupListener implements ServletContextListener {
                 logger.warn("Failed to stop timer thread {}", thread, e);
             }
         } else {
-            logger.warn(
-                    "Couldn't stop timer thread {} as one of newTasksMayBeScheduled/queue fields are not present in the class {}",
-                    thread, thread
-                            .getClass().getName());
+            logger.warn("Couldn't stop timer thread {} as one of newTasksMayBeScheduled/queue fields are not present in the class {}", thread, thread
+                    .getClass().getName());
         }
-
+        
     }
 
     /**
-     * returns threads running in the given in class loader context or whose class is loaded from given class loader
-     *
+     * returns threads running in the given in class loader context or whose class is loaded from given class loader 
      * @param classLoader
      * @return
      */
@@ -372,212 +512,6 @@ public class CleanupListener implements ServletContextListener {
         return Thread.getAllStackTraces().keySet().stream().filter(thread -> {
             return thread.getContextClassLoader() == classLoader || thread.getClass().getClassLoader() == classLoader;
         }).collect(Collectors.toList());
-    }
-
-    /**
-     * Added by akritim
-     * To clear TypeFactory's TypeCache
-     */
-    private void typeFactoryClearTypeCache(ClassLoader classLoader) {
-        if (isSharedLib()) {
-            String className = "com.fasterxml.jackson.databind.type.TypeFactory";
-            try {
-                Class klass = ClassLoaderUtils.findLoadedClass(classLoader.getParent(), className);
-                if (klass != null) {
-                    logger.info("Attempt to clear typeCache from {} class instance", klass);
-                    TypeFactory.defaultInstance().clearCache();
-                }
-            } catch (Throwable e) {
-                logger.warn("Failed to Clear TypeCache from {}", className, e);
-            }
-        }
-    }
-
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-        //properties set to time out LDAP connections automatically
-        System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
-        System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
-        warmUpPoiInParentClassLoader();
-        if (RuntimeEnvironment.isTestRunEnvironment()) {
-            event.getServletContext().setInitParameter("spring.profiles.active", "wm_preview");
-        }
-    }
-
-    private void clearLdapThreadConnections(ClassLoader classLoader) {
-        List<Thread> threads = getThreads(classLoader);
-        for (Thread thread : threads) {
-            if (isAliveAndNotCurrentThread(thread)) {
-                try {
-                    if (thread.getName().startsWith("Thread-")) {
-                        Field targetField = findField(Thread.class, "target");
-                        Runnable runnable = (Runnable) targetField.get(thread);
-                        if (runnable != null && runnable instanceof Connection) {
-                            logger.info("Interrupting LDAP connection thread");
-                            Connection conn = (Connection) runnable;
-                            WMIOUtils.closeSilently(conn.inStream);
-                            WMIOUtils.closeSilently(conn.outStream);
-                            Field parent = findField(Connection.class, "parent");
-                            LdapClient ldapClient = (LdapClient) parent.get(conn);
-                            ldapClient.closeConnection();
-                            LdapPoolManager.expire(3000);
-                        }
-                    }
-                } catch (Throwable t) {
-                    logger.warn("Failed to stop the thread {} properly", thread, t);
-                }
-            }
-        }
-    }
-
-    /*
-        In XSSFPicture, while creating prototype it internally using current app class loader references, due to this
-         app classloader was not cleared event after app undeploy.
-        To fix memory leak caused by first time initialization from Web app, We are loading prototype through
-        common class loader.
-     */
-    private void warmUpPoiInParentClassLoader() {
-        try {
-            ClassLoader currentCL = getAppClassLoader();
-            if (currentCL != XSSFPicture.class.getClassLoader()) {
-                try {
-                    Thread.currentThread().setContextClassLoader(XSSFPicture.class.getClassLoader());
-                    logger.info("warming up poi prototype field");
-                    final Method prototype = findMethod(XSSFPicture.class, "prototype");
-                    if (prototype != null) {
-                        prototype.invoke(null);
-                    }
-                } finally {
-                    Thread.currentThread().setContextClassLoader(currentCL);
-                }
-            }
-        } catch (Throwable e) {
-            logger.warn("Failed to initialize prototype method", e);
-        }
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent event) {
-        try {
-            /**
-             * De registering it at the start so that preceding clean up tasks may clean any references created by loading unwanted classes by this call.
-             */
-            deregisterDrivers(getAppClassLoader());
-            deRegisterOracleDiagnosabilityMBean(getAppClassLoader());
-            typeFactoryClearTypeCache(getAppClassLoader());
-            resourceManagerClearPropertiesCache();
-            jacksonAnnotationIntrospectorClearAnnotationTypes(getAppClassLoader());
-            //clearCacheSourceAbstractClassGenerator()
-            clearLdapThreadConnections(getAppClassLoader());
-            cleanupMBeanNotificationListeners(getAppClassLoader());
-            cleanupJULIReferences(getAppClassLoader());
-            deregisterSecurityProviders(getAppClassLoader());
-            stopRunningThreads(getAppClassLoader(), MAX_WAIT_TIME_FOR_RUNNING_THREADS);
-            //Release all open references for logging
-//            LogFactory.release(getAppClassLoader());
-
-            // flush all of the Introspector's internal caches
-            Introspector.flushCaches();
-            logger.info("Clean Up Successful!");
-        } catch (Exception e) {
-            logger.info("Failed to clean up some things on app undeploy", e);
-        }
-    }
-
-    private void jacksonAnnotationIntrospectorClearAnnotationTypes(ClassLoader classLoader) {
-        /*
-         *  ObjectMapper which comes from the shared classloader, is the parent classloader for all deployed applications.
-         *  It is having a static reference to JacksonAnnotationIntrospector" instance.
-         *  JacksonAnnotationIntrospector object is having a map, which is holding reference to custom annotation classes used in the application.
-         *  As parent class loader is holding the references to custom annotations used in child classloader, this is preventing the garbage collection of child
-         *  classloader even after undeploying the application.
-         *
-         *   Fix:
-         *   This cleanup task that removes all the entries from the map declared in JacksonAnnotationIntrospector object.
-         *   This removes all the references (from parent classloader) to the custom annotation classes used in the child class loader(deployed applications).
-         *
-         * */
-        if (isSharedLib()) {
-            String className = "com.fasterxml.jackson.databind.ObjectMapper";
-            try {
-                Class klass = ClassLoaderUtils.findLoadedClass(classLoader.getParent(), className);
-                if (klass != null) {
-                    logger.info(
-                            "Attempting to clear annotation map from {} JacksonAnnotationIntrospector class instance",
-                            klass);
-                    Field defaultAnnotationIntrospectorField = klass
-                            .getDeclaredField("DEFAULT_ANNOTATION_INTROSPECTOR");
-                    defaultAnnotationIntrospectorField.setAccessible(true);
-                    JacksonAnnotationIntrospector jacksonAnnotationIntrospector = (JacksonAnnotationIntrospector) defaultAnnotationIntrospectorField
-                            .get(null);
-                    Field annotaionsInsideField = jacksonAnnotationIntrospector.getClass()
-                            .getDeclaredField("_annotationsInside");
-                    annotaionsInsideField.setAccessible(true);
-                    LRUMap lruMap = (LRUMap) annotaionsInsideField.get(jacksonAnnotationIntrospector);
-                    if (lruMap != null) {
-                        lruMap.clear();
-                    }
-                }
-            } catch (Throwable e) {
-                logger.warn("Failed to Clear annotationsMap  from {}", className, e);
-            }
-        }
-    }
-
-    /**
-     * Added by akritim
-     * To clear ResourceManager's PropertiesCache
-     */
-    private void resourceManagerClearPropertiesCache() {
-        Class<ResourceManager> klass = ResourceManager.class;
-        try {
-            Field propertiesCache = findField(klass, "propertiesCache");
-            if (propertiesCache != null) {
-                WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache
-                        .get(null);
-                if (!map.isEmpty()) {
-                    logger.info("Clearing propertiesCache from ");
-                    map.clear();
-                }
-            }
-        } catch (Throwable e) {
-            logger.warn("Failed to clear propertiesCache from {}", klass, e);
-        }
-    }
-
-    /**
-     * de-registers the JDBC drivers registered visible to this class loader from DriverManager
-     * Added by akritim
-     */
-    private void deregisterDrivers(ClassLoader classLoader) {
-        try {
-
-            /*
-             * DriverManager.getDrivers() has the side effect of registering driver classes
-             * which are there in other class loaders(and registered with DriverManager) but not yet loaded in the caller class loader.
-             * So calling it twice so that the second call to getDrivers will actually return all the drivers visible to the caller class loader.
-             * Synchronizing the process to prevent a rare case where the second call to getDrivers method actually registers the unwanted driver
-             * because of registerDriver from some other thread between the two getDrivers call
-             */
-            Enumeration<Driver> drivers;
-            synchronized (DriverManager.class) {
-                Enumeration<Driver> ignoreDrivers = DriverManager.getDrivers();
-                drivers = DriverManager.getDrivers();
-            }
-            while (drivers.hasMoreElements()) {
-                Driver driver = drivers.nextElement();
-                if (driver.getClass().getClassLoader() == classLoader) {
-                    logger.info("De Registering the driver {}", driver.getClass().getCanonicalName());
-                    try {
-                        DriverManager.deregisterDriver(driver);
-                    } catch (SQLException e1) {
-                        logger.warn("Failed to de-register driver ", driver.getClass().getCanonicalName(), e1);
-                    }
-                }
-            }
-        } catch (Throwable e) {
-            logger.warn("Failed to de-register drivers", e);
-        }
     }
 
     private static boolean isAliveAndNotCurrentThread(Thread thread) {
@@ -608,11 +542,11 @@ public class CleanupListener implements ServletContextListener {
             }
         }
     }
-
+    
     private static ClassLoader getAppClassLoader() {
         return Thread.currentThread().getContextClassLoader();
     }
-
+    
     private static Field findField(Class klass, String name) {
         Field field = ReflectionUtils.findField(klass, name);
         if (field != null) {
