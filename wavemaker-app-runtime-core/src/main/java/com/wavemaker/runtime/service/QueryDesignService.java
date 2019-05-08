@@ -18,6 +18,7 @@ package com.wavemaker.runtime.service;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
@@ -30,6 +31,8 @@ import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 public interface QueryDesignService {
 
     List<ReturnProperty> extractMeta(String serviceId, RuntimeQuery query);
+
+    DesignServiceResponse testRunQuery(String serviceId, MultipartHttpServletRequest request, Pageable pageable);
 
     DesignServiceResponse testRunQuery(String serviceId, RuntimeQuery query, final Pageable pageable);
 

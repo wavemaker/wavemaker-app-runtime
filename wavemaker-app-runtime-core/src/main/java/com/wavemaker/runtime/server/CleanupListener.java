@@ -63,6 +63,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.commons.util.WMUtils;
+import com.wavemaker.runtime.RuntimeEnvironment;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
@@ -87,6 +88,9 @@ public class CleanupListener implements ServletContextListener {
         System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
         System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
         warmUpPoiInParentClassLoader();
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            event.getServletContext().setInitParameter("spring.profiles.active", "wm_preview");
+        }
     }
 
     /*

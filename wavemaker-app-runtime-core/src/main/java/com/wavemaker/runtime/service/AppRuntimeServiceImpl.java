@@ -10,8 +10,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
@@ -20,11 +18,7 @@ import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.PropertiesFileUtils;
 import com.wavemaker.commons.validations.DbValidationsConstants;
 import com.wavemaker.runtime.app.AppFileSystem;
-import com.wavemaker.runtime.data.model.DesignServiceResponse;
-import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
-import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.security.SecurityService;
-import com.wavemaker.runtime.util.MultipartQueryUtils;
 
 /**
  * Created by Kishore Routhu on 21/6/17 3:00 PM.
@@ -45,7 +39,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
             "timeFormat"};
 
     private String applicationType = null;
-    private Map<String, Object> applicationProperties ;
+    private Map<String, Object> applicationProperties;
 
     @Autowired
     private QueryDesignService queryDesignService;
@@ -65,15 +59,17 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
             if (applicationProperties == null) {
                 InputStream inputStream = appFileSystem.getClasspathResourceStream(APP_PROPERTIES);
                 Properties properties = PropertiesFileUtils.loadFromXml(inputStream);
-                applicationProperties = new HashMap<>();
+                Map<String, Object> appProperties = new HashMap<>();
                 for (String s : uiProperties) {
-                    applicationProperties.put(s, properties.get(s));
+                    appProperties.put(s, properties.get(s));
                 }
-                if("APPLICATION".equals(getApplicationType())) {
-                    applicationProperties.put("securityEnabled", securityService.isSecurityEnabled());
-                    applicationProperties.put("xsrf_header_name", getCsrfHeaderName());
+                if ("APPLICATION".equals(getApplicationType())) {
+                    appProperties.put("securityEnabled", securityService.isSecurityEnabled());
+                    appProperties.put("xsrf_header_name", getCsrfHeaderName());
                 }
-                applicationProperties.put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
+                appProperties
+                        .put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
+                this.applicationProperties = appProperties;
             }
         }
         return new HashMap<>(applicationProperties);
@@ -88,24 +84,6 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
             }
         }
         return applicationType;
-    }
-
-    @Override
-    public DesignServiceResponse testRunQuery(
-            String serviceId, MultipartHttpServletRequest request, Pageable pageable) {
-        RuntimeQuery query = MultipartQueryUtils.readContent(request, RuntimeQuery.class);
-        MultipartQueryUtils.setMultiparts(query.getParameters(), request.getMultiFileMap());
-        return queryDesignService.testRunQuery(serviceId, query, pageable);
-    }
-
-    @Override
-    public DesignServiceResponse testRunProcedure(String serviceId, RuntimeProcedure procedure) {
-        return procedureDesignService.testRunProcedure(serviceId, procedure);
-    }
-
-    @Override
-    public Object executeQuery(String serviceId, RuntimeQuery query, Pageable pageable) {
-        return queryDesignService.executeQuery(serviceId, query, pageable);
     }
 
     @Override
@@ -131,7 +109,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
 
     private String getCsrfHeaderName() {
         String csrfHeaderName = securityService.getSecurityInfo().getCsrfHeaderName();
-        if(csrfHeaderName == null) {
+        if (csrfHeaderName == null) {
             return "X-WM-XSRF-TOKEN";
         }
         return csrfHeaderName;

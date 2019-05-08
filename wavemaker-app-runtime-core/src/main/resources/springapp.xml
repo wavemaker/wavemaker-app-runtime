@@ -191,4 +191,8 @@
         </constructor-arg>
     </bean>
 
+    <beans profile="wm_preview">
+        <bean id="querycontroller" class="com.wavemaker.runtime.controller.QueryTestRunController"/>
+    </beans>
+
 </beans>
