@@ -48,11 +48,6 @@
 
     <bean id="cacheControlFilter" class="com.wavemaker.runtime.web.filter.CacheControlFilter"/>
 
-    <bean id="cacheFilterConfigFactory" class="com.wavemaker.runtime.filter.etag.CacheFilterConfigFactoryBean"/>
-    <bean id="eTagFilter" class="com.wavemaker.commons.web.filter.EtagFilter"/>
-
-    <bean id="cacheManagementFilter" class="com.wavemaker.runtime.web.filter.CacheManagementFilter"/>
-
     <bean id="languagePreferenceFilter" class="com.wavemaker.runtime.web.filter.LanguagePreferenceFilter"/>
 
     <bean id="handlerExceptionResolver"
@@ -112,8 +107,6 @@
     <bean id="appRuntimeSessionListener" class="com.wavemaker.runtime.web.AppRuntimeSessionListener"/>
 
     <bean id="securityService" class="com.wavemaker.runtime.security.SecurityService"/>
-
-    <bean id="propertyPlaceHolderReplacementHelper" class="com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper"/>
 
     <bean class="com.wavemaker.runtime.data.spring.WMPropertyPlaceholderConfigurer">
         <property name="locations">
@@ -197,11 +190,5 @@
             </bean>
         </constructor-arg>
     </bean>
-
-    <bean id="webProcessController" class="com.wavemaker.runtime.webprocess.controller.WebProcessController"/>
-
-    <beans profile="wm_preview">
-        <bean id="querycontroller" class="com.wavemaker.runtime.controller.QueryTestRunController"/>
-    </beans>
 
 </beans>
