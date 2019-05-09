@@ -27,6 +27,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
 import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
 import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
 import com.wavemaker.runtime.rest.processor.data.XWMPrefixDataProcessor;
@@ -61,8 +62,9 @@ public class RestRuntimeServiceCacheHelper {
         return httpRequestDataProcessors;
     }
 
-    public RestRuntimeConfig getAppRuntimeConfig(String serviceId){
-        return WMAppContext.getInstance().getSpringBean(serviceId+"RestRuntimeConfig");
+    public RestRuntimeConfig getAppRuntimeConfig(String serviceId) {
+        RestServiceInfoBean restServiceInfoBean = WMAppContext.getInstance().getSpringBean(serviceId + "ServiceInfo");
+        return restServiceInfoBean.getRestRuntimeConfig();
     }
 
 }
