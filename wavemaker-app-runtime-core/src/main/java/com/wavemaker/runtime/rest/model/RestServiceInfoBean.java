@@ -19,6 +19,8 @@ package com.wavemaker.runtime.rest.model;
  * Created by ArjunSahasranam on 6/10/15.
  */
 
+import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
+
 /**
  * Responsible for registering rest urls to SimpleUrlHandlerMapping through RestServiceBeanPostProcessor.
  */
@@ -26,6 +28,7 @@ public class RestServiceInfoBean {
     private String url;
     private String httpMethod;
     private String serviceName;
+    private RestRuntimeConfig restRuntimeConfig;
 
     public RestServiceInfoBean() {
 
@@ -53,6 +56,14 @@ public class RestServiceInfoBean {
 
     public void setServiceName(final String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public RestRuntimeConfig getRestRuntimeConfig() {
+        return restRuntimeConfig;
+    }
+
+    public void setRestRuntimeConfig(RestRuntimeConfig restRuntimeConfig) {
+        this.restRuntimeConfig = restRuntimeConfig;
     }
 
     @Override
