@@ -14,7 +14,7 @@ WM.module('wm.widgets.basic')
     }])
     .directive('wmPicture', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.picture', ['wm.base', 'wm.base.events']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.picture', ['wm.base', 'wm.dynamicstyles', 'wm.base.events']),
             notifyFor = {
                 'pictureaspect': true,
                 'picturesource': true,
