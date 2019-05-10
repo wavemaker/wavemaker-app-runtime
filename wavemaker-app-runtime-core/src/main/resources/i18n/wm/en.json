@@ -141,5 +141,6 @@
   "com.wavemaker.runtime.ws$ProvideEitherWSDLURLOrFile" : "Provide Either WSDL URL or WSDL File.",
   "com.wavemaker.runtime.ws$RestWsdlMissingUrl" : "REST WSDL is missing endpoint URL.It should be defined in the WSDL like:\n<wsdl:documentation>\n\tendpoint=http://...\n</wsdl:documentation>",
   "com.wavemaker.runtime.ws$RpcEncodedNotSupported" : "RPC/encoded style is not supported.",
-  "com.wavemaker.runtime.ws$WadlMethodNotFound" : "Unable to locate method in the WADL file."
+  "com.wavemaker.runtime.ws$WadlMethodNotFound" : "Unable to locate method in the WADL file.",
+  "com.wavemaker.runtime.security.authentication.failed" : "Authentication Failed :{0}"
 }
