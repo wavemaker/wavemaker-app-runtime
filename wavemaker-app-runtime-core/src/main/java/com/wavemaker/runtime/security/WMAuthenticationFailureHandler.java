@@ -49,7 +49,7 @@ public class WMAuthenticationFailureHandler implements AuthenticationFailureHand
         response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, msg);
         Map<String, Object> errorMap = new HashMap(1);
         ErrorResponse errorResponse = new ErrorResponse();
-        MessageResource messageResource = MessageResource.create("AUTHENTICATION_FAILED");
+        MessageResource messageResource = MessageResource.create("com.wavemaker.runtime.security.authentication.failed");
 		errorResponse.setMessageKey(messageResource.getMessageKey());
 		errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
 		errorResponse.setParameters(Arrays.asList(exceptionMessage));
