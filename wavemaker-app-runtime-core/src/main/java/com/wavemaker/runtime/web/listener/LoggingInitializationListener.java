@@ -15,18 +15,24 @@
  */
 package com.wavemaker.runtime.web.listener;
 
-import java.net.MalformedURLException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.log4j.LogManager;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.OptionConverter;
+import org.slf4j.MDC;
 
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
+import com.wavemaker.runtime.web.filter.WMRequestFilter;
 
 /**
  *
@@ -47,22 +53,17 @@ import com.wavemaker.runtime.RuntimeEnvironment;
  * </ul>
  * </p>
  *
+ * It works in conjuction with {@link AppNameMDCStartStopListener} class for starting and stopping mdc variables. Check its documentation for more details. 
+ *
  * @author Uday Shankar
  */
 public class LoggingInitializationListener implements ServletContextListener {
 
     private static final String DEFAULT_CONFIGURATION_FILE = "log4j.properties";
 
-    private static final String DEFAULT_XML_CONFIGURATION_FILE = "log4j.xml";
-
-    private static final String DEFAULT_CONFIGURATION_KEY = "log4j.configuration";
-
-    private static final String CONFIGURATOR_CLASS_KEY = "log4j.configuratorClass";
-
     private static final String DEFAULT_INIT_OVERRIDE_KEY = "log4j.defaultInitOverride";
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
+    static {
         if (RuntimeEnvironment.isTestRunEnvironment()) {
             try {
                 System.out.println("Reinitializing log4j configuration");
@@ -75,61 +76,85 @@ public class LoggingInitializationListener implements ServletContextListener {
     }
 
     @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        //NO-OP
+    public void contextInitialized(ServletContextEvent sce) {
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            MDC.put(WMRequestFilter.APP_NAME_KEY, sce.getServletContext().getContextPath());
+        }
     }
 
-    private synchronized void initLog4jLogging() {
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            MDC.remove(WMRequestFilter.APP_NAME_KEY);
+        }
+    }
+
+    private static synchronized void initLog4jLogging() {
         String override = OptionConverter.getSystemProperty(DEFAULT_INIT_OVERRIDE_KEY, null);
 
         // if there is no default init override, then get the resource
         // specified by the user or the default config file.
         if (override == null || "false".equalsIgnoreCase(override)) {
-
-            String configurationOptionStr = OptionConverter.getSystemProperty(
-                    DEFAULT_CONFIGURATION_KEY,
-                    null);
-
-            String configuratorClassName = OptionConverter.getSystemProperty(
-                    CONFIGURATOR_CLASS_KEY,
-                    null);
-
-            URL url = null;
-
-            // if the user has not specified the log4j.configuration
-            // property, we search first for the file "log4j.xml" and then
-            // "log4j.properties"
-            if (configurationOptionStr == null) {
-                url = Loader.getResource(DEFAULT_XML_CONFIGURATION_FILE);
-                if (url == null) {
-                    url = Loader.getResource(DEFAULT_CONFIGURATION_FILE);
-                }
-            } else {
-                try {
-                    url = new URL(configurationOptionStr);
-                } catch (MalformedURLException ex) {
-                    // so, resource is not a URL:
-                    // attempt to get the resource from the class path
-                    url = Loader.getResource(configurationOptionStr);
-                }
-            }
-            // If we have a non-null url, then delegate the rest of the
-            // configuration to the OptionConverter.selectAndConfigure
-            // method.
+            URL url = Loader.getResource(DEFAULT_CONFIGURATION_FILE);
             if(url != null) {
                 LogLog.debug("Using URL ["+url+"] for automatic log4j configuration.");
                 try {
-                    OptionConverter.selectAndConfigure(url, configuratorClassName,
-                            LogManager.getLoggerRepository());
+                    Properties properties = readProperties(url);
+                    updatePropertiesWithWMCustomAppender(properties);
+                    //configuring the logger with updated properties.
+                    PropertyConfigurator.configure(properties);
                 } catch (NoClassDefFoundError e) {
                     LogLog.warn("Error during default initialization", e);
                 }
-            } else {
-                LogLog.debug("Could not find resource: ["+configurationOptionStr+"].");
             }
         } else {
             LogLog.debug("Default initialization of overridden by " +
                     DEFAULT_INIT_OVERRIDE_KEY + "property.");
         }
+    }
+
+    private static void updatePropertiesWithWMCustomAppender(Properties properties) {
+        String rootLoggerPropertyValue = properties.getProperty("log4j.rootLogger");
+        if (StringUtils.isBlank(rootLoggerPropertyValue)) {
+            rootLoggerPropertyValue = "info";
+        }
+        String rootLevel = rootLoggerPropertyValue.split(",")[0];
+        rootLevel = rootLevel.concat(", wmAppender");
+        properties.setProperty("log4j.rootLogger", rootLevel);
+
+        //removing all the appenders and adding the WMAppender
+        for (String property: properties.stringPropertyNames()) {
+            if (property.startsWith("log4j.appender")) {
+                properties.remove(property);
+            }
+        }
+
+        properties.setProperty("log4j.appender.wmAppender", "org.apache.log4j.RollingFileAppender");
+        properties.setProperty("log4j.appender.wmAppender.encoding","UTF-8");
+        properties.setProperty("log4j.appender.wmAppender.File", System.getProperty("wm.apps.log",
+                System.getProperty("java.io.tmpdir") + "/apps.log"));
+        properties.setProperty("log4j.appender.wmAppender.layout","org.apache.log4j.PatternLayout");
+        properties.setProperty("log4j.appender.wmAppender.layout.ConversionPattern","%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} " +
+                "-%X{X-WM-Request-Track-Id} %t %p [%c] - %m%n");
+        properties.setProperty("log4j.appender.wmAppender.MaxFileSize", "10MB");
+        properties.setProperty("log4j.appender.wmAppender.MaxBackupIndex", "5");
+    }
+
+    private static Properties readProperties(URL url) {
+        Properties props = new Properties();
+        LogLog.debug("Reading configuration from URL " + url);
+        InputStream inputStream = null;
+        try {
+            URLConnection uConn = url.openConnection();
+            uConn.setUseCaches(false);
+            inputStream = uConn.getInputStream();
+            props.load(inputStream);
+        } catch (Exception e) {
+            LogLog.error("Could not read configuration file from URL [" + url + "].", e);
+            LogLog.error("Ignoring configuration file [" + url +"].");
+        } finally {
+            WMIOUtils.closeSilently(inputStream);
+        }
+        return props;
     }
 }
