@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.security.web.context.HttpRequestResponseHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
@@ -43,6 +44,8 @@ import com.wavemaker.commons.classloader.ClassLoaderUtils;
 public class WMRequestFilter extends GenericFilterBean {
 
     private static final Logger logger = LoggerFactory.getLogger(WMRequestFilter.class);
+    
+    public static final String APP_NAME_KEY = "wm.app.name";
 
     private static ThreadLocal<HttpRequestResponseHolder> httpRequestResponseHolderThreadLocal = new ThreadLocal<>();
 
@@ -52,9 +55,11 @@ public class WMRequestFilter extends GenericFilterBean {
         try {
             HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+            MDC.put(APP_NAME_KEY, httpServletRequest.getServletContext().getContextPath());
             httpRequestResponseHolderThreadLocal.set(new HttpRequestResponseHolder(httpServletRequest, httpServletResponse));
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
+            MDC.remove(APP_NAME_KEY);
             httpRequestResponseHolderThreadLocal.remove();
             this.clearThreadLocalActivityCorrelator();
             this.clearThreadLocalServiceInterceptorFactory();
