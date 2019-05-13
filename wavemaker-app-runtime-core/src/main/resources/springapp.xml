@@ -169,4 +169,9 @@
 
     <bean id="appHostnameVerifier" class="com.wavemaker.runtime.ssl.HostnameVerifierFactoryBean"/>
 
+    <bean id="requestTrackingFilter" class="com.wavemaker.commons.web.filter.RequestTrackingFilter">
+        <property name="requestTrackingHeaderName" value="X-WM-Request-Track-Id"/>
+        <property name="requestTrackingIdPrefix" value="app"/>
+    </bean>
+
 </beans>
