@@ -28,9 +28,11 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.OptionConverter;
+import org.slf4j.MDC;
 
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
+import com.wavemaker.runtime.web.filter.WMRequestFilter;
 
 /**
  *
@@ -50,6 +52,8 @@ import com.wavemaker.runtime.RuntimeEnvironment;
  *     <li>One issue is that the configuration in the old running app will be updated the new configuration changes</li>
  * </ul>
  * </p>
+ * 
+ * It works in conjuction with {@link AppNameMDCStartStopListener} class for starting and stopping mdc variables. Check its documentation for more details. 
  *
  * @author Uday Shankar
  */
@@ -73,11 +77,16 @@ public class LoggingInitializationListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            MDC.put(WMRequestFilter.APP_NAME_KEY, sce.getServletContext().getContextPath());
+        }
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        //NO-OP
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            MDC.remove(WMRequestFilter.APP_NAME_KEY);
+        }
     }
 
     private static synchronized void initLog4jLogging() {
@@ -125,7 +134,8 @@ public class LoggingInitializationListener implements ServletContextListener {
         properties.setProperty("log4j.appender.wmAppender.File", System.getProperty("wm.apps.log",
                 System.getProperty("java.io.tmpdir") + "/apps.log"));
         properties.setProperty("log4j.appender.wmAppender.layout","org.apache.log4j.PatternLayout");
-        properties.setProperty("log4j.appender.wmAppender.layout.ConversionPattern","%d{dd MMM yyyy HH:mm:ss,SSS} %t %p [%c] - %m%n");
+        properties.setProperty("log4j.appender.wmAppender.layout.ConversionPattern","%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} " +
+                "-%X{X-WM-Request-Track-Id} %t %p [%c] - %m%n");
         properties.setProperty("log4j.appender.wmAppender.MaxFileSize", "10MB");
         properties.setProperty("log4j.appender.wmAppender.MaxBackupIndex", "5");
     }
