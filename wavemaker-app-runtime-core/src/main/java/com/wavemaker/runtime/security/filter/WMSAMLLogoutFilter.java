@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.opensaml.common.SAMLException;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.ws.message.encoder.MessageEncodingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,6 +57,8 @@ public class WMSAMLLogoutFilter extends LogoutFilter {
      * URL this filter processes
      */
     public static final String FILTER_URL = "/saml/logout";
+
+    private static final Logger logger = LoggerFactory.getLogger(WMSAMLLogoutFilter.class);
 
     /**
      * Default constructor.
@@ -100,14 +104,12 @@ public class WMSAMLLogoutFilter extends LogoutFilter {
      * @throws ServletException error
      */
     public void processLogout(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-
         if (requiresLogout(request, response)) {
-
             try {
-
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
                 if (auth != null && isGlobalLogout(request, auth)) {
+                    logger.info("Request for global saml logout");
 
                     // Notify session participants using SAML Single Logout profile
                     SAMLCredential credential = getSamlCredentials();
@@ -116,6 +118,7 @@ public class WMSAMLLogoutFilter extends LogoutFilter {
 
                     // Terminate the session first
                     for (LogoutHandler handler : globalHandlers) {
+                        logger.info("Invoking logout handler {}", handler.getClass().getSimpleName());
                         handler.logout(request, response, auth);
                     }
 
@@ -124,26 +127,27 @@ public class WMSAMLLogoutFilter extends LogoutFilter {
                     SAMLMessageContext context = contextProvider.getLocalAndPeerEntity(request, response);
                     profile.sendLogoutRequest(context, credential);
                     samlLogger.log(SAMLConstants.LOGOUT_REQUEST, SAMLConstants.SUCCESS, context);
+                    logger.info("Logout successful");
 
                 } else {
-
+                    logger.info("Request for local saml logout");
                     super.doFilter(request, response, chain);
 
                 }
 
             } catch (SAMLException e) {
-                logger.debug("Error initializing global logout", e);
+                logger.warn("Error initializing global logout", e);
                 throw new ServletException("Error initializing global logout", e);
             } catch (MetadataProviderException e) {
-                logger.debug("Error processing metadata", e);
+                logger.warn("Error processing metadata", e);
                 throw new ServletException("Error processing metadata", e);
             } catch (MessageEncodingException e) {
-                logger.debug("Error encoding outgoing message", e);
+                logger.warn("Error encoding outgoing message", e);
                 throw new ServletException("Error encoding outgoing message", e);
             }
 
         } else {
-
+            logger.info("Logout is not required");
             chain.doFilter(request, response);
         }
 
