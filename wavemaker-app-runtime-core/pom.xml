@@ -209,7 +209,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.owasp.antisamy</groupId>
+            <groupId>org.owasp</groupId>
             <artifactId>antisamy</artifactId>
         </dependency>
 
