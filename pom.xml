@@ -52,7 +52,7 @@
         <poi.version>4.0.1</poi.version>
         <poi.ooxml.version>4.0.1</poi.ooxml.version>
         <quartz.version>2.3.0</quartz.version>
-        <antisamy.version>1.4</antisamy.version>
+        <antisamy.version>1.5.8</antisamy.version>
         <jasperreports.version>6.7.0</jasperreports.version>
         <freemarker.version>2.3.28</freemarker.version>
         <antlr.version>4.7.2</antlr.version>
@@ -784,7 +784,7 @@
             </dependency>
 
             <dependency>
-                <groupId>org.owasp</groupId>
+                <groupId>org.owasp.antisamy</groupId>
                 <artifactId>antisamy</artifactId>
                 <version>${antisamy.version}</version>
             </dependency>
