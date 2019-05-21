@@ -11,7 +11,8 @@
             isConnected : localStorage.getItem(IS_CONNECTED_KEY) !== "false",
             isNetworkAvailable : true,
             isServiceAvailable : true
-        };
+        },
+        isStudioMode = false;
 
     /**
      * If server is not connected and url does not match the unblock list of regular expressions,
@@ -30,7 +31,7 @@
     }
     // Intercept all XHR calls
     XMLHttpRequest.prototype.open = function (method, url) {
-        if (blockUrl(url)) {
+        if (!isStudioMode && blockUrl(url)) {
             //if the app is not connected, then all xhr calls will be blocked.
             this.blockedByWM = true;
         }
@@ -64,6 +65,7 @@
         '$q',
         '$rootScope',
         '$timeout',
+        'CONSTANTS',
         'ProjectService',
         'Utils',
         function (
@@ -73,6 +75,7 @@
             $q,
             $rootScope,
             $timeout,
+            CONSTANTS,
             ProjectService,
             Utils
         ) {
@@ -81,6 +84,8 @@
                 originalDownload = $cordovaFileTransfer.download,
                 baseURL,
                 lastKnownNetworkState;
+
+            isStudioMode = CONSTANTS.isStudioMode;
 
             function setAutoConnect(flag) {
                 autoConnect = flag;
