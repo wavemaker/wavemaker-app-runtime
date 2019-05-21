@@ -30,6 +30,8 @@
         <spring.retry.version>1.2.2.RELEASE</spring.retry.version>
         <spring.social.version>1.1.5.RELEASE</spring.social.version>
 
+        <aspectjweaver.version>1.9.3</aspectjweaver.version>
+
         <hibernate.version>5.2.17.Final</hibernate.version>
         <hibernate.validator.version>5.4.2.Final</hibernate.validator.version>
 
@@ -881,6 +883,14 @@
                 <scope>test</scope>
             </dependency>
 
+            <!-- Spring aop is depending on aspectjweaver which is optional so explicitly adding it as a dependency. -->
+            <!-- If not added here, NoClassDefFound issue is observed in studio run when using aop fuctionalities as spring-aop expects aspectjweaver in the same CL. -->
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectjweaver.version}</version>
+            </dependency>
+
             <!--Required for the Grammar classes-->
             <dependency>
                 <groupId>org.antlr</groupId>
@@ -903,6 +913,12 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
