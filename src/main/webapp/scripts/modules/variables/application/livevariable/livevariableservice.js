@@ -477,6 +477,7 @@ wm.variables.services.$liveVariable = [
                 case dbModes.exactignorecase:
                 case dbModes.exact:
                 case dbModes.notequals:
+                case dbModes.notequalsignorecase:
                     param = encodeAndAddQuotes(value, type, skipEncode);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
@@ -486,6 +487,7 @@ wm.variables.services.$liveVariable = [
                     }), ' and ');
                     break;
                 case dbModes.in:
+                case dbModes.notin:
                     param = _.join(_.map(value, function (val) {
                         return wrapInLowerCase(encodeAndAddQuotes(val, type, skipEncode), options, ignoreCase);
                     }), ', ');
@@ -512,8 +514,8 @@ wm.variables.services.$liveVariable = [
                     return;
                 }
                 if (isValArray) {
-                    //If array is value and mode is between, pass between. Else pass as in query
-                    filterCondition = filterCondition === dbModes.between ? filterCondition : dbModes.in;
+                    //If array is value and mode is between, pass between. Mode is notin, pass not in. Else pass as in query
+                    filterCondition = (filterCondition === dbModes.between || filterCondition === dbModes.notin) ? filterCondition : dbModes.in;
                     fieldValue.filterCondition = filterCondition;
                 }
                 matchModeExpr = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition];
@@ -540,7 +542,7 @@ wm.variables.services.$liveVariable = [
              * this is used to identify whether to use ignorecase at each criteria level and not use the variable
              * level isIgnoreCase flag and apply it to all the rules.
              * Instead of adding an extra param to the criteria object, we have added few other matchmodes for string types like
-             * anywhere with anywhereignorecase, start with startignorecase, end with endignorecase, exact with exactignorecase,
+             * anywhere with anywhereignorecase, start with startignorecase, end with endignorecase, exact with exactignorecase, notequals with notequalsignorecase
              * So while creating the criteria itseld user can choose whether to use ignore case or not for a particular column while querying
              * @param matchMode
              * @param ignoreCase
@@ -551,7 +553,7 @@ wm.variables.services.$liveVariable = [
                 if(_.indexOf([matchModes['anywhere'], matchModes['start'], matchModes['end'], matchModes['exact']], matchMode) !== -1) {
                     return false;
                 }
-                if(_.indexOf([matchModes['anywhereignorecase'], matchModes['startignorecase'], matchModes['endignorecase'], matchModes['exactignorecase']], matchMode) !== -1) {
+                if(_.indexOf([matchModes['anywhereignorecase'], matchModes['startignorecase'], matchModes['endignorecase'], matchModes['exactignorecase'], matchModes['notequalsignorecase']], matchMode) !== -1) {
                     return true;
                 }
                 return ignoreCase;
@@ -666,7 +668,7 @@ wm.variables.services.$liveVariable = [
                             case 'text':
                             case 'string':
                                 if (WM.isArray(fieldValue)) {
-                                    filterCondition = matchModes['exact'];
+                                    filterCondition = _.includes([matchModes['in'], matchModes['notin']], filterCondition) ? filterCondition : matchModes['exact'];
                                 } else {
                                     filterCondition = filterCondition || matchModes['anywhereignorecase'];
                                 }
@@ -734,7 +736,7 @@ wm.variables.services.$liveVariable = [
                             if(!_.isNull(rule.target)) {
                                 var value = rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.between.toLowerCase()
                                     ? (_.isArray(rule.value) ? rule.value : [rule.value, rule.secondvalue])
-                                    : (rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase()
+                                    : (rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase() || rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.notin.toLowerCase()
                                         ? (_.isArray(rule.value) ? rule.value : (rule.value ? rule.value.split(",") : ''))
                                         : rule.value);
                                 rules[index] = getFilterOption(variable, {
@@ -1990,7 +1992,7 @@ wm.variables.services.$liveVariable = [
                          * but these are processed and merged into a single value with comma as separator. For these conditions like 'in' and 'between',
                          * for building the query, the function expects the values to be an array
                          */
-                        if(value.filterCondition === DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase() || value.filterCondition === DB_CONSTANTS.DATABASE_MATCH_MODES.between.toLowerCase()) {
+                        if(value.filterCondition === DB_CONSTANTS.DATABASE_MATCH_MODES.notin.toLowerCase() || DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase() || value.filterCondition === DB_CONSTANTS.DATABASE_MATCH_MODES.between.toLowerCase()) {
                             value.value = value.value.split(",");
                         }
                         filterFields.push(value);
