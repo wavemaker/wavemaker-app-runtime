@@ -15,18 +15,28 @@
  */
 package com.wavemaker.runtime.security.xss.sanitizer;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.text.translate.AggregateTranslator;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.EntityArrays;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
 
 /**
  * Created by kishorer on 6/7/16.
  */
 public class XSSEncodeSanitizer implements XSSSanitizer {
 
+    private static final CharSequenceTranslator ESCAPE_HTML4 =
+            new AggregateTranslator(
+                    new LookupTranslator(EntityArrays.BASIC_ESCAPE()),
+                    new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE()),
+                    new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE())
+            );
+
     @Override
     public String sanitizeRequestData(final String data) {
         if (data == null) {
             return data;
         }
-        return StringEscapeUtils.escapeHtml4(data);
+        return ESCAPE_HTML4.translate(data);
     }
 }
