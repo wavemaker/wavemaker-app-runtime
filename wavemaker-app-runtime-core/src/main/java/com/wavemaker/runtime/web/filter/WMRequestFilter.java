@@ -139,12 +139,16 @@ public class WMRequestFilter extends GenericFilterBean {
                 klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
             }
             if (klass != null) {
-                Field activityIdTlsField = klass.getDeclaredField("ActivityIdTls");
-                activityIdTlsField.setAccessible(true);
-                ThreadLocal threadLocal = (ThreadLocal) activityIdTlsField.get(null);
-                if (threadLocal != null) {
-                    logger.debug("Removing the thread local value of the field ActivityIdTls in the class {}", className);
-                    threadLocal.remove();
+                try {
+                    Field activityIdTlsField = klass.getDeclaredField("ActivityIdTls");
+                    activityIdTlsField.setAccessible(true);
+                    ThreadLocal threadLocal = (ThreadLocal) activityIdTlsField.get(null);
+                    if (threadLocal != null) {
+                        logger.debug("Removing the thread local value of the field ActivityIdTls in the class {}", className);
+                        threadLocal.remove();
+                    }
+                } catch (NoSuchFieldException e) {
+                    logger.debug("ActivityIdTls field not found in the class {}", className);
                 }
             }
         } catch (Throwable e) {
