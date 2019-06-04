@@ -239,8 +239,11 @@ WM.module('wm.widgets.base')
             }
 
             function processEventAttr($is, attrName, attrValue) {
-                var onEvtName = _.camelCase(attrName); // prepend the event name with "on" eg, 'click' with on --> onClick
-
+                // _.deburr will replaces all latin characters with english chars
+                // Then removing all occurences of 's in the string and first occurence of "on-"
+                // Then capitalizing the remaing string and prepend with on.
+                // eg, "on-click_cb" ---> onClick_cb
+                var onEvtName = 'on' + _.capitalize(_.deburr(attrName).replace(RegExp("['\u2019]", 'g'), '').replace('on-', ''));
                 // save the attrValue in isolateScope. eg, $is.__onClick = "f1();dialog1.show;f2();"
                 $is['__' + onEvtName] = attrValue;
             }
