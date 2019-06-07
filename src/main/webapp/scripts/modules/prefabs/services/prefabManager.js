@@ -124,6 +124,9 @@ WM.module('wm.prefabs')
                     if (appPrefabNamePropertiesMap[prefabName] && !studioPrefabNamePropertiesMap[prefabName]) { //if the prefab is not in studio and exists in the project then categorize it as project prefab
                         prefabObj.isProjectPrefab = true;
                     }
+                    if (appPrefabNamePropertiesMap[prefabName]) {
+                        prefabObj.isPrefabInUse = true;
+                    }
                     prefabObj.iconUrl = prefabObj.icon;
                     mergedPrefabs[prefabName] = prefabObj;
                 });
@@ -474,6 +477,8 @@ WM.module('wm.prefabs')
                     appPrefabNamePropertiesMap[prefabName] = Utils.getClonedObject(studioPrefabNamePropertiesMap[prefabName]);
                     appPrefabNameConfigMap[prefabName] = studioPrefabNameConfigMap[prefabName];
                     Utils.triggerFn(callback);
+                    // Refresh the prefabs list
+                    $rs.$emit('list-prefabs');
                 }, function (err) {
                     Utils.triggerFn(callback, err);
                 });
@@ -507,7 +512,7 @@ WM.module('wm.prefabs')
                 }
             }
 
-            function deRegisterPrefab($event, projectId, prefabName) {
+            function deRegisterPrefab(projectId, prefabName, callback) {
                 PrefabService.deRegister({
                     projectId: projectId,
                     data: {
@@ -515,9 +520,11 @@ WM.module('wm.prefabs')
                     }
                 }, function () {
                     delete appPrefabNamePropertiesMap[prefabName];
+                    Utils.triggerFn(callback);
+                }, function (errMsg, errorDetails) {
+                    Utils.triggerFn(callback, errMsg, errorDetails);
                 });
             }
-            $rs.$on('delete-prefab-widget', deRegisterPrefab);
 
             /* callback function when prefab resource is loaded */
             function OnPrefabResourceLoad(count) {
@@ -929,6 +936,15 @@ WM.module('wm.prefabs')
              * this function will register a prefab(copy from studio to app/project)
              */
             this.registerPrefab = registerPrefab;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#deRegisterPrefab
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * This function will deregister a prefab from project(Deletes prefab source from filemanager)
+             */
+            this.deRegisterPrefab = deRegisterPrefab;
 
             /**
              * @ngdoc function
