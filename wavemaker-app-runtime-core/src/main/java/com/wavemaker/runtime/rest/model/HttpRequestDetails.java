@@ -16,12 +16,12 @@
 package com.wavemaker.runtime.rest.model;
 
 import java.io.InputStream;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.http.HttpHeaders;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 /**
  * Class used to represent the details of the http request which can be invoked
@@ -33,12 +33,12 @@ public class HttpRequestDetails {
     private String endpointAddress;
 
     private String method;
-    
+
     @JsonIgnore
     private InputStream body;
 
     private HttpHeaders headers = new HttpHeaders();
-    
+
     private boolean redirectEnabled = true;
 
     //Needed for jackson deserialization

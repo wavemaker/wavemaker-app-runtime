@@ -16,10 +16,11 @@
 package com.wavemaker.runtime.rest.service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +48,7 @@ import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessor;
 import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessorContext;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
+import com.wavemaker.runtime.rest.util.RestRequestUtils;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
@@ -157,9 +159,10 @@ public class RestRuntimeService {
         Operation operation = getOperation(path, operationId);
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        Map<String, Object> queryParameters = new HashMap();
-        Map<String, String> pathParameters = new HashMap();
-        filterRequestData(httpRequestData, operation, httpHeaders, queryParameters, pathParameters);
+        Map<String, Object> queryParameters = new HashMap<>();
+        Map<String, String> pathParameters = new HashMap<>();
+        filterAndApplyServerVariablesOnRequestData(httpRequestData, operation, httpHeaders, queryParameters,
+                pathParameters);
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
@@ -173,22 +176,28 @@ public class RestRuntimeService {
         return httpRequestDetails;
     }
 
-    private void filterRequestData(HttpRequestData httpRequestData, Operation operation, HttpHeaders headers, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
+    private void filterAndApplyServerVariablesOnRequestData(
+            HttpRequestData httpRequestData, Operation operation, HttpHeaders headers,
+            Map<String, Object> queryParameters, Map<String, String> pathParameters) {
         for (Parameter parameter : operation.getParameters()) {
             String paramName = parameter.getName();
             String type = parameter.getIn().toUpperCase();
+            Optional<String> variableValue = RestRequestUtils.findVariableValue(parameter);
             if (ParameterType.HEADER.name().equals(type)) {
-                List<String> headerValues = httpRequestData.getHttpHeaders().get(paramName);
+                List<String> headerValues = variableValue.map(Collections::singletonList)
+                        .orElse(httpRequestData.getHttpHeaders().get(paramName));
                 if (headerValues != null) {
                     headers.put(paramName, headerValues);
                 }
             } else if (ParameterType.QUERY.name().equals(type)) {
-                List<String> paramValues = httpRequestData.getQueryParametersMap().get(paramName);
+                List<String> paramValues = variableValue.map(Collections::singletonList)
+                        .orElse(httpRequestData.getQueryParametersMap().get(paramName));
                 if (paramValues != null) {
                     queryParameters.put(paramName, paramValues);
                 }
             } else if (ParameterType.PATH.name().equals(type)) {
-                String pathVariableValue = httpRequestData.getPathVariablesMap().get(paramName);
+                String pathVariableValue = variableValue
+                        .orElse(httpRequestData.getPathVariablesMap().get(paramName));
                 if (pathVariableValue != null) {
                     pathParameters.put(paramName, pathVariableValue);
                 }
