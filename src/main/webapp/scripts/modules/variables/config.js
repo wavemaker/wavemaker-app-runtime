@@ -80,7 +80,9 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
         'ACCESSTOKEN_PLACEHOLDER': {
             'LEFT': '',
             'RIGHT': '.access_token'
-        }
+        },
+        'VARIABLE_TYPE': 'x-WM-VARIABLE_TYPE',
+        'VARIABLE_KEY': 'x-WM-VARIABLE_KEY'
     },
     VARIABLE_SERVICE_TYPES: {
         'DATABASE': 'database',
