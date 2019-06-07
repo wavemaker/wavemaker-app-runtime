@@ -22,4 +22,6 @@ import com.wavemaker.runtime.commons.WebConstants;
  */
 public class RestConstants extends WebConstants {
     public static final String X_WM_HEADER_PREFIX = "X-WM-";
+    public static final String VARIABLE_TYPE = "VARIABLE_TYPE";
+    public static final String VARIABLE_KEY = "VARIABLE_KEY";
 }
