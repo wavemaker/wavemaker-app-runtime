@@ -498,6 +498,8 @@ WM.module('wm.widgets.live')
                     'displayName'   :   attrs.displayName || attrs.label || attrs.caption || '',
                     'show'          :   _.isUndefined(attrs.show) ? 'true' : (attrs.show || 'false'),
                     'class'         :   attrs.class || '',
+                    'conditionalclass': attrs.conditionalclass || '',
+                    'conditionalstyle': attrs.conditionalstyle || {},
                     'iconclass'     :   attrs.iconclass,
                     'title'         :   _.isUndefined(attrs.title) ? (attrs.displayName || '') : attrs.title,
                     'action'        :   attrs.action,
@@ -1659,35 +1661,35 @@ WM.module('wm.widgets.live')
                 switch (column.widgetType) {
                 case 'image':
                     if (column.type === 'blob') {
-                        column.customExpression = '<wm-picture show="' + column.widgetConfig.src + '!= null" width="48px" picturesource="' + column.widgetConfig.src + '" class="" conditionalclass=""></wm-picture>';
+                        column.customExpression = '<wm-picture show="' + column.widgetConfig.src + '!= null" width="48px" picturesource="' + column.widgetConfig.src + '" class="" conditionalclass="" conditionalstyle=""></wm-picture>';
                     } else {
                         column.customExpression = '<wm-picture picturesource="' + column.widgetConfig.src + '" hint="' + column.widgetConfig.src + '"' +
-                            ' class="' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-picture>';
+                            ' class="' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '" conditionalstyle="' + column.widgetConfig.conditionalstyle + '"></wm-picture>';
                     }
                     break;
                 case 'button':
                     column.customExpression = '<wm-button caption="' + column.widgetConfig.title + '" show="true" class="' + column.widgetConfig.class + '" iconclass="' +
-                        column.widgetConfig.icon + '" on-click="' + column.widgetConfig.action + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-button>';
+                        column.widgetConfig.icon + '" on-click="' + column.widgetConfig.action + '" conditionalclass="' + widgetNgClassesExpression + '" conditionalstyle="' + column.widgetConfig.conditionalstyle + '"></wm-button>';
                     break;
                 case 'checkbox':
                     column.customExpression = '<wm-checkbox datavalue="' + column.widgetConfig.model + '" disabled="' + column.widgetConfig.disabled + '" ' +
-                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-checkbox>';
+                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '" conditionalstyle="' + column.widgetConfig.conditionalstyle + '"></wm-checkbox>';
                     break;
                 case 'anchor':
                     if (column.type === 'blob') {
                         column.customExpression = '<wm-anchor caption="" hyperlink="' + column.widgetConfig.hyperlink + '" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" show="' + column.widgetConfig.hyperlink + '!= null"></wm-anchor>';
                     } else {
                         column.customExpression = '<wm-anchor caption="' + column.widgetConfig.title + '" hyperlink="' + column.widgetConfig.hyperlink + '" ' +
-                            'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-anchor>';
+                            'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '" conditionalstyle="' + column.widgetConfig.conditionalstyle + '"></wm-anchor>';
                     }
                     break;
                 case 'label':
                     column.customExpression = '<wm-label caption="' + column.widgetConfig.title + '" ' +
-                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-label>';
+                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '" condtionalstyle="' + column.widgetConfig.conditionalstyle + '"></wm-label>';
                     break;
                 case 'icon':
                     column.customExpression = '<wm-icon caption="' + column.widgetConfig.title + '" iconclass="' + column.widgetConfig.icon + '" iconposition="' + column.widgetConfig.iconposition + '" ' +
-                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-icon>';
+                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '" conditionalstyle="' + column.widgetConfig.conditionalstyle + '"></wm-icon>';
                     break;
                 default:
                     if (column.type === 'blob') {
@@ -1708,7 +1710,8 @@ WM.module('wm.widgets.live')
                     column.widgetConfig = {
                         'src': val,
                         'class': '',
-                        'ngClasses': widgetNgClasses
+                        'ngClasses': widgetNgClasses,
+                        'conditionalstyle': ''
                     };
                     break;
                 case 'button':
@@ -1717,7 +1720,8 @@ WM.module('wm.widgets.live')
                         'action': '',
                         'title': val,
                         'class': 'btn-sm btn-primary',
-                        'ngClasses': widgetNgClasses
+                        'ngClasses': widgetNgClasses,
+                        'conditionalstyle': ''
                     };
                     break;
                 case 'checkbox':
@@ -1725,7 +1729,8 @@ WM.module('wm.widgets.live')
                         'model': val,
                         'disabled': 'bind:colDef.readonly',
                         'class': '',
-                        'ngClasses': widgetNgClasses
+                        'ngClasses': widgetNgClasses,
+                        'conditionalstyle': ''
                     };
                     break;
                 case 'anchor':
@@ -1733,14 +1738,16 @@ WM.module('wm.widgets.live')
                         'title'    : val,
                         'hyperlink': val,
                         'class'    : '',
-                        'ngClasses': widgetNgClasses
+                        'ngClasses': widgetNgClasses,
+                        'conditionalstyle': ''
                     };
                     break;
                 case 'label':
                     column.widgetConfig = {
                         'title'    : val,
                         'class'    : '',
-                        'ngClasses': widgetNgClasses
+                        'ngClasses': widgetNgClasses,
+                        'conditionalstyle': ''
                     };
                     break;
                 case 'icon':
@@ -1749,14 +1756,16 @@ WM.module('wm.widgets.live')
                         'class'        : '',
                         'icon'         : 'wi wi-star-border',
                         'iconposition' : 'left',
-                        'ngClasses'    : widgetNgClasses
+                        'ngClasses'    : widgetNgClasses,
+                        'conditionalstyle': ''
                     };
                     break;
                 default:
                     column.widgetConfig = {
                         'src': val,
                         'class': '',
-                        'ngClasses': widgetNgClasses
+                        'ngClasses': widgetNgClasses,
+                        'conditionalstyle': ''
                     };
                     break;
                 }
@@ -1771,6 +1780,7 @@ WM.module('wm.widgets.live')
                     widgetTitle,
                     widgetClass,
                     widgetNgClasses,
+                    widgetNgStyle,
                     widgetSrc,
                     widgetModel,
                     widgetHyperlink,
@@ -1783,13 +1793,15 @@ WM.module('wm.widgets.live')
                 el = WM.element(customExpression);
                 widgetClass = el.attr('widget-class') || el.attr('class');
                 widgetNgClasses = parseNgClasses(el.attr('conditionalclass'));
+                widgetNgStyle = el.attr('conditionalstyle');
                 switch (widgetType) {
                 case 'image':
                     widgetSrc = el.attr('data-ng-src') || el.attr('picturesource');
                     column.widgetConfig = {
                         'src': widgetSrc,
                         'class': widgetClass,
-                        'ngClasses': widgetNgClasses
+                        'ngClasses': widgetNgClasses,
+                        'conditionalstyle': widgetNgStyle
                     };
                     break;
                 case 'button':
@@ -1801,7 +1813,8 @@ WM.module('wm.widgets.live')
                         'action'    : widgetAction,
                         'title'     : widgetTitle,
                         'class'     : widgetClass,
-                        'ngClasses' : widgetNgClasses
+                        'ngClasses' : widgetNgClasses,
+                        'conditionalstyle': widgetNgStyle
                     };
                     break;
                 case 'checkbox':
@@ -1811,7 +1824,8 @@ WM.module('wm.widgets.live')
                         'model'     : widgetModel,
                         'disabled'  : widgetDisabled,
                         'class'     : widgetClass,
-                        'ngClasses' : widgetNgClasses
+                        'ngClasses' : widgetNgClasses,
+                        'conditionalstyle': widgetNgStyle
                     };
                     break;
                 case 'anchor':
@@ -1821,7 +1835,8 @@ WM.module('wm.widgets.live')
                         'title'     : widgetTitle,
                         'hyperlink' : widgetHyperlink,
                         'class'     : widgetClass,
-                        'ngClasses' : widgetNgClasses
+                        'ngClasses' : widgetNgClasses,
+                        'conditionalstyle': widgetNgStyle
                     };
                     break;
                 case 'label':
@@ -1829,7 +1844,8 @@ WM.module('wm.widgets.live')
                     column.widgetConfig = {
                         'title'     : widgetTitle,
                         'class'     : widgetClass,
-                        'ngClasses' : widgetNgClasses
+                        'ngClasses' : widgetNgClasses,
+                        'conditionalstyle': widgetNgStyle
                     };
                     break;
                 case 'icon':
@@ -1840,14 +1856,16 @@ WM.module('wm.widgets.live')
                         'icon'         : widgetIcon,
                         'class'        : widgetClass,
                         'iconposition' : el.attr('iconposition') || 'left',
-                        'ngClasses'    : widgetNgClasses
+                        'ngClasses'    : widgetNgClasses,
+                        'conditionalstyle': widgetNgStyle
                     };
                     break;
                 default:
                     column.widgetConfig = {
                         'src'       : '',
                         'class'     : widgetClass,
-                        'ngClasses' : widgetNgClasses
+                        'ngClasses' : widgetNgClasses,
+                        'conditionalstyle': widgetNgStyle
                     };
                     break;
                 }
