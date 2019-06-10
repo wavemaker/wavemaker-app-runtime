@@ -9,7 +9,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmTile', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.tile', ['wm.containers', 'wm.base.events.touch']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.tile', ['wm.containers', 'wm.dynamicstyles', 'wm.base.events.touch']);
 
         return {
             'restrict'  : 'E',

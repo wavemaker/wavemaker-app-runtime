@@ -44,7 +44,7 @@ WM.module('wm.layouts.containers')
         function (PropertiesFactory, WidgetUtilService, Utils) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps', 'wm.layouts.panel.defaults', 'wm.scrollablecontainer']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.dynamicstyles', 'wm.base.events.touch', 'wm.menu.dataProps', 'wm.layouts.panel.defaults', 'wm.scrollablecontainer']),
                 menuDataProps = _.keys(PropertiesFactory.getPropertiesOf('', ['wm.menu.dataProps'])),
                 notifyFor   = {
                     'actions' : true,

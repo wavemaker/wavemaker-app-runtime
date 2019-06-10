@@ -376,7 +376,6 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
                         "iconposition": {"type": "list", "options": ["left", "right"], "value": "left"},
                         "iconclass": {"type": "string", "value": "wi wi-star-border", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
-                        "conditionalclass": {"bindable": "in-bound"},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
                         "animation": {"type": "list", "options": animationOptions},
                         "color": {"type": "string", "widget": "color"},
@@ -389,9 +388,12 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "value": '150px', "pattern": dimensionRegex},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all"}
                     },
+                    "wm.dynamicstyles": {
+                        "conditionalstyle": {"bindable": "in-bound", "bindContext": "expression"},
+                        "conditionalclass": {"bindable": "in-bound", "bindContext": "expression"}
+                    },
                     "wm.button": {
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
-                        "conditionalclass": {"bindable": "in-bound"},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
                         "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -829,7 +831,6 @@ WM.module('wm.widgets.base', [])
                     "wm.checkbox": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "conditionalclass": {"bindable": "in-bound"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "margin": {"type": "string", "widget": "box-model"},
                         "datavalue": {"type": "boolean, string", "bindable": "in-out-bound", "widget": "string"},
@@ -946,7 +947,6 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": [ "h1", "h2", "h3", "h4", "h5", "h6", "p", "text-ellipsis", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "label-default", "label-primary", "label-success", "label-info", "label-warning", "label-danger", "vertical-align-top", "vertical-align-middle", "vertical-align-bottom", "lead", "badge", "form-control-static", "control-label"]},
-                        "conditionalclass": {"bindable": "in-bound"},
                         "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
                         "wordbreak": {"type": "list", "options": ["break-word", "normal"]},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false}
@@ -966,7 +966,6 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["img-responsive"]},
-                        "conditionalclass": {"bindable": "in-bound"},
                         "margin": {"type": "string", "widget": "box-model"},
                         "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "border-style"},
@@ -1318,7 +1317,6 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
-                        "conditionalclass": {"bindable": "in-bound"},
                         "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
@@ -1389,7 +1387,6 @@ WM.module('wm.widgets.base', [])
                         "zindex": {"type": "string", "pattern": zindexRegex},
                         "visibility": {"type": "list", "options": visibilityOptions},
                         "display": {"type": "list", "options": displayOptions},
-                        "conditionalclass": {"bindable": "in-bound"},
                         /*Events*/
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1405,7 +1402,6 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.tile': {
                         "margin": {"type": "string", "widget": "box-model"},
-                        "conditionalclass": {"bindable": "in-bound"},
                         /*Events*/
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1718,7 +1714,6 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.anchor": {
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
-                        "conditionalclass": {"bindable": "in-bound"},
                         "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
@@ -2250,7 +2245,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "operations", "properties": ["insertrow", "deleterow", "updaterow", "submitbutton", "resetbutton"], "parent": "properties"},
                 {"name": "message", "properties": ["messagelayout", "errormessage", "insertmessage", "updatemessage", "confirmdelete", "deletemessage", "nodatamessage", "loadingdatamsg", "datacompletemsg", "postmessage"], "parent": "properties"},
                 {"name": "deletedialog", "properties": ["deleteoktext", "deletecanceltext"], "parent": "properties"},
-                {"properties": [ "class", "conditionalclass", "menuclass", "listclass", "itemclass", "chipclass", "paginationclass", "gridclass", "contentclass"], "parent": "styles"},
+                {"properties": [ "class", "conditionalclass", "conditionalstyle", "menuclass", "listclass", "itemclass", "chipclass", "paginationclass", "gridclass", "contentclass"], "parent": "styles"},
                 {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontstyle", "fontweight", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
                 {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
                 {"name": "border", "properties": ["bordercolor", "borderstyle", "borderwidth"], "parent": "styles"},
@@ -2709,7 +2704,7 @@ WM.module('wm.widgets.base', [])
                 ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius ' +
                 ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight ' +
                 ' opacity overflow padding picturesource avatar textalign textdecoration verticalalign visibility ' +
-                ' whitespace wordbreak zindex borderwidth margin fontsize fontunit show hint caption animation backgroundimage iconposition iconclass conditionalclass smoothscroll';
+                ' whitespace wordbreak zindex borderwidth margin fontsize fontunit show hint caption animation backgroundimage iconposition iconclass conditionalclass conditionalstyle smoothscroll';
 
 
             //use requestIdleCallback when available otherwise use setTimeout
@@ -2768,6 +2763,15 @@ WM.module('wm.widgets.base', [])
                 }
             }
 
+            //To add styles on the $el
+            function updateStyles(oldStyles, newStyles, $el) {
+                if (_.isObject(newStyles)) {
+                    var keys = Object.keys(newStyles || {});
+                    keys.forEach(function(key) {
+                        $el.css(key, newStyles[key]);
+                    })
+                }
+            }
 
             function onScopeValueChangeProxy($is, $el, attrs, key, nv, ov, listeners) {
                 var $hiddenEleNode,
@@ -2813,6 +2817,8 @@ WM.module('wm.widgets.base', [])
                             $el.children().first().removeClass(ov).addClass(nv);
                         }
                     }
+                } else if (key === 'conditionalstyle') {
+                   updateStyles(ov, nv, $el);
                 } else if (key === 'name') {
                     attrs.$set('name', nv);
                 } else if (key === 'showindevice') {
