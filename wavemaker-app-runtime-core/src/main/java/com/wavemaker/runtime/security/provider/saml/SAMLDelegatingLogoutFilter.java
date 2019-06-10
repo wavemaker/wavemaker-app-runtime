@@ -55,16 +55,20 @@ public class SAMLDelegatingLogoutFilter extends LogoutFilter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         if (requiresLogout(request, response)) {
+            logger.info("Request for logout");
             if (HttpRequestUtils.isAjaxRequest(request)) {
+                logger.info("Redirecting to the same request uri {}", request.getRequestURI());
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(JSONUtils.toJSON(new StringWrapper(request.getRequestURI())));
                 response.getWriter().flush();
                 return;
             } else {
+                logger.info("Delegating to {}", samlLogoutFilter.getClass().getSimpleName());
                 samlLogoutFilter.doFilter(request, response, chain);
             }
 
+        } else {
+            chain.doFilter(request, response);
         }
-        chain.doFilter(request, response);
     }
 }
