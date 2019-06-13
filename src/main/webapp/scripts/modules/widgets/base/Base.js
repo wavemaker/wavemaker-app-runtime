@@ -2089,6 +2089,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
                         "color": {"type": "string", "widget": "color"},
                         "selecteditem": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
+                        "onBeforerender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onTransform": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound", "show": false}
