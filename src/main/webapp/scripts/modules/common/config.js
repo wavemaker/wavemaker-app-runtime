@@ -37,7 +37,11 @@ wm.modules.wmCommon.constant('SERVICE_TYPE_CONSTANTS', {
 /*Defining custom swagger properties for WM internal use*/
 wm.modules.wmCommon.constant('SWAGGER_CONSTANTS', {
     WM_DATA_JSON: "wm_data_json",
-    WM_HTTP_JSON: "wm_httpRequestDetails"
+    WM_HTTP_JSON: "wm_httpRequestDetails",
+    SERVER: "SERVER",
+    APP_ENVIRONMENT: "APP_ENVIRONMENT",
+    PROMPT: "PROMPT",
+    VARIABLE_APP_ENV: "__APP_ENV__"
 });
 
 
