@@ -441,7 +441,6 @@
         }
         .wm-mobile-app-left-panel.slide-in {
           left: 0;
-          z-index: 0;
           white-space: nowrap;
           opacity: 1;
           -webkit-transform: translate3d(0, 0, 0);
@@ -449,7 +448,17 @@
           animation: none;
           overflow: hidden;
           &.left-panel-collapsed {
+            z-index: 0;
             margin-left: -40pt;
+          }
+          &.left-panel-collapsed::before {
+            content: '';
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: block;
+            opacity: 1;
+            z-index: 100;
           }
           &.left-panel-collapsed .app-nav > .app-nav-item {
             > .app-anchor, > .dropdown .dropdown-toggle {
