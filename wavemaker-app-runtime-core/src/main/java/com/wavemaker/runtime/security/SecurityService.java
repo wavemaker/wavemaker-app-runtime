@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -97,6 +96,13 @@ public class SecurityService {
             }
         }
         return securityEnabled;
+    }
+
+    private boolean isRememberMeEnabled() {
+        if (wmAppSecurityConfig != null && wmAppSecurityConfig.getRememberMeConfig() != null) {
+            return wmAppSecurityConfig.getRememberMeConfig().isEnabled();
+        }
+        return false;
     }
 
     public LoginConfig getLoginConfig() {
@@ -308,6 +314,7 @@ public class SecurityService {
         SecurityInfo securityInfo = new SecurityInfo();
         securityInfo.setAuthenticated(authenticated);
         securityInfo.setSecurityEnabled(isSecurityEnabled());
+        securityInfo.setRememberMeEnabled(isRememberMeEnabled());
         securityInfo.setLoginConfig(getLoginConfig());
         securityInfo.setUserInfo(userInfo);
         securityInfo.setCsrfHeaderName(getCsrfHeaderName());

@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.commons.wrapper.BooleanWrapper;
-import com.wavemaker.commons.wrapper.IntegerWrapper;
 import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.security.SecurityService;
 import com.wavemaker.runtime.security.WMCurrentUser;

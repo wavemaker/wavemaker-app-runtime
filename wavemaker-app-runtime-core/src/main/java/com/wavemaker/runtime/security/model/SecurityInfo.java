@@ -23,6 +23,7 @@ import com.wavemaker.commons.model.security.LoginConfig;
 public class SecurityInfo {
     private boolean securityEnabled;
     private boolean authenticated;
+    private boolean rememberMeEnabled;
     private LoginConfig loginConfig;
     private UserInfo userInfo;
     private String csrfHeaderName;
@@ -41,6 +42,14 @@ public class SecurityInfo {
 
     public void setAuthenticated(final boolean authenticated) {
         this.authenticated = authenticated;
+    }
+
+    public boolean isRememberMeEnabled() {
+        return rememberMeEnabled;
+    }
+
+    public void setRememberMeEnabled(boolean rememberMeEnabled) {
+        this.rememberMeEnabled = rememberMeEnabled;
     }
 
     public LoginConfig getLoginConfig() {
