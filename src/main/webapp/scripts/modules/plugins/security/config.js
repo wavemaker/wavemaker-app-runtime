@@ -28,6 +28,14 @@ wm.plugins.security.constant('SECURITY_URLS', {
             url: "services/projects/:projectID/securityservice/general",
             method: "POST"
         },
+        getAuthInfo: {
+            url: "services/projects/:projectID/securityservice/authInfo",
+            method: "GET"
+        },
+        setAuthInfo: {
+            url: "services/projects/:projectID/securityservice/authInfo",
+            method: "POST"
+        },
         configDemo: {
             url: "services/projects/:projectID/securityservice/providers/demo",
             method: "POST"
