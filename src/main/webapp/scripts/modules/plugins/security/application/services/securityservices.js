@@ -285,6 +285,71 @@ wm.plugins.security.services.SecurityService = [
                     Utils.triggerFn(successCallback);
                 }, failureCallback);
             },
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#getAuthInfo
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The API is used to get values of authentication options. These values can determine if security config is enabled or not and also stores the type of datasource to be used. Following are the fields associated in generaloptions object:
+             * 1. enforceSecurity - it signifies whether security is enabled or not for the associated project.
+             * 2. csrfConfig - it signifies whether csrf security enabled or not and headerName
+             * 3. loginConfig - it signifies type,pageName and sessionTimeout
+             * 4. rememberMeConfig - it signifies whether rememberMeConfig enabled or not and tokenValiditySeconds.
+             * 5.tokenAuthConfig - it signifies whether tokenAuthConfig enabled or not, parameter and tokenValiditySeconds.
+             * 6. authProviders - Its a set containing the Security AUth providers in use. Each element can have one of the following values
+             *      - DEMO
+             *      - DATABASE
+             *      - LDAP
+             *      -SAML
+             *      -Open ID
+             *      - AD
+             *      - CAS
+             *      - CUSTOM
+             *
+             * @param {string} projectID project id
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+
+
+            getAuthInfo:  function (projectID, successCallback, failureCallback) {
+                BaseService.send({
+                    target: 'Security',
+                    action: 'getAuthInfo',
+                    urlParams: {
+                        projectID: projectID
+                    }
+                }, function (authInfo) {
+                    Utils.triggerFn(successCallback, authInfo);
+                }, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#setAuthInfo
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * to store the authentication information of the security in this service
+             *
+             * @param {object} Authentication information
+             */
+
+            setAuthInfo: function (params, successCallback, failureCallback) {
+                BaseService.send({
+                    target: 'Security',
+                    action: 'setAuthInfo',
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.config
+                }, function () {
+                    Utils.triggerFn(successCallback);
+                }, failureCallback);
+            },
 
             cacheGeneralOptions: function (generalOptions) {
                 _generalOptions = generalOptions;
