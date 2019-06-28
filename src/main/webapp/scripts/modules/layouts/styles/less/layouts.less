@@ -1551,7 +1551,7 @@ body {
   }
   .btn {
     &.btn-rounded {
-      border-radius: 500px;
+      border-radius: 50%;
       padding: 0.45em 0.75em;
       height: auto;
       > * {
@@ -1559,12 +1559,27 @@ body {
       }
     }
     &.btn-fab {
-      font-size: 21pt;
-      height: 42pt;
-      width: 42pt;
+      font-size: 24px;
+      width: 38pt;
+      height: 38pt;
       box-shadow: rgba(0, 0, 0, 0.117647) 0 1px 2px 0, rgba(0, 0, 0, 0.239216) 0 1px 1px 0;
-      border-radius: 500px;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      line-height: normal;
       padding: 0;
+      &.btn-lg {
+        width: 48pt;
+        height: 48pt;
+      }
+      &.btn-sm {
+        width: 30pt;
+        height: 30pt;
+      }
+      .app-icon {
+        padding: 0 .06em;
+        vertical-align: middle;
+      }
     }
     &.btn-raised {
       &:hover {
