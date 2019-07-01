@@ -823,6 +823,10 @@ app-page-outlet.page-load-in-progress {
 .app-select option[disabled]:first-child {
   display: none;
 }
+/*special case customization to show the first element of the select group which is disabled*/
+.custom-select-disable .app-select option[disabled]:first-child {
+  display: block;
+}
 .group-by-header() {
   list-style: none;
   background-color: rgba(0,0,0,0.1);
