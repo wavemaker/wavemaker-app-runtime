@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -77,7 +76,6 @@ public class XssRestMethodArgumentsInterceptor implements RestMethodArgumentsInt
 
         if (value != null && !(value instanceof Number) && !(manipulatedObjects.contains(value) || isExcludedClass(value))) {
             final Class<?> valueClass = value.getClass();
-            manipulatedObjects.add(value);
 
             if (valueClass == char[].class) {
                 encoded = encode(((char[]) value));
@@ -88,6 +86,7 @@ public class XssRestMethodArgumentsInterceptor implements RestMethodArgumentsInt
                 encoded = encode((String) value);
                 modified = true;
             } else {
+                manipulatedObjects.add(value);
                 final ResponseTuple response = encodeCustomClass(value, manipulatedObjects);
                 if (response.modified) {
                     encoded = response.value;
