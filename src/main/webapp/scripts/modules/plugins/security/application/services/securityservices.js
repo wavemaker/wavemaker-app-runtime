@@ -272,7 +272,8 @@ wm.plugins.security.services.SecurityService = [
              * @param {object} generalOptions general options
              */
 
-            setGeneralOptions: function (params, successCallback, failureCallback) {
+            setGeneralOptions: function (params) {
+                var deferred = $q.defer();
                 BaseService.send({
                     target: 'Security',
                     action: 'setGeneralOptions',
@@ -282,8 +283,9 @@ wm.plugins.security.services.SecurityService = [
                     data: params.config
                 }, function () {
                     _generalOptions = params.config;
-                    Utils.triggerFn(successCallback);
-                }, failureCallback);
+                    deferred.resolve();
+                }, deferred.reject);
+                return deferred.promise;
             },
             /**
              * @ngdoc function
@@ -338,7 +340,8 @@ wm.plugins.security.services.SecurityService = [
              * @param {object} Authentication information
              */
 
-            setAuthInfo: function (params, successCallback, failureCallback) {
+            setAuthInfo: function (params) {
+                var deferred = $q.defer();
                 BaseService.send({
                     target: 'Security',
                     action: 'setAuthInfo',
@@ -346,9 +349,8 @@ wm.plugins.security.services.SecurityService = [
                         projectID: params.projectID
                     },
                     data: params.config
-                }, function () {
-                    Utils.triggerFn(successCallback);
-                }, failureCallback);
+                }, deferred.resolve, deferred.reject);
+                return deferred.promise;
             },
 
             cacheGeneralOptions: function (generalOptions) {
