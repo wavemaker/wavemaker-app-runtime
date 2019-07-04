@@ -740,6 +740,11 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "label": "CURRENT_DATE_TIME",
             "value": "DATETIME"
         },
+        "CURRENT_TIMESTAMP": {
+            "property": "Current Timestamp",
+            "label": "CURRENT_TIMESTAMP",
+            "value": "TIMESTAMP"
+        },
         "CURRENT_USER_ID": {
             "property": "LoggedIn UserId",
             "label": "CURRENT_USER_ID",
