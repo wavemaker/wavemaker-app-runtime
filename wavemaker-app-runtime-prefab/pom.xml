@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.wavemaker.runtime</groupId>
         <artifactId>wavemaker-app-runtime</artifactId>
-        <version>9.9.9</version>
+        <version>10.1.0.js</version>
     </parent>
 
     <artifactId>wavemaker-app-runtime-prefab</artifactId>

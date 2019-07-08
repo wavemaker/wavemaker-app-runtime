@@ -7,7 +7,7 @@
 
     <groupId>com.wavemaker.runtime</groupId>
     <artifactId>wavemaker-app-runtime</artifactId>
-    <version>9.9.9</version>
+    <version>10.1.0.js</version>
     <name>wavemaker-app-runtime</name>
     <packaging>pom</packaging>
 
