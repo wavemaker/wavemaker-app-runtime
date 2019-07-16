@@ -3225,6 +3225,22 @@ WM.module('wm.utils', [])
             return expression && expression.split(bindExpressionRegEx);
         }
 
+        /**
+         * This function finds the element's closest form and sets the dirty flag
+         * @param $ele jQuery element
+         */
+        function setFormDirty($ele) {
+            // explicitly setting form dirty when typeahead is selected
+            var formEle = $ele.closest('form');
+            if (formEle.length) {
+                var formName = formEle.attr('name');
+                var scope = formEle.scope();
+                if (scope) {
+                    scope[formName].$setDirty();
+                }
+            }
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3393,4 +3409,5 @@ WM.module('wm.utils', [])
         this.getStudioUrl               = getStudioUrl;
         this.escapeHtml                 = escapeHtml;
         this.splitExpression            = splitExpression;
+        this.setFormDirty               = setFormDirty;
     }]);
