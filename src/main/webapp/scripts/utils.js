@@ -3180,6 +3180,22 @@ WM.module('wm.utils', [])
                 .replace(/'/g, "&#039;");
         }
 
+        /**
+         * This function finds the element's closest form and sets the dirty flag
+         * @param $ele jQuery element
+         */
+        function setFormDirty($ele) {
+            // explicitly setting form dirty when typeahead is selected
+            var formEle = $ele.closest('form');
+            if (formEle.length) {
+                var formName = formEle.attr('name');
+                var scope = formEle.scope();
+                if (scope) {
+                    scope[formName].$setDirty();
+                }
+            }
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3346,4 +3362,5 @@ WM.module('wm.utils', [])
         this.getDecodedData             = getDecodedData;
         this.getStudioUrl               = getStudioUrl;
         this.escapeHtml                 = escapeHtml;
+        this.setFormDirty               = setFormDirty;
     }]);
