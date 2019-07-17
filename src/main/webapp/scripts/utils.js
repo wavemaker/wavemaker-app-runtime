@@ -3235,7 +3235,7 @@ WM.module('wm.utils', [])
             if (formEle.length) {
                 var formName = formEle.attr('name');
                 var scope = formEle.scope();
-                if (scope) {
+                if (scope && scope[formName]) {
                     scope[formName].$setDirty();
                 }
             }
