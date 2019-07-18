@@ -2068,6 +2068,7 @@ WM.module('wm.widgets.table')
                 /*push the fieldDefs in respective grid markup*/
                 gridObj = {
                     widgetName : $is.name,
+                    widgetId: $is.widgetid,
                     fieldDefs: defaultFieldDefs,
                     scopeId: $is.$id
                 };
