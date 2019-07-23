@@ -69,6 +69,26 @@ WM.module('wm.layouts.containers')
                 onPropertyChange.notifyFor = notifyFor;
                 $is.propertyManager.add($is.propertyManager.ACTIONS.CHANGE, onPropertyChange);
                 WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                setTimeout(function() {
+                    renderGhostList($is, $el, attrs);
+                }, 100);
+            }
+
+            function renderGhostList($is, $el, attrs) {
+                var list = $el.closest('ul');
+                var ghostItem = $($el.html().replace(/widgetid=/g, 'widgetid_ghost='));
+                ghostItem.find('img').each(function() {
+                    var wrapper = $('<div class="image-wrapper"><div class="image-wrap"></div> </div>');
+                    var $img = $(this);
+                    wrapper.find('>.image-wrap').css('border-radius', $img.css('border-radius'));
+                    wrapper.insertBefore($img);
+                    wrapper.append($img);
+                });
+                for (var i = 0; i < 4; i++) {
+                    var listItem = $('<li init-widget class="app-listtemplate list-group-item app-list-item app-list-ghost-item"></li>');
+                    listItem.append(ghostItem.clone());
+                    list.append(listItem);
+                }
             }
 
             function runMode_preLinkFn($is, $el, attrs, listCtrl) {
