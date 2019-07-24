@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
-import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -111,7 +111,7 @@ public class OAuth2RuntimeServiceManager {
 
         HttpRequestDetails httpRequestDetails = HttpRequestDetailsBuilder.create(oAuth2ProviderConfig.getAccessTokenUrl())
                 .setMethod("POST")
-                .setContentType(ContentType.APPLICATION_FORM_URLENCODED.toString())
+                .setContentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .setRequestBody(requestBody).build();
 
         HttpResponseDetails httpResponseDetails = restConnector.invokeRestCall(httpRequestDetails);
