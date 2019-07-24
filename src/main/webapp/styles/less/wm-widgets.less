@@ -1889,6 +1889,7 @@ body.modal-open {
     list-style: none;
     outline: none;
     &.app-list-ghost-item {
+      opacity: 0.5;
       .ghost-wrapper {
         content: ' ';
         position: absolute;
@@ -1912,6 +1913,14 @@ body.modal-open {
         top: 0;
         left: 0;
         z-index: 100;
+      }
+      label, a {
+        height: 6pt !important;
+        overflow: hidden;
+        padding: 0;
+      }
+      label {
+        min-width: 50pt;
       }
     }
     .app-list-item-value {

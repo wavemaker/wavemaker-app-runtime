@@ -80,7 +80,7 @@ WM.module('wm.layouts.containers')
                 ghostItem.find('img').each(function() {
                     var wrapper = $('<div class="image-wrapper"><div class="image-wrap"></div> </div>');
                     var $img = $(this);
-                    wrapper.find('>.image-wrap').css('border-radius', $img.css('border-radius'));
+                    wrapper.find('>.image-wrap').addClass($img.attr('class'));
                     wrapper.insertBefore($img);
                     wrapper.append($img);
                 });
