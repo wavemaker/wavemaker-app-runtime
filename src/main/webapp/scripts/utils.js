@@ -3158,6 +3158,13 @@ WM.module('wm.utils', [])
             return docLinks;
         }
 
+        function prepareExternalLinks(externalLinks, studioVersion) {
+            _.forEach(externalLinks, function (value, link) {
+                externalLinks[link] = replace(value, _.set({}, 'studio.version', studioVersion));
+            });
+            return externalLinks;
+        }
+
         function getDecodedData (content) {
             return decodeURIComponent(content.replace(/\+/g, ' '));
         }
@@ -3405,6 +3412,7 @@ WM.module('wm.utils', [])
         this.disableRightClick          = disableRightClick;
         this.formatExportExpression     = formatExportExpression;
         this.prepareDocLinks            = prepareDocLinks;
+        this.prepareExternalLinks       = prepareExternalLinks;
         this.getDecodedData             = getDecodedData;
         this.getStudioUrl               = getStudioUrl;
         this.escapeHtml                 = escapeHtml;
