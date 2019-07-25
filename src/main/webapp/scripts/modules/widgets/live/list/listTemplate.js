@@ -72,11 +72,22 @@ WM.module('wm.layouts.containers')
                 setTimeout(function() {
                     renderGhostList($is, $el, attrs);
                 }, 100);
+                var renderGhostListThrottleFn = _.throttle(renderGhostList, 1000, { 'trailing': true });
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        renderGhostListThrottleFn($is, $el, attrs);
+                    });
+                });
+                observer.observe($el[0], { childList: true, subtree: true });
+                $is.$on('$destroy', function () {
+                    observer.disconnect();
+                });
             }
 
             function renderGhostList($is, $el, attrs) {
                 var list = $el.closest('ul');
-                var ghostItem = $($el.html().replace(/widgetid=/g, 'widgetid_ghost='));
+                list.find('>li.app-list-ghost-item').remove();
+                var ghostItem = $('<div></div>').append($el.html().replace(/widgetid=/g, 'widgetid_ghost='));
                 ghostItem.find('img').each(function() {
                     var wrapper = $('<div class="image-wrapper"><div class="image-wrap"></div> </div>');
                     var $img = $(this);
@@ -84,9 +95,11 @@ WM.module('wm.layouts.containers')
                     wrapper.insertBefore($img);
                     wrapper.append($img);
                 });
+                ghostItem.find('.wm-focus-rect').remove();
+                ghostItem.find('.widget-drop-target').removeClass('widget-drop-target');
                 for (var i = 0; i < 4; i++) {
                     var listItem = $('<li init-widget class="app-listtemplate list-group-item app-list-item app-list-ghost-item"></li>');
-                    listItem.append(ghostItem.clone());
+                    listItem.append(ghostItem.children().clone());
                     list.append(listItem);
                 }
             }
