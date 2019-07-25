@@ -3009,26 +3009,6 @@ WM.module('wm.widgets.live')
 
             /**
              * @ngdoc function
-             * @name wm.widgets.live.toggleFilterMode
-             * @methodOf wm.widgets.live.LiveWidgetUtils
-             * @function
-             *
-             * @description
-             * hide filtermode option if it is a dynamic table. For dynamic table we dont have table columns.
-             * So checking headerConfig array because it is set only when we have table columns and column group
-             *
-             * @param {$is} Scope of the widget(datatable scope)
-             */
-            function toggleFilterMode($is) {
-                $is.widgetProps.filtermode.showindesigner = !_.isEmpty($is.headerConfig);
-                // check for dynamic table
-                if (_.isEmpty($is.headerConfig)) {
-                    $rs.$emit('set-markup-attr', $is.widgetid, {'filtermode': ''});
-                }
-            }
-
-            /**
-             * @ngdoc function
              * @name wm.widgets.live.getDefaultViewModeWidget
              * @methodOf wm.widgets.live.LiveWidgetUtils
              * @function
@@ -3101,7 +3081,6 @@ WM.module('wm.widgets.live')
             this.getDefaultViewModeWidget   = getDefaultViewModeWidget;
             this.getDisplayExpr             = getDisplayExpr;
             this.getCutomizedOptions        = getCutomizedOptions;
-            this.toggleFilterMode           = toggleFilterMode;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
