@@ -772,8 +772,7 @@ WM.module('wm.widgets.table')
                                 wp.pagesize.show     = !($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable) || ($is.isBoundToWidget ? !$is.isBoundToFilter : false);
                                 wp.exportformat.show = wp.exportformat.showindesigner = wp.exportdatasize.show = wp.exportdatasize.showindesigner = ($is.showExportOptions());
                                 wp.multiselect.show  = wp.multiselect.showindesigner = ($is.isPartOfLiveGrid ? false : wp.multiselect.show);
-                                /* hide filtermode option if it is a dynamic table.*/
-                                LiveWidgetUtils.toggleFilterMode($is);
+
                                 /* If bound to live filter result, disable grid search. */
                                 wp.filtermode.disabled = $is.isBoundToFilter;
                             }
@@ -1595,10 +1594,7 @@ WM.module('wm.widgets.table')
                         'field' : rowOperationsColumn.field,
                         'isPredefined' : true
                     };
-                /* hide filtermode option if it is a dynamic table.*/
-                if ($is.widgetid) {
-                  LiveWidgetUtils.toggleFilterMode($is);
-                }
+
                 /*Return if no fieldDefs are present.*/
                 if (!$is.fieldDefs.length) {
                     return;
@@ -2068,6 +2064,7 @@ WM.module('wm.widgets.table')
                 /*push the fieldDefs in respective grid markup*/
                 gridObj = {
                     widgetName : $is.name,
+                    widgetId: $is.widgetid,
                     fieldDefs: defaultFieldDefs,
                     scopeId: $is.$id
                 };

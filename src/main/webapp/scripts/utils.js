@@ -49,7 +49,7 @@ WM.module('wm.utils', [])
                 VALID_HTML: /<[a-z][\s\S]*>/i,
                 VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/,
                 SPECIAL_CHARACTERS: /[^A-Z0-9a-z_]+/i,
-                APP_SERVER_URL_FORMAT: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+([:]?[0-9]{2,5}|\.[a-zA-Z]{2,5}[\.]{0,1})\/+[^?#&=]+$/,
+                APP_SERVER_URL_FORMAT: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+([:]?[0-9]{2,5}|\.[a-zA-Z]{2,5}[\.]{0,1})(\/?)+[^?#&=]+$/,
                 JSON_DATE_FORMAT: /\d{4}-[0-1]\d-[0-3]\d(T[0-2]\d:[0-5]\d:[0-5]\d.\d{1,3}Z$)?/,
                 MOBILE_APP_ID: /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9]*[A-Za-z0-9])$/
             },
@@ -3160,6 +3160,13 @@ WM.module('wm.utils', [])
             return docLinks;
         }
 
+        function prepareExternalLinks(externalLinks, studioVersion) {
+            _.forEach(externalLinks, function (value, link) {
+                externalLinks[link] = replace(value, _.set({}, 'studio.version', studioVersion));
+            });
+            return externalLinks;
+        }
+
         function getDecodedData (content) {
             return decodeURIComponent(content.replace(/\+/g, ' '));
         }
@@ -3225,6 +3232,22 @@ WM.module('wm.utils', [])
          * @returns a list of strings after splitting based on Operators**/
         function splitExpression(expression) {
             return expression && expression.split(bindExpressionRegEx);
+        }
+
+        /**
+         * This function finds the element's closest form and sets the dirty flag
+         * @param $ele jQuery element
+         */
+        function setFormDirty($ele) {
+            // explicitly setting form dirty when typeahead is selected
+            var formEle = $ele.closest('form');
+            if (formEle.length) {
+                var formName = formEle.attr('name');
+                var scope = formEle.scope();
+                if (scope && scope[formName]) {
+                    scope[formName].$setDirty();
+                }
+            }
         }
 
         this.setSessionStorageItem      = setSessionStorageItem;
@@ -3391,8 +3414,10 @@ WM.module('wm.utils', [])
         this.disableRightClick          = disableRightClick;
         this.formatExportExpression     = formatExportExpression;
         this.prepareDocLinks            = prepareDocLinks;
+        this.prepareExternalLinks       = prepareExternalLinks;
         this.getDecodedData             = getDecodedData;
         this.getStudioUrl               = getStudioUrl;
         this.escapeHtml                 = escapeHtml;
         this.splitExpression            = splitExpression;
+        this.setFormDirty               = setFormDirty;
     }]);
