@@ -2409,7 +2409,7 @@ WM.module('wm.widgets.live')
                 var matchMode = matchModeMsgs[group.rules[i].matchMode].replace(/\s/ig, "_").toUpperCase(), matchModeVal;
                 switch (matchMode) {
                     case 'IN':
-                    case 'NOT_IN':
+                    case 'NOTIN':
                         matchModeVal = matchMode + " (" + group.rules[i].value + ")";
                         break;
                     case 'BETWEEN':
