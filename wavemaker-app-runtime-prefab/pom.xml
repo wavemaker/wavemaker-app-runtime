@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.wavemaker.runtime</groupId>
         <artifactId>wavemaker-app-runtime</artifactId>
-        <version>9.4.0.4</version>
+        <version>9.4.0.5</version>
     </parent>
 
     <artifactId>wavemaker-app-runtime-prefab</artifactId>
