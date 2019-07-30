@@ -316,6 +316,26 @@ WM.module('i18n')
                 }
             }
 
+            function loadAppLocaleBundleByAppType(content) {
+                var deferred = $q.defer();
+                // If application is spotcue type, then override locale with app type specific locale
+                if (!$rs.isSpotcuesApplicationType) {
+                    return deferred.resolve;
+                }
+
+                var path = _appLocaleRootPath + $rs.project.platformType + '/' + _selectedLocale + '.json';
+
+                $http
+                    .get(path)
+                    .then(function (response) {
+                        WM.extend($rs[localeKey], response.data, content);
+                        deferred.resolve();
+                    }, function (err) {
+                        deferred.resolve();
+                    });
+                return deferred.promise;
+            }
+
             /**
              * Loads the localeBundle.
              * Placeholders in the path will be replaced with the selected locale value and localeBundle will be loaded using the constructed path.
@@ -333,7 +353,7 @@ WM.module('i18n')
                         // error case
                         if (CONSTANTS.isRunMode) {
                             $rs.appLocale = {};
-                            console.warn("Error while loading the message bundle for loacle(" + _selectedLocale + ")" );
+                            console.warn("Error while loading the message bundle for locale(" + _selectedLocale + ")" );
                         }
                     });
                 //i18nService implementation can be ignored as of now
@@ -558,5 +578,16 @@ WM.module('i18n')
              * returns the supported locale codes - name map
              */
             this.getSupportedLocaleMap = getSupportedLocaleMap;
+
+            /**
+             * @ngdoc function
+             * @name i18nService#loadAppLocaleBundleByAppType
+             * @methodOf i18nService
+             * @function
+             *
+             * @description
+             * loads app type specific locale and overrides the default one
+             */
+            this.loadAppLocaleBundleByAppType = loadAppLocaleBundleByAppType;
         }
     ]);
