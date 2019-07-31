@@ -65,7 +65,8 @@ WM.module('wm.layouts.page')
                          */
                         pageName = $s.prefabname
                                         || ($rs.isPrefabTemplate && 'Main')
-                                        || $s.$root._toBeActivatedPage;
+                                        || $s.$root._toBeActivatedPage
+                                        || $s.$root.activePageName;
 
                         variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
 
