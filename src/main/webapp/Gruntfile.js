@@ -338,6 +338,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.jsLoader.js',
                         //ocLazyLoad -- end
                         '<%= config.components %>/hammerjs/hammer.js',
+                        '<%= config.components %>/iscroll/build/iscroll.js',
                         '<%= config.scripts %>/modules/swipey/swipey.jquery.plugin.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
                         '<%= config.scripts %>/modules/base64/base64.js',
