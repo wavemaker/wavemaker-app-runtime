@@ -318,8 +318,8 @@ WM.module('i18n')
 
             function loadAppLocaleBundleByAppType(content) {
                 var deferred = $q.defer();
-                // If application is spotcue type, then override locale with app type specific locale
-                if (!$rs.isSpotcuesApplicationType) {
+                // Override locale with app type specific locale
+                if (!($rs.project && $rs.project.platformType)) {
                     return deferred.resolve;
                 }
 
