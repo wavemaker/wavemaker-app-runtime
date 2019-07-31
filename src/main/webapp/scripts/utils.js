@@ -2607,7 +2607,15 @@ WM.module('wm.utils', [])
                         'canceltext' : $rootScope.locale.LABEL_CANCEL,
                         'backdrop'   : true,
                         'scope'      : options.params.$s
-                    }) : DialogService.showDialog("jobResponseDialog",{ });
+                    }) : DialogService.showDialog("jobResponseDialog",{
+                        resolve: {
+                            dialogParams:function(){
+                                return {
+                                    'exportType':$rootScope.locale.LABEL_MOBILE_BUILD_FOR_ANDROID
+                                }
+                            }
+                        }
+                     });
                 }, function (errMsg) {
                     // hide spinner
                     $rootScope.isStudioDisabled = false;
