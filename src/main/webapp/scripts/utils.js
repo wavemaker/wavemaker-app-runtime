@@ -176,7 +176,7 @@ WM.module('wm.utils', [])
                 'CAMERA'          : [{'name' : 'cordova-plugin-camera', 'spec' : '4.0.3'},
                                      {'name' : 'cordova-plugin-media-capture', 'spec' : '3.0.2'}],
                 'CONTACTS'        : [{'name' : 'cordova-plugin-contacts', 'spec' : '3.0.1'}],
-                'COOKIE_MANAGER'  : [{'name' : 'cordova-cookie-emperor', 'spec' : 'https://github.com/RTK/cordova-cookie-emperor.git#3a73cfd'}],
+                'COOKIE_MANAGER'  : [{'name' : 'cordova-plugin-cookieemperor', 'spec' : 'https://github.com/wavemaker/cordova-cookie-emperor#3a73cfd'}],
                 'FILE'            : [{'name' : 'cordova-plugin-file', 'spec' : '6.0.1'},
                                         {'name': 'cordova-plugin-file-transfer', 'spec': '1.7.1'},
                                         {'name' : 'cordova-plugin-file-opener2', 'spec' : 'https://github.com/wavemaker/cordova-plugin-file-opener2.git#d382e11'},
