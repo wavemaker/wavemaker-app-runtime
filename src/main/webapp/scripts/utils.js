@@ -3248,6 +3248,22 @@ WM.module('wm.utils', [])
             }
         }
 
+        /**
+         * ex:<meta name="viewport" content="width=device-width">
+         *    <meta name="wm:static:url" content="_static_">
+         *    <meta property="og:title" content="Title Here" />
+         *
+         * @param meta - ex: viewport, wm:static:url
+         * @param metaSelector - ex: name, property
+         *
+         * Custom meta tags can contain keys as name, property as shown above. To handle all such cases
+         * this method takes the attributeName to get to the correct metatag
+         */
+        function getMetaTagContent(meta, metaSelector) {
+            metaSelector  = metaSelector ? metaSelector : 'name';
+            return $("meta["+ metaSelector +"='" + meta + "']").attr("content");
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3418,4 +3434,5 @@ WM.module('wm.utils', [])
         this.escapeHtml                 = escapeHtml;
         this.splitExpression            = splitExpression;
         this.setFormDirty               = setFormDirty;
+        this.getMetaTagContent          = getMetaTagContent;
     }]);
