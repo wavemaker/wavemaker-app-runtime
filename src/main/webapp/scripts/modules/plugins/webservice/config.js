@@ -17,7 +17,7 @@ wm.plugins.webServices.controllers.EmptyController = WM.noop;
 wm.plugins.webServices.constant('WS_SERVICE_URLS', {
     WebService: {
         invokeRestCall: {
-            url: "services/projects/:projectID/restservices/invoke",
+            url: "services/projects/:projectID/restservices/invoke?optimizeResponse=:optimizeResponse",
             method: "POST"
         },
         generateRESTWsdlSettings: {
