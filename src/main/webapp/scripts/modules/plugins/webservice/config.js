@@ -15,7 +15,7 @@ wm.plugins.webServices.factory(wm.plugins.webServices.factories);
 wm.plugins.webServices.constant('WS_SERVICE_URLS', {
     WebService: {
         invokeRestCall: {
-            url: "services/projects/:projectID/restservices/invoke",
+            url: "services/projects/:projectID/restservices/invoke?optimizeResponse=:optimizeResponse",
             method: "POST"
         },
         generateRESTWsdlSettings: {
