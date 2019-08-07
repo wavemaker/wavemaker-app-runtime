@@ -2571,7 +2571,8 @@ WM.module('wm.utils', [])
                     exportType: options.params.exportType
                 },
                 exportOptions = options.defaultParams || defaultParams,
-                deferred = $q.defer();
+                deferred = $q.defer(),
+                isAsyncJobOperation = options && options.params && (options.params.exportType==='WAR');
 
             if (options.params.vcsBranch) {
                 exportOptions.vcsRef = options.params.vcsBranch;
@@ -2591,12 +2592,13 @@ WM.module('wm.utils', [])
                         options.params.$s.blockProjectsList = false;
                     }
 
-                    options.params.$s[fnName] = function () {
-                        window.location.href = 'services/projects/' + options.params.projectId + '/downloads/' + fileId;
-                        options.params.$s[fnName] = undefined;
-                    };
-
-                    DialogService.showConfirmDialog({
+                    if(!isAsyncJobOperation) {
+                        options.params.$s[fnName] = function () {
+                            window.location.href = '/file-service/'+ fileId;
+                            options.params.$s[fnName] = undefined;
+                        };
+                    }
+                    !isAsyncJobOperation? DialogService.showConfirmDialog({
                         'caption'    : dialogParams.caption,
                         'controller' : 'EmptyController',
                         'onOk'       : fnName,
@@ -2605,7 +2607,15 @@ WM.module('wm.utils', [])
                         'canceltext' : $rootScope.locale.LABEL_CANCEL,
                         'backdrop'   : true,
                         'scope'      : options.params.$s
-                    });
+                    }) : DialogService.showDialog("jobResponseDialog",{
+                            resolve: {
+                                dialogParams:function(){
+                                    return {
+                                        'exportType':$rootScope.locale.LABEL_WAR_PROJECT
+                                    }
+                                }
+                            }
+                         });
                 }, function (errMsg) {
                     // hide spinner
                     $rootScope.isStudioDisabled = false;
