@@ -1367,15 +1367,8 @@ WM.module('wm.widgets.live')
                     extendedProperties,
                     textWidgets = ['text', 'password'],
                     setDefaultValueProps = function () {
-                        var defaultProp;
                         /*Use default value instead of datavalue for fields*/
-                        if (widgetType === 'radioset') {
-                            defaultProp = 'selectedvalue';
-                        } else if (widgetType === 'checkboxset') {
-                            defaultProp = 'selectedvalues';
-                        } else {
-                            defaultProp = 'datavalue';
-                        }
+                        var defaultProp = 'datavalue';
                         if (widgetProps[defaultProp]) {
                             widgetProps.defaultvalue = WM.copy(widgetProps[defaultProp]);
                             widgetProps.defaultvalue.bindable = 'in-bound';

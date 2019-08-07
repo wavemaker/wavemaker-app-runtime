@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.security.authenticationToken.AbstractAuthenticationToken;
 import com.wavemaker.runtime.security.authority.SimpleGrantedAuthority;
 
@@ -91,10 +92,10 @@ public class WMAuthentication extends AbstractAuthenticationToken {
         return mapped;
     }
 
-    private SimpleGrantedAuthority mapAuthority(String name) {
-        if (prefix.length() > 0 && !name.startsWith(prefix)) {
-            name = prefix + name;
+    private SimpleGrantedAuthority mapAuthority(String authorityName) {
+        if (prefix.length() > 0 && !authorityName.startsWith(prefix)) {
+            authorityName = prefix + authorityName;
         }
-        return new SimpleGrantedAuthority(name);
+        return new SimpleGrantedAuthority(EncodeUtils.encodeContent(authorityName));
     }
 }

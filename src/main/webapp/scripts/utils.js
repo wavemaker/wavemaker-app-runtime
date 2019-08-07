@@ -176,7 +176,7 @@ WM.module('wm.utils', [])
                 'CAMERA'          : [{'name' : 'cordova-plugin-camera', 'spec' : '4.0.3'},
                                      {'name' : 'cordova-plugin-media-capture', 'spec' : '3.0.2'}],
                 'CONTACTS'        : [{'name' : 'cordova-plugin-contacts', 'spec' : '3.0.1'}],
-                'COOKIE_MANAGER'  : [{'name' : 'cordova-cookie-emperor', 'spec' : 'https://github.com/RTK/cordova-cookie-emperor.git#3a73cfd'}],
+                'COOKIE_MANAGER'  : [{'name' : 'cordova-plugin-cookieemperor', 'spec' : 'https://github.com/wavemaker/cordova-cookie-emperor#3a73cfd'}],
                 'FILE'            : [{'name' : 'cordova-plugin-file', 'spec' : '6.0.1'},
                                         {'name': 'cordova-plugin-file-transfer', 'spec': '1.7.1'},
                                         {'name' : 'cordova-plugin-file-opener2', 'spec' : 'https://github.com/wavemaker/cordova-plugin-file-opener2.git#d382e11'},
@@ -3258,6 +3258,22 @@ WM.module('wm.utils', [])
             }
         }
 
+        /**
+         * ex:<meta name="viewport" content="width=device-width">
+         *    <meta name="wm:static:url" content="_static_">
+         *    <meta property="og:title" content="Title Here" />
+         *
+         * @param meta - ex: viewport, wm:static:url
+         * @param metaSelector - ex: name, property
+         *
+         * Custom meta tags can contain keys as name, property as shown above. To handle all such cases
+         * this method takes the attributeName to get to the correct metatag
+         */
+        function getMetaTagContent(meta, metaSelector) {
+            metaSelector  = metaSelector ? metaSelector : 'name';
+            return $("meta["+ metaSelector +"='" + meta + "']").attr("content");
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3428,4 +3444,5 @@ WM.module('wm.utils', [])
         this.escapeHtml                 = escapeHtml;
         this.splitExpression            = splitExpression;
         this.setFormDirty               = setFormDirty;
+        this.getMetaTagContent          = getMetaTagContent;
     }]);
