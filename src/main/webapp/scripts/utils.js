@@ -2594,7 +2594,7 @@ WM.module('wm.utils', [])
 
                     if(!isAsyncJobOperation) {
                         options.params.$s[fnName] = function () {
-                            window.location.href = 'services/projects/' + options.params.projectId + '/downloads/' + fileId;
+                            window.location.href = '/file-service/'+ fileId;
                             options.params.$s[fnName] = undefined;
                         };
                     }
@@ -2608,14 +2608,14 @@ WM.module('wm.utils', [])
                         'backdrop'   : true,
                         'scope'      : options.params.$s
                     }) : DialogService.showDialog("jobResponseDialog",{
-                        resolve: {
-                            dialogParams:function(){
-                                return {
-                                    'exportType':$rootScope.locale.LABEL_MOBILE_BUILD_FOR_ANDROID
+                            resolve: {
+                                dialogParams:function(){
+                                    return {
+                                        'exportType':$rootScope.locale.LABEL_WAR_PROJECT
+                                    }
                                 }
                             }
-                        }
-                     });
+                         });
                 }, function (errMsg) {
                     // hide spinner
                     $rootScope.isStudioDisabled = false;
