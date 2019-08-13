@@ -319,11 +319,11 @@ WM.module('i18n')
             function loadAppLocaleBundleByAppType(content) {
                 var deferred = $q.defer();
                 // Override locale with app type specific locale
-                if (!($rs.project && $rs.project.platformType)) {
+                if (!($rs.project && $rs.project.platformType && CONSTANTS.isStudioMode)) {
                     return deferred.resolve;
                 }
 
-                var path = _appLocaleRootPath + $rs.project.platformType + '/' + _selectedLocale + '.json';
+                var path = _appLocaleRootPath + $rs.project.platformType.toLowerCase() + '/' + _selectedLocale + '.json';
 
                 $http
                     .get(path)
