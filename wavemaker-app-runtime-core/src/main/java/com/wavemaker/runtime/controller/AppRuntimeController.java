@@ -18,6 +18,7 @@ package com.wavemaker.runtime.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,11 +27,13 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.validations.DbValidationsConstants;
 import com.wavemaker.commons.wrapper.StringWrapper;
+import com.wavemaker.runtime.adaptivecard.AdaptiveCardResolverService;
 import com.wavemaker.runtime.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.ExportedFileContentWrapper;
@@ -49,6 +52,9 @@ public class AppRuntimeController {
 
     @Autowired
     private ExportedFileManager exportedFileManager;
+
+    @Autowired
+    private AdaptiveCardResolverService adaptiveCardResolverService;
 
 
     @RequestMapping(value = "/application/type", method = RequestMethod.GET)
@@ -81,6 +87,11 @@ public class AppRuntimeController {
     public DownloadResponse getExportedFile(@PathVariable("fileId") String fileId) throws IOException {
         ExportedFileContentWrapper fileContents = exportedFileManager.getFileContent(fileId);
         return new DownloadResponse(fileContents.getInputStream(), MediaType.APPLICATION_OCTET_STREAM_VALUE, fileContents.getFileName());
+    }
+
+    @RequestMapping(value = "/adaptivecards/{name}", method = RequestMethod.GET, produces = "application/vnd.microsoft.card.adaptive")
+    public String getAdaptiveJson(@PathVariable("name") String cardName, @RequestParam(required = false) Map<String, String> params) {
+        return adaptiveCardResolverService.resolveCard(cardName, params);
     }
 }
 

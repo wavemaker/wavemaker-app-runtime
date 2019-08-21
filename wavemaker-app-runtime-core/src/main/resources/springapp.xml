@@ -113,6 +113,10 @@
 
     <bean id="securityService" class="com.wavemaker.runtime.security.SecurityService"/>
 
+    <bean id="adaptiveCardResolverService" class="com.wavemaker.runtime.adaptivecard.AdaptiveCardResolverServiceImpl"/>
+
+    <bean id="adaptiveCardRecursiveEvaluator" class="com.wavemaker.runtime.adaptivecard.AdaptiveCardRecursiveEvaluator"/>
+
     <bean id="propertyPlaceHolderReplacementHelper" class="com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper"/>
 
     <bean class="com.wavemaker.runtime.data.spring.WMPropertyPlaceholderConfigurer">
