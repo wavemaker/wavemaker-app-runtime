@@ -42,7 +42,7 @@ WM.module('wm.widgets.base', [])
      *  - another property, e.g. for grid, 'selecteditem' property's type is dependent on the 'dataset' property
      *  - an expression, can be defined and evaluated in the isolateScope of widget.
      */
-    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', 'Utils', '$rootScope', function (WIDGET_CONSTANTS, CONSTANTS, Utils, $rs) {
+    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', 'AdaptiveCardWidgetDefManager', 'Utils', '$rootScope', function (WIDGET_CONSTANTS, CONSTANTS, AdaptiveCardWidgetDefManager, Utils, $rs) {
         "use strict";
 
         var widgetEventOptions = Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), /*A copy of the variable to preserve the actual value.*/
@@ -2289,6 +2289,12 @@ WM.module('wm.widgets.base', [])
                 {"name": "valueformat", "properties": ["ynumberformat"], "parent": "value"}
             ];
         }
+
+
+
+        if ($rs.isAdaptiveCardAppType) {
+            result = AdaptiveCardWidgetDefManager.getWidgetProperties(result);
+        }
         properties = result.properties;
         propertyGroups = result.propertyGroups;
         advancedPropertyGroups = result.advancedPropertyGroups;
@@ -2298,6 +2304,31 @@ WM.module('wm.widgets.base', [])
             unSupportedProperties = ['hint', 'shortcutkey', 'tabindex'];
         }
 
+        function applyAdapticveCardProperties() {
+            var adaptiveProps = AdaptiveCardWidgetDefManager.getWidgetProperties();
+        }
+
+        function overrideWidgetProperties(source, overrides) {
+            var result = source;
+            if (overrides) {
+                result.properties = _.assignIn(source.properties, overrides.properties);
+                result.propertyGroups = _.map(source.propertyGroups, function (g) {
+                    var override = _.find(overrides.propertyGroups,  function(o) { return o.name === g.name});
+                    if (override) {
+                        g.properties = _.concat(g.properties, override.properties);
+                    }
+                    return g;
+                });
+                result.advancedPropertyGroups = _.map(source.advancedPropertyGroups, function (g) {
+                    var override = _.find(overrides.advancedPropertyGroups,  function(o) { return o.name === g.name});
+                    if (override) {
+                        g.properties = _.concat(g.properties, override.properties);
+                    }
+                    return g;
+                });
+            }
+            return result;
+        }
         //gives all the advanced properties list
         function getAdvancedProperties() {
             var advancedProperties = [];
@@ -3796,7 +3827,7 @@ WM.module('wm.widgets.base', [])
 
                     $is._cssObj = {};
 
-                    $is._applyCSSFns.push(__applyCSS.bind(undefined, $is, $el, attrs));
+                    $is._applyCSSFns && $is._applyCSSFns.push(__applyCSS.bind(undefined, $is, $el, attrs));
 
                     WidgetUtilService.registerPropertyChangeListener(onCSSPropertyChange.bind(undefined, $is, $el, attrs), $is, notifyFor);
                 }

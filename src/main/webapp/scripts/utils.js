@@ -369,7 +369,7 @@ WM.module('wm.utils', [])
      */
         function getValidMarkUp(htmlString, handleValidMarkUp, handleInValidMarkUp) {
             var newMarkup = '', checkValidRootElement = function (ele) {
-                return WM.element(ele).is('wm-page, wm-partial, wm-template, wm-prefab-container');
+                return WM.element(ele).is('wm-page, wm-partial, wm-template, wm-prefab-container, ac-card');
             },
                 $htm,
                 $outerEle,
@@ -385,7 +385,7 @@ WM.module('wm.utils', [])
                 triggerFn(handleInValidMarkUp);
                 //the page markup is not valid
                 $outerEle = WM.element('<div>' + htmlString + '</div>');
-                $innerEle = $outerEle.find('wm-page, wm-partial, wm-template, wm-prefab-container');
+                $innerEle = $outerEle.find('wm-page, wm-partial, wm-template, wm-prefab-container, ac-card');
 
                 if ($innerEle.length > 0) {
                     newMarkup = $innerEle[0].outerHTML;

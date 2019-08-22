@@ -1,7 +1,9 @@
 {
   "name": "wm-angular",
   "version": "1.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "adaptivecards": "1.2.0"
+  },
   "devDependencies": {
     "grunt": "0.4.5",
     "matchdep": "0.3.0",

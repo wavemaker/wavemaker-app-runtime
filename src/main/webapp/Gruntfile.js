@@ -12,7 +12,9 @@ module.exports = function (grunt) {
         editor: 'editor',
         mobile: 'mobile',
         styles: 'styles',
+        adaptivecard: 'adaptivecard',
         components: 'components',
+        node_modules: 'node_modules',
         tmp: 'tmp'
     };
 
@@ -26,6 +28,7 @@ module.exports = function (grunt) {
                         src: [
                             '<%= config.application %>/*',
                             '<%= config.mobile %>/*',
+                            '<%= config.adaptivecard %>/*',
                             '<%= config.editor %>/*',
                             '<%= config.tmp %>/*'
                         ]
@@ -196,7 +199,11 @@ module.exports = function (grunt) {
                     {
                         src : '<%= config.tmp %>/styles/css/wm-responsive.css',
                         dest : '<%= config.mobile %>/styles/css/wm-responsive.css'
-                    }
+                    },
+                    {
+                        src : '<%= config.tmp %>/scripts/wm-adaptivecard-libs.min.js',
+                        dest : '<%= config.adaptivecard %>/scripts/wm-libs.min.js'
+                    },
 
 
                 ]
@@ -282,6 +289,10 @@ module.exports = function (grunt) {
                     '<%= config.mobile %>/scripts/wm-mobileloader.min.js': [
                         '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js',
                         '<%= config.scripts %>/wmbootstrap.js'
+                    ],
+                    '<%= config.adaptivecard %>/scripts/wm-loader.min.js': [
+                        '<%= config.editor %>/adaptivecard/scripts/runtimeloader.js',
+                        '<%= config.scripts %>/modules/adaptivecard/wmbootstrap.js'
                     ],
                     '<%= config.tmp %>/scripts/component-libs/chart.min.js': [
                         '<%= config.components %>/nvd3/nv.d3.min.js'
@@ -378,6 +389,10 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/gestures/gestures.js',
                         '<%= config.scripts %>/modules/base64/base64.js',
                         '<%= config.scripts %>/modules/xmlToJson/xmlToJson.js'
+                    ],
+                    '<%= config.tmp %>/scripts/wm-adaptivecard-libs.min.js': [
+                        '<%= config.components %>/jquery/jquery.js',
+                        '<%= config.node_modules %>/adaptivecards/dist/adaptivecards.js'
                     ]
                 }
             },
@@ -525,7 +540,12 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/i18n/config.js',
                         '<%= config.scripts %>/modules/i18n/services/i18nService.js',
                         '<%= config.scripts %>/modules/wmMobile.js',
-                        '<%= config.scripts %>/modules/common/services/navigationService.js'
+                        '<%= config.scripts %>/modules/common/services/navigationService.js',
+
+                        '<%= config.scripts %>/modules/adaptivecard/widgets/base/widgetDefManager.js',
+                        '<%= config.scripts %>/modules/adaptivecard/layouts/card/card.js',
+                        '<%= config.scripts %>/modules/adaptivecard/widgets/basic/image/image.js',
+                        '<%= config.scripts %>/modules/adaptivecard/widgets/basic/textblock/textblock.js'
 
                     ],
                     '<%= config.editor %>/application/scripts/runtimeloader.min.js': [
@@ -719,6 +739,17 @@ module.exports = function (grunt) {
                         '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js'
                     ]
                 }
+            },
+            'adaptive-runtime-files': { // mobile changes
+                nonull: true,
+                files: {
+                    '<%= config.editor %>/adaptivecard/scripts/runtimeloader.js': [
+
+                    ],
+                    '<%= config.editor %>/adaptivecard/scripts/runtimeloader.min.js': [
+                        '<%= config.editor %>/adaptivecard/scripts/runtimeloader.js'
+                    ]
+                }
             }
         }
     });
@@ -738,7 +769,6 @@ module.exports = function (grunt) {
     /*grunt task for development*/
     grunt.registerTask('build', [
         'clean',
-        'bower',
         'less',
         'concat',
         'concat:wm-loader',
