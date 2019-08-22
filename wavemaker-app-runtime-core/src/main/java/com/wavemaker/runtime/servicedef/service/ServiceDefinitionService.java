@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
+import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.prefab.core.Prefab;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
@@ -163,7 +164,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                             for (String role : roles) {
                                 role = role.trim();
                                 role = role.substring(1, role.length() - 1);
-                                authExpressionVsServiceDefinitions.put(role, serviceDefinition);
+                                authExpressionVsServiceDefinitions.put(EncodeUtils.decode(role), serviceDefinition);
                             }
                         } else {
                             authExpressionVsServiceDefinitions.put(attribute, serviceDefinition);
