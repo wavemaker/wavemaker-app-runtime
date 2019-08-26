@@ -39,6 +39,7 @@ import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.commons.model.security.LoginConfig;
 import com.wavemaker.commons.model.security.RoleConfig;
 import com.wavemaker.commons.model.security.RolesConfig;
+import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.security.model.SecurityInfo;
@@ -238,7 +239,7 @@ public class SecurityService {
 
             // make sure the role is not the maker for no roles
             if (realRoleName != null) {
-                roleNames.add(realRoleName);
+                roleNames.add(EncodeUtils.decode(realRoleName));
             }
         }
 

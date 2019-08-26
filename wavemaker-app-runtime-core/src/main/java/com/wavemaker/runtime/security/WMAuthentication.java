@@ -96,6 +96,6 @@ public class WMAuthentication extends AbstractAuthenticationToken {
         if (prefix.length() > 0 && !authorityName.startsWith(prefix)) {
             authorityName = prefix + authorityName;
         }
-        return new SimpleGrantedAuthority(EncodeUtils.encodeContent(authorityName));
+        return new SimpleGrantedAuthority(EncodeUtils.encode(authorityName));
     }
 }
