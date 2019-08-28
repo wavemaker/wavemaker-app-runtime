@@ -1701,7 +1701,8 @@ WM.module('wm.widgets.base', [])
 
                         /* ---- events ---- */
                         "onBeforeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     'wm.fileupload.mobile': {
                         "fileuploadmessage": {"show": false},
