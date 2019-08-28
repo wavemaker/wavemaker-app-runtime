@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.adaptivecard;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -15,11 +17,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
@@ -44,8 +50,13 @@ public class AdaptiveCardRecursiveEvaluator {
     private static final String DATA_BINDING_VALUE = "value";
     private static final String FILE_SEPERATOR = "/";
     private static final Pattern pattern = Pattern.compile("(?<=Variables\\.)(\\w*)(?=\\.)*");
+
     @Autowired
     private RestRuntimeService restRuntimeService;
+
+    @Autowired
+    private ServletContext servletContext;
+
     private Configuration configuration = null;
 
     AdaptiveCardRecursiveEvaluator() {
@@ -87,7 +98,7 @@ public class AdaptiveCardRecursiveEvaluator {
             modelInput.put(VARIABLES, variables);
             modelInput.put(PAGE_PARAMS, pageParams);
             HttpResponseDetails httpResponseDetails = restRuntimeService.executeRestCall((String) varMap.get(SERVICE_ID),
-                    OPERATION_ID, getQueryParams(varMap.get(DATA_BINDINGS), modelInput));
+                    OPERATION_ID, getQueryParams(varMap.get(DATA_BINDINGS), modelInput, (String) varMap.get(SERVICE_ID)));
             if (httpResponseDetails.getStatusCode() == 200) {
                 varMap.put(DATA_SET, streamToMap(httpResponseDetails.getBody()));
             }
@@ -108,17 +119,58 @@ public class AdaptiveCardRecursiveEvaluator {
         }
     }
 
-    private HttpRequestData getQueryParams(Object node, Map<String, Object> modelInput) {
+    private HttpRequestData getQueryParams(Object node, Map<String, Object> modelInput, String varName) {
 
         HttpRequestData httpRequestData = new HttpRequestData();
         org.springframework.util.MultiValueMap<String, String> queryMap = new LinkedMultiValueMap<>();
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, String> parameterTypeMap = getDataBindingsValueType(varName);
+
         ((ArrayList) node).forEach((var) -> {
             Map<String, Object> variable = (Map<String, Object>) var;
-            queryMap.put((String) variable.get(DATA_BINDING_TARGET), Collections.singletonList(evalExpression((String) variable.get(DATA_BINDING_VALUE),
-                    modelInput)));
+            if (parameterTypeMap.containsKey(variable.get(DATA_BINDING_TARGET))) {
+                String parameterType = parameterTypeMap.get(variable.get(DATA_BINDING_TARGET));
+                if (parameterType.equals("query")) {
+                    queryMap.put((String) variable.get(DATA_BINDING_TARGET), Collections.singletonList(evalExpression((String) variable.get(DATA_BINDING_VALUE),
+                            modelInput)));
+                } else if (parameterType.equals("header")) {
+                    headers.add((String) variable.get(DATA_BINDING_TARGET), evalExpression((String) variable.get(DATA_BINDING_VALUE), modelInput));
+                }
+
+            }
         });
+        //todo :: pathParams cannot handle and RequestBody.
         httpRequestData.setQueryParametersMap(queryMap);
+        httpRequestData.setHttpHeaders(headers);
+
         return httpRequestData;
+    }
+
+    //todo :: change it to Enums
+    private Map<String, String> getDataBindingsValueType(String variableName) {
+        File serviceDef = new File(servletContext.getRealPath("/WEB-INF/classes/servicedefs/" + variableName + "-service-definitions.json"));
+        try (FileInputStream fileInputStream = new FileInputStream(serviceDef)) {
+            Map<String, Object> serviceDefinitions = JSONUtils.toObject(fileInputStream, new TypeReference<Map<String, Object>>() {
+            });
+            Map<String, String> outMap = new HashMap<>();
+            for (Map.Entry<String, Object> entry : serviceDefinitions.entrySet()) {
+//                Map.Entry<String, Object> entry = (Map.Entry<String, Object>) serviceDefinitions.entrySet();
+
+                Map<String, Object> internalMap = (Map<String, Object>) entry.getValue();
+
+                Map<String, Object> serviceOperationMap = (Map<String, Object>) internalMap.get("wmServiceOperationInfo");
+
+
+                ((ArrayList) serviceOperationMap.get("parameters")).forEach((var) -> {
+                    Map<String, String> variable = (Map<String, String>) var;
+                    outMap.put(variable.get("name"), variable.get("parameterType"));
+                });
+            }
+            return outMap;
+        } catch (IOException e) {
+            throw new RuntimeException("cannot get parameter types from service definitions file", e);
+        }
     }
 
     private String evalExpression(String expression, Map<String, Object> modelInput) {
