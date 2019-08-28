@@ -70,5 +70,7 @@
   "MESSAGE_LOGIN_REDIRECTION": "Redirecting to SSO login...",
   "LABEL_ICON": "Icon",
   "LABEL_MINDATE_VALIDATION_MESSAGE": "Please choose a date greater than or equal to",
-  "LABEL_MAXDATE_VALIDATION_MESSAGE": "Please choose a date less than or equal to"
+  "LABEL_MAXDATE_VALIDATION_MESSAGE": "Please choose a date less than or equal to",
+  "LABEL_FILE_EXTENTION_VALIDATION_MESSAGE": "Expected file extension is",
+  "LABEL_FILE_EXCEED_VALIDATION_MESSAGE": "File size exceeded limit. Max upload size is"
 }
