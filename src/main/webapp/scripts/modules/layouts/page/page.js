@@ -68,6 +68,7 @@ WM.module('wm.layouts.page')
                                         || $s.$root._toBeActivatedPage;
 
                         variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
+                        $s._pageName = pageName;
 
                         if (CONSTANTS.isRunMode) {
                             $s.Actions   = {};
@@ -210,12 +211,12 @@ WM.module('wm.layouts.page')
                             handlers.push($rs.$on('on-sessionTimeout', $s.onSessionTimeout));
 
                             Utils.triggerFn($s._onPageLoad);
-                            $el.on('$destroy', function () {
-                                // destroy variables
-                                Variables.unload(attrs.ngController.replace('PageController', ''), $s);
-                                handlers.forEach(Utils.triggerFn);
-                            });
                         }
+                        // destroy variables
+                        $el.on('$destroy', function () {
+                            Variables.unload($s._pageName, $s);
+                            handlers.forEach(Utils.triggerFn);
+                        });
                     }
                 }
             };
@@ -282,6 +283,7 @@ WM.module('wm.layouts.page')
 
                         pageName      = $s.partialname || $rs._toBeActivatedPage ;
                         variableScope = (CONSTANTS.isStudioMode && !$s.prefabname && !$s.partialname) ? $rs.domScope : $s;
+                        $s._pageName = pageName;
 
                         if (CONSTANTS.isRunMode) {
                             $s.Widgets   = {};
@@ -355,14 +357,13 @@ WM.module('wm.layouts.page')
                              * of the parent container once all the components(lazy widgets, partials) are loaded.
                              */
                             $s._onPartialLoad();
-
-                            // canvasTree will listen for this event and will hide itself upon occurrence of it
-                            $el.on('$destroy', function () {
-                                // destroy loaded variables
-                                Variables.unload(attrs.ngController.replace('PageController', ''), $s);
-                                handlers.forEach(Utils.triggerFn);
-                            });
                         }
+                        // canvasTree will listen for this event and will hide itself upon occurrence of it
+                        $el.on('$destroy', function () {
+                            // destroy loaded variables
+                            Variables.unload($s._pageName, $s);
+                            handlers.forEach(Utils.triggerFn);
+                        });
                     }
                 }
             };
