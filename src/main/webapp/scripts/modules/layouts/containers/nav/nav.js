@@ -30,7 +30,8 @@ WM.module('wm.layouts.containers')
                     'itemlabel'    : true,
                     'itemlink'     : true,
                     'itemchildren' : true,
-                    'orderby'      : true
+                    'orderby'      : true,
+                    'isactive'     : true
                 };
 
             menuDataProps.push('orderby', 'autoclose', 'itembadge', 'autoopen');
@@ -60,13 +61,15 @@ WM.module('wm.layouts.containers')
                     $is.itemclass    = '';
                     $is.itemicon     = '';
                     $is.itemlink     = '';
+                    $is.isactive     = '';
 
                     $rs.$emit('set-markup-attr', $is.widgetid, {
                         'itemlabel'   : $is.itemlabel,
                         'itemchildren': $is.itemchildren,
                         'itemicon'    : $is.itemicon,
                         'itemclass'   : $is.itemclass,
-                        'itemlink'    : $is.itemlink
+                        'itemlink'    : $is.itemlink,
+                        'isactive'    : $is.isactive
                     });
                 }
                 return nodes;
@@ -84,6 +87,7 @@ WM.module('wm.layouts.containers')
                         badgeField    = $is.itembadge    || 'badge',
                         actionField   = $is.itemaction   || 'action',
                         childrenField = $is.itemchildren || 'children',
+                        isactiveField = $is.isactive     || 'isactive',
                         userRole      = $is.userrole;
 
                     labelField = isDefaultDataset ? 'label' : $is.itemlabel;
@@ -103,6 +107,7 @@ WM.module('wm.layouts.containers')
                                 itemAction    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemaction'})   || node[actionField],
                                 itemChildren  = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemchildren'}) || node[childrenField],
                                 itemLink      = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlink'}) || node[itemField],
+                                isActive      = $is.bindisactive ? WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'isactive'}) : node[isactiveField],
                                 $menu;
 
                             // menu widget expects data as an array.
@@ -126,6 +131,7 @@ WM.module('wm.layouts.containers')
                                     'itemclass'   : $is.binditemclass || classField,
                                     'itemchildren': $is.binditemchildren || childrenField,
                                     'userrole'    : $is.binduserrole || userRole,
+                                    'isactive'    : $is.bindisactive || isactiveField,
                                     'type'        : 'anchor',
                                     'iconclass'   : itemIconClass || '',
                                     'on-select'   : '_onMenuItemSelect($event, $item)',
@@ -152,6 +158,11 @@ WM.module('wm.layouts.containers')
                                 }
                                 $li.addClass(itemClass).append($a);
                                 $el.append($li);
+                            }
+                            if (isActive) {
+                                $li.addClass('active')
+                            } else {
+                                $li.removeClass('active')
                             }
                         }
 
@@ -191,6 +202,7 @@ WM.module('wm.layouts.containers')
                 case 'itemlink':
                 case 'itemchildren':
                 case 'orderby':
+                case 'isactive':
                     constructNav($el, $is, attrs);
                     break;
                 }
