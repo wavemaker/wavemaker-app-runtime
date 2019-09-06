@@ -13,6 +13,23 @@ WM.module('wm.widgets.base').service('AdaptiveCardWidgetDefManager', ['$rootScop
             "ac.card": {
                 "title": {"type": "string", "bindable": "in-bound"}
             },
+            "ac.column": {
+                "width": {"type": "string"}
+            },
+            "ac.columnset": {
+                "verticalcontentalignment": {"show": false},
+            },
+            "ac.container.base" : {
+                "backgroundimage": {"type": "string", "bindable": "in-bound"},
+                "backgroundfillmode": {"type": "list", "options": ["", "repeat", "repeatHorizontally", "repeatVertically"], "value": "repeat", "bindable": "in-bound"},
+                "backgroundpositiony": {"type": "list", "options": ["top", "center", "bottom"], "bindable": "in-bound"},
+                "backgroundpositionx": {"type": "list", "options": ["left", "center", "right"], "bindable": "in-bound"},
+                "bleed": {"type": "boolean", "value": false, "bindable": "in-bound"},
+                "containerstyle": {"type": "list", "options": ["default", "emphasis", "good", "attention", "warning", "accent"], "value": "default", "bindable": "in-bound"},
+                "height": {"show": false},
+                "minheight": {"type": "string", "pattern": dimensionRegex},
+                "verticalcontentalignment": {"type": "list", "options": ["top", "center", "bottom"], "value": "top", "bindable": "in-bound"},
+            },
             "ac.image": {
                 "alttext" : {"type": "string", "bindable": "in-bound"},
                 "backgroundcolor": {"type": "string", "widget": "color"},
@@ -23,6 +40,9 @@ WM.module('wm.widgets.base').service('AdaptiveCardWidgetDefManager', ['$rootScop
                 "imagesize": {"type": "list", "options": ["auto", "strech", "small", "medium", "large"], "value": "auto", "bindable": "in-bound"},
                 "imagestyle": {"type": "list", "options": ["default", "person"], "value": "none", "bindable": "in-bound"},
                 "imagesource" : {"type": "string", "bindable": "in-bound"},
+            },
+            "ac.list": {
+                "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"}
             },
             "ac.textblock": {
                 "color": {"type": "list", "options": ["default", "dark", "light", "accent", "good", "warning", "attention"], "value": "default", "bindable": "in-bound"},
@@ -40,12 +60,15 @@ WM.module('wm.widgets.base').service('AdaptiveCardWidgetDefManager', ['$rootScop
             {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic", "iconClass":"wms wms-properties"},
             {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style", "iconClass":"wms wms-styles"},
             {"properties": ["name", "text"], "parent": "properties"},
+            {"properties": ["containerstyle", "text"], "parent": "styles"},
             {"name": "accessibility", "properties": ["alttext"], "parent": "properties"},
             {"name": "picture", "properties": ["imagesource", "imagesize", "imagestyle", "imagewidth", "imageheight", "imagealignment"], "parent": "properties"},
-            {"name": "layout", "properties": ["height"], "parent": "properties"},
-            {"name": "behavior", "properties": ["isvisible", "separator", "maxlines", "wrap"], "parent": "properties"},
+            {"name": "layout", "properties": ["width", "height", "minheight"], "parent": "properties"},
+            {"name": "dataset", "properties": ["dataset"], "parent": "properties"},
+            {"name": "content", "properties": ["verticalcontentalignment"], "parent": "properties"},
+            {"name": "behavior", "properties": ["isvisible", "bleed", "separator", "maxlines", "wrap"], "parent": "properties"},
             {"name": "textstyle", "properties": ["size", "fontType", "color", "issubtle", "weight", "horizontalalignment"], "parent": "styles"},
-            {"name": "backgroundstyle", "properties": ["backgroundcolor"], "parent": "styles"}
+            {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundfillmode", "backgroundpositiony", "backgroundpositionx"], "parent": "styles"}
         ],
         "advancedPropertyGroups" : []
     };

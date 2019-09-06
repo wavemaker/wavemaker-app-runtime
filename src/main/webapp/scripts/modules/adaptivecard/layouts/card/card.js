@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
             '<div class="ac-card" init-widget wmtransclude></div>'
         );
     }])
-    .directive('acCard', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
+    .directive('acCard', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', 'Utils', 'Variables', function ($rs, PropertiesFactory, WidgetUtilService, Utils, Variables) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('ac.card', ['ac.base']),
             notifyFor = {
@@ -31,8 +31,15 @@ WM.module('wm.widgets.basic')
             'transclude': true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/ac/widget/card.html'),
             'link'    : {
-                'pre': function (scope, $el, attrs) {
-                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                'pre': function ($s, $el, attrs) {
+                    $s.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;// register the page variables
+                    setTimeout(function () {
+                        var pageName = $rs.activePageName;
+                        var variableScope = $rs.domScope;
+                        Variables.getPageVariables(pageName, function (variables) {
+                            Variables.register(pageName, variables, true, variableScope);
+                        });
+                    }, 1000);
                 },
                 'post': function (scope, element, attrs) {
 

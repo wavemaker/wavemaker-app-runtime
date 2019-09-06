@@ -545,7 +545,11 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/adaptivecard/widgets/base/widgetDefManager.js',
                         '<%= config.scripts %>/modules/adaptivecard/layouts/card/card.js',
                         '<%= config.scripts %>/modules/adaptivecard/widgets/basic/image/image.js',
-                        '<%= config.scripts %>/modules/adaptivecard/widgets/basic/textblock/textblock.js'
+                        '<%= config.scripts %>/modules/adaptivecard/widgets/basic/textblock/textblock.js',
+                        '<%= config.scripts %>/modules/adaptivecard/widgets/live/list/list.js',
+                        '<%= config.scripts %>/modules/adaptivecard/layouts/containers/container/container.js',
+                        '<%= config.scripts %>/modules/adaptivecard/layouts/containers/columnset/columnset.js',
+                        '<%= config.scripts %>/modules/adaptivecard/layouts/containers/column/column.js'
 
                     ],
                     '<%= config.editor %>/application/scripts/runtimeloader.min.js': [

@@ -5,9 +5,9 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/ac/widget/textblock.html',
-            '<div class="ac-textblock" init-widget>' +
+            '<div class="ac-textblock-wrapper" init-widget>' +
             '   <div class="ac-horizontal-separator" ng-class="{\'visible\': separator}"></div>' +
-            '   <div class="ac-textblock-label" ng-class="{\'wrap-text\': wrap, \'subtle-content\': issubtle}"></div>' +
+            '   <div class="ac-textblock" ng-class="{\'wrap-text\': wrap, \'subtle-content\': issubtle}"></div>' +
             '</div>'
         );
     }])
@@ -36,20 +36,20 @@ WM.module('wm.widgets.basic')
             }];
 
         function setClass(element, newVal, classType) {
-            var labelEle = element.find('.ac-textblock-label'),
-                options = _.find(classnames, {name: classType}).options;
+            var options = _.find(classnames, {name: classType}).options;
             options = _.map(options, function (o) {
-                return o + '-' + classType;
+                return classType + '-' + o;
             });
-            labelEle.removeClass(options.join(' '));
-            labelEle.addClass(newVal+ '-' + classType);
+            element.removeClass(options.join(' '));
+            element.addClass(classType+ '-' + newVal);
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(element, attrs, key, newVal) {
+        function propertyChangeHandler(wrapper, attrs, key, newVal) {
+            var element = wrapper.find('.ac-textblock');
             switch (key) {
                 case 'text':
-                    Utils.setNodeContent(element.find('>.ac-textblock-label'), newVal);
+                    Utils.setNodeContent(element, newVal);
                     break;
                 case 'size' :
                     setClass(element, newVal, 'font-size');

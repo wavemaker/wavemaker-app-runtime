@@ -5,10 +5,10 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/ac/widget/image.html',
-            '<div class="ac-image" init-widget>' +
+            '<div class="ac-image-wrapper" init-widget>' +
             '   <div class="ac-horizontal-separator" ng-class="{\'visible\': separator}"></div>' +
             '   <div class="ac-image-container">' +
-            '       <img class="ac-image-picture" ng-src="{{imagesource}}" alt="{{alttext}}" ng-style="{\'background-color\': backgroundcolor, \'width\': imagewidth, \'height\': imageheight}">' +
+            '       <img class="ac-image" ng-src="{{imagesource}}" alt="{{alttext}}" ng-style="{\'background-color\': backgroundcolor, \'width\': imagewidth, \'height\': imageheight}">' +
             '   </div>'+
             '</div>'
         );
@@ -36,23 +36,24 @@ WM.module('wm.widgets.basic')
         function setClass(element, newVal, classType) {
             var options = _.find(classnames, {name: classType}).options;
             options = _.map(options, function (o) {
-                return o + '-' + classType;
+                return classType + '-' + o;
             });
             element.removeClass(options.join(' '));
-            element.addClass(newVal+ '-' + classType);
+            element.addClass(classType+ '-' + newVal);
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(element, attrs, key, newVal) {
+        function propertyChangeHandler(wrapper, attrs, key, newVal) {
+            var element = wrapper.find('.ac-image');
             switch (key) {
                 case 'imagesize' :
-                    setClass(element.find('.ac-image-picture'), newVal, 'image-size');
+                    setClass(element, newVal, 'image-size');
                     break;
                 case 'imagestyle' :
-                    setClass(element.find('.ac-image-picture'), newVal, 'image-style');
+                    setClass(element, newVal, 'image-style');
                     break;
                 case 'imagealignment' :
-                    setClass(element.find('>.ac-image-container'), newVal, 'image-align');
+                    setClass(wrapper.find('.ac-image-container'), newVal, 'image-align');
                     break;
             }
         }
