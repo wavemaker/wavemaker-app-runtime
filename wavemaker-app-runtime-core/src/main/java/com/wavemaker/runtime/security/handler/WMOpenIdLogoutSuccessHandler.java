@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
         if (openIdProviderRuntimeConfig != null && !CollectionUtils.isEmpty(openIdProviderRuntimeConfig.getOpenIdProviderInfoList())) {
             logoutUrl = openIdProviderRuntimeConfig.getOpenIdProviderInfoList().get(0).getLogoutUrl();
         }
-        if (logoutUrl != null) {
+        if (StringUtils.isNotBlank(logoutUrl)) {
             StringBuilder targetUrl = new StringBuilder()
                     .append(logoutUrl).append(QUESTION_MARK)
                     .append(idTokenHintQueryParam(((OidcUserAuthority)authentication.getAuthorities().iterator().next()).getIdToken().getTokenValue()))
