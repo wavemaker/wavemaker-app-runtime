@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
@@ -17,7 +17,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
-import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.security.openId.OpenIdProviderRuntimeConfig;
 
 public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
@@ -63,7 +62,7 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
         if (logoutUrl != null) {
             StringBuilder targetUrl = new StringBuilder()
                     .append(logoutUrl).append(QUESTION_MARK)
-                    .append(idTokenHintQueryParam(((OidcUser) ((WMAuthentication) authentication).getAuthenticationSource().getPrincipal())))
+                    .append(idTokenHintQueryParam(((OidcUserAuthority)authentication.getAuthorities().iterator().next()).getIdToken().getTokenValue()))
                     .append(QUERY_PARAM_DELIMITER).append(postLogoutUrlQueryParam(request));
             logger.info("Using the {} logoutUrl", targetUrl);
             return targetUrl.toString();
@@ -71,8 +70,8 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
         return null;
     }
 
-    private String idTokenHintQueryParam(OidcUser oidcUser) {
-        return QUERY_PARAM_ID_TOKEN_HINT + EQUALS + oidcUser.getIdToken().getTokenValue();
+    private String idTokenHintQueryParam(String tokenValue) {
+        return QUERY_PARAM_ID_TOKEN_HINT + EQUALS + tokenValue;
     }
 
     private String postLogoutUrlQueryParam(HttpServletRequest request) {
