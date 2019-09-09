@@ -478,7 +478,8 @@ WM.module('wm.widgets.base', [])
                         "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "itemchildren": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "objects"},
                         "itemaction": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
-                        "userrole": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"}
+                        "userrole": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "isactive": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                     },
 
                     "wm.tree": {
@@ -2177,7 +2178,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "eventsdata", "properties": ["eventtitle", "eventstart", "eventend", "eventallday", "eventclass"], "parent": "properties"},
-                {"name": "actions", "properties": ["actions", "itemid", "itemlabel", "itemicon", "itemlink", "itemaction", "userrole", "itembadge", "itemchildren"], "parent": "properties"},
+                {"name": "actions", "properties": ["actions", "itemid", "itemlabel", "itemicon", "itemlink", "itemaction", "userrole", "itembadge", "itemchildren", "isactive"], "parent": "properties"},
                 {"name": "xaxis", "properties": ["xaxisdatakey"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
