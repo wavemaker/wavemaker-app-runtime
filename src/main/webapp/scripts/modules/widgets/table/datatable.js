@@ -606,6 +606,7 @@ $.widget('wm.datatable', {
             disabledTl    = disabled ? ' disabled="' + disabled + '" ' : '',
             required      = colDef.required ? ' required="' + colDef.required + '" ' : '',
             showdropdownonExpression= colDef.showdropdownon ? ' showdropdownon="' + colDef.showdropdownon + '" ' : '',
+            dataentrymodeExpression= colDef.dataentrymode ? ' dataentrymode="' + colDef.dataentrymode + '" ' : '',
             datePattern   = colDef.editdatepattern ? ((colDef.editWidgetType === 'time' ? 'timepattern' : 'datepattern') + '="' + colDef.editdatepattern + '" ') : '',
             properties    = disabledTl + dataFieldName + eventTemplate + required + datePattern,
             index         = colDef.index,
@@ -624,19 +625,19 @@ $.widget('wm.datatable', {
             break;
         case 'date':
             $el.addClass('datetime-wrapper');
-            template = '<wm-date ' + properties + ' placeholder="' + placeholder + '"' + showdropdownonExpression + '></wm-date>';
+            template = '<wm-date ' + properties + ' placeholder="' + placeholder + '"' + showdropdownonExpression + dataentrymodeExpression +  '></wm-date>';
             break;
         case 'time':
             $el.addClass('datetime-wrapper');
-            template = '<wm-time ' + properties + ' placeholder="' + placeholder + '"'  + showdropdownonExpression + '></wm-time>';
+            template = '<wm-time ' + properties + ' placeholder="' + placeholder + '"'  + showdropdownonExpression + dataentrymodeExpression + '></wm-time>';
             break;
         case 'datetime':
             $el.addClass('datetime-wrapper');
-            template = '<wm-datetime ' + properties + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"'  + showdropdownonExpression + '></wm-datetime>';
+            template = '<wm-datetime ' + properties + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"'  + showdropdownonExpression + dataentrymodeExpression + '></wm-datetime>';
             break;
         case 'timestamp':
             $el.addClass('datetime-wrapper');
-            template = '<wm-datetime ' + properties + ' placeholder="' + placeholder + '"'  + showdropdownonExpression + '></wm-datetime>';
+            template = '<wm-datetime ' + properties + ' placeholder="' + placeholder + '"'  + showdropdownonExpression + dataentrymodeExpression + '></wm-datetime>';
             break;
         case 'checkbox':
             checkedTmpl = colDef.checkedvalue ? ' checkedvalue="' + colDef.checkedvalue + '" ' : '';
