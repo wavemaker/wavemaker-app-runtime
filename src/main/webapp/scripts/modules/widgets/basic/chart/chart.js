@@ -80,6 +80,7 @@ WM.module('wm.widgets.basic')
                 'aggregationcolumn' : true,
                 'orderby'           : true,
                 'showlegend'        : true,
+                'legendtype'        : true,
                 'title'             : true,
                 'nodatamessage'     : true,
                 'subheading'        : true

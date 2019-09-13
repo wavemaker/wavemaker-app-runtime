@@ -2051,7 +2051,7 @@ WM.module('wm.widgets.base', [])
                         "showlegend": {"type": "list", "options": ["hide", "top", "bottom"], "value": "top"},
                         "showxaxis": {"type": "boolean", "value": true},
                         "showyaxis": {"type": "boolean", "value": true},
-                        "legendtype": {"type": "list", "options": ["classic", "furious"], "value": "furious", "disabled": false, "show": false},
+                        "legendtype": {"type": "list", "options": ["classic", "furious"], "value": "furious", "disabled": false},
                         "showvalues": {"type": "boolean", "value": false},
                         "showlabels": {"type": "list", "options":  ['hide', 'inside', 'outside'], "value": "outside"},
                         "viewtype": {"type": "list", "options":  ['Grouped', 'Stacked'], "value": "Grouped"},
@@ -2276,7 +2276,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "colors", "properties": ["theme", "customcolors"], "parent": "chart"},
                 {"name": "message", "properties": ["nodatamessage", "loadingdatamsg"], "parent": "chart"},
                 {"name": "layout", "properties": ["offset"], "parent": "chart"},
-                {"name": "legend", "properties": ["showlegend"], "parent": "chart"},
+                {"name": "legend", "properties": ["showlegend", "legendtype"], "parent": "chart"},
                 {"name": "behavior", "properties": ["tooltips", "donutratio", "highlightpoints", "linethickness"], "parent": "chart"},
                 {"name": "datarendering", "properties": [ "viewtype", "interpolation", "areaviewtype"], "parent": "chart"},
                 //x axis groups
