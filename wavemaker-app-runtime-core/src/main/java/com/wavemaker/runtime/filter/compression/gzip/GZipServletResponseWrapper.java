@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.filter.gzip;
+package com.wavemaker.runtime.filter.compression.gzip;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -12,17 +12,19 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.MimeType;
 
+import com.wavemaker.runtime.filter.compression.CompressionFilterConfig;
+
 /**
  * @author Kishore Routhu on 10/10/17 6:54 PM.
  */
 public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
     private ServletOutputStream outputStream;
     private PrintWriter printWriter;
-    private GZipFilterConfig filterConfig;
+    private CompressionFilterConfig filterConfig;
     private boolean compressionEnabled = true;
     private int originalContentLength;
 
-    public GZipServletResponseWrapper(GZipFilterConfig filterConfig, HttpServletResponse response) throws IOException {
+    public GZipServletResponseWrapper(CompressionFilterConfig filterConfig, HttpServletResponse response) throws IOException {
         super(response);
         this.filterConfig = filterConfig;
     }

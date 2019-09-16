@@ -42,7 +42,7 @@
         </property>
     </bean>
 
-    <bean id="gzipCompressionFilter" class="com.wavemaker.runtime.filter.gzip.GZipCompressionFilter"/>
+    <bean id="wmCompressionFilter" class="com.wavemaker.runtime.filter.compression.WMCompressionFilter"/>
 
     <bean id="wmRequestFilter" class="com.wavemaker.runtime.web.filter.WMRequestFilter"/>
 
@@ -126,8 +126,8 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
-    <bean id="gzipFilterConfig" class="com.wavemaker.runtime.filter.gzip.GZipFilterConfig">
-        <property name="enableGZipCompression" value="${app.web.compression.enabled}"/>
+    <bean id="compressionFilterConfig" class="com.wavemaker.runtime.filter.compression.CompressionFilterConfig">
+        <property name="enableCompression" value="${app.web.compression.enabled}"/>
         <property name="minCompressSize" value="${app.web.compression.minsize}"/>
         <property name="includeMimeTypes" value="${app.web.compression.mimetypes.includePatterns}"/>
         <property name="excludeMimeTypes" value="${app.web.compression.mimetypes.excludePatterns}"/>

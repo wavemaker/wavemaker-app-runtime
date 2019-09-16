@@ -1,11 +1,11 @@
-package com.wavemaker.runtime.filter.gzip;
+package com.wavemaker.runtime.filter.compression;
 
 /**
  * @author Kishore Routhu on 10/10/17 7:15 PM.
  */
-public class GZipFilterConfig {
+public class CompressionFilterConfig {
 
-    private boolean enableGZipCompression;
+    private boolean enableCompression;
 
     private int minCompressSize;
 
@@ -13,15 +13,15 @@ public class GZipFilterConfig {
 
     private String excludeMimeTypes;
 
-    public GZipFilterConfig() {
+    public CompressionFilterConfig() {
     }
 
-    public boolean isEnableGZipCompression() {
-        return enableGZipCompression;
+    public boolean isEnableCompression() {
+        return enableCompression;
     }
 
-    public void setEnableGZipCompression(boolean enableGZipCompression) {
-        this.enableGZipCompression = enableGZipCompression;
+    public void setEnableCompression(boolean enableCompression) {
+        this.enableCompression = enableCompression;
     }
 
     public int getMinCompressSize() {

@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.filter.gzip;
+package com.wavemaker.runtime.filter.compression.gzip;
 
 import java.io.IOException;
 import java.io.OutputStream;
