@@ -296,7 +296,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         returnType = operation.return;
                     } else {
                         // fetch return type and operation object from swagger
-                        if (operation.responses && operation.responses['200'].schema) {
+                        if (_.get(operation, "responses['200'].schema")) {
                             schemaObject = operation.responses['200'].schema;
                             typeArgumentsObject = schemaObject["x-WM-TYPE_ARGUMENTS"];
                             isList = schemaObject.$ref === "#/definitions/Page";

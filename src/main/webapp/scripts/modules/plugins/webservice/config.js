@@ -48,6 +48,14 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             },
             transformRequest: WM.identity
         },
+        uploadOpenAPI: {
+            url: "services/projects/:projectID/restservice/import",
+            method: "POST",
+            headers: {
+                'Content-Type': undefined
+            },
+            transformRequest: WM.identity
+        },
         registerFeedService: {
             url: "services/projects/:projectID/feed/register",
             method: "POST"

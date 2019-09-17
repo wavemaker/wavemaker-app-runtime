@@ -697,6 +697,16 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 action: 'getWebSocketServiceDetails',
                 urlParams: urlParams
             }, successCallback, failureCallback);
+        },
+
+        uploadOpenAPI: function(connectionParams, successCallback, failureCallback) {
+            BaseService.send({
+                target: 'WebService',
+                action: 'uploadOpenAPI',
+                data: connectionParams.data,
+                urlParams: connectionParams.urlParams,
+                params: connectionParams.params
+            }, successCallback, failureCallback);
         }
     };
 };

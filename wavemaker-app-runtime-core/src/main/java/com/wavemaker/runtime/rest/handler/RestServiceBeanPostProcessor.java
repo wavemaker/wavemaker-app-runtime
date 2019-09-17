@@ -39,6 +39,7 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.controller.RestRuntimeController;
 import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
+import com.wavemaker.runtime.rest.model.RestServiceInfoBeanEntry;
 
 /**
  * Created by ArjunSahasranam on 6/10/15.
@@ -93,9 +94,11 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
     public Object postProcessBeforeInitialization(final Object bean, final String beanName) {
         if (bean instanceof RestServiceInfoBean) {
             RestServiceInfoBean restServiceInfoBean = (RestServiceInfoBean) bean;
-            RequestMappingInfo requestMappingInfo = getRequestMappingInfo(restServiceInfoBean);
-            requestMappingHandlerMapping
-                    .registerMapping(requestMappingInfo, restRuntimeController, HANDLE_REQUEST_METHOD);
+            restServiceInfoBean.getEntryList().forEach(restInfoEntry -> {
+                RequestMappingInfo requestMappingInfo = getRequestMappingInfo(restInfoEntry);
+                requestMappingHandlerMapping
+                        .registerMapping(requestMappingInfo, restRuntimeController, HANDLE_REQUEST_METHOD);
+            });
         }
         return bean;
     }
@@ -105,10 +108,10 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
-    private RequestMappingInfo getRequestMappingInfo(RestServiceInfoBean restServiceInfoBean) {
+    private RequestMappingInfo getRequestMappingInfo(RestServiceInfoBeanEntry restServiceEntry) {
         RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
-                RequestMethod.valueOf(restServiceInfoBean.getHttpMethod()));
-        PatternsRequestCondition patterns = new PatternsRequestCondition(restServiceInfoBean.getUrl());
+                RequestMethod.valueOf(restServiceEntry.getHttpMethod()));
+        PatternsRequestCondition patterns = new PatternsRequestCondition(restServiceEntry.getUrl());
         ParamsRequestCondition params = new ParamsRequestCondition();
         HeadersRequestCondition headers = new HeadersRequestCondition();
         ConsumesRequestCondition consumes = new ConsumesRequestCondition();

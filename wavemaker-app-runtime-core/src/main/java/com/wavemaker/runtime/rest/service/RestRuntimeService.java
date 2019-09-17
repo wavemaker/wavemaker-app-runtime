@@ -35,6 +35,7 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.UnAuthorizedResourceAccessException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
+import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.RestConstants;
@@ -107,10 +108,10 @@ public class RestRuntimeService {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Rest service request details {}", httpRequestDetails.toString());
+            logger.debug("Rest service request details {}", httpRequestDetails);
         }
 
-        new RestConnector().invokeRestCall(httpRequestDetails, (response) -> {
+        new RestConnector().invokeRestCall(httpRequestDetails, response -> {
             HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
             try {
                 httpResponseDetails.setStatusCode(response.getRawStatusCode());
@@ -153,27 +154,36 @@ public class RestRuntimeService {
 
     private HttpRequestDetails constructHttpRequest(String serviceId, String operationId, HttpRequestData httpRequestData) {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
-        Map.Entry<String, Path> pathEntry = swagger.getPaths().entrySet().iterator().next();
-        String pathValue = pathEntry.getKey();
-        Path path = pathEntry.getValue();
-        Operation operation = getOperation(path, operationId);
+        final Tuple.Three<String, Path, Operation> pathAndOperation = findPathAndOperation(swagger, operationId);
+
 
         HttpHeaders httpHeaders = new HttpHeaders();
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> pathParameters = new HashMap<>();
-        filterAndApplyServerVariablesOnRequestData(httpRequestData, operation, httpHeaders, queryParameters,
-                pathParameters);
+        filterAndApplyServerVariablesOnRequestData(httpRequestData, pathAndOperation.v3, httpHeaders, queryParameters, pathParameters);
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
-        updateAuthorizationInfo(swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
-        httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathValue, queryParameters, pathParameters));
-        httpRequestDetails.setMethod(SwaggerDocUtil.getOperationType(path, operation.getOperationId()).toUpperCase());
+        updateAuthorizationInfo(swagger.getSecurityDefinitions(), pathAndOperation.v3, queryParameters, httpHeaders, httpRequestData);
+        httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathAndOperation.v1, queryParameters, pathParameters));
+        httpRequestDetails.setMethod(SwaggerDocUtil.getOperationType(pathAndOperation.v2, operationId).toUpperCase());
 
         httpRequestDetails.setHeaders(httpHeaders);
         httpRequestDetails.setBody(httpRequestData.getRequestBody());
 
         return httpRequestDetails;
+    }
+
+    private Tuple.Three<String, Path, Operation> findPathAndOperation(Swagger swagger, String operationId) {
+        for (final Map.Entry<String, Path> pathEntry : swagger.getPaths().entrySet()) {
+            for (final Operation operation : pathEntry.getValue().getOperations()) {
+                if (operation.getMethodName().equalsIgnoreCase(operationId)) {
+                    return new Tuple.Three<>(pathEntry.getKey(), pathEntry.getValue(), operation);
+                }
+            }
+        }
+        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.operation.doesnt.exist"),
+                operationId);
     }
 
     private void filterAndApplyServerVariablesOnRequestData(
