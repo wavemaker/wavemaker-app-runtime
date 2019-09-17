@@ -1,86 +1,56 @@
 package com.wavemaker.runtime.adaptivecard;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.LinkedMultiValueMap;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.servicedef.model.ServiceDefinition;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMObjectMapper;
-import com.wavemaker.runtime.rest.model.HttpRequestData;
+import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
-import com.wavemaker.runtime.rest.service.RestRuntimeService;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
+import com.wavemaker.runtime.rest.service.RestConnector;
+import com.wavemaker.runtime.servicedef.service.ServiceDefinitionService;
 
 public class AdaptiveCardRecursiveEvaluator {
 
     private static final String VARIABLES = "Variables";
     private static final String PAGE_PARAMS = "pageParams";
-    private static final String SERVICE_TYPE = "serviceType";
-    private static final String REST_SERVICE = "RestService";
-    private static final String OPERATION_ID = "invoke";
-    private static final String SERVICE_ID = "service";
     private static final String DATA_BINDINGS = "dataBinding";
     private static final String DATA_SET = "dataSet";
-    private static final String DATA_BINDING_TARGET = "target";
     private static final String DATA_BINDING_VALUE = "value";
-    private static final String FILE_SEPERATOR = "/";
+    private static final String OPERATION_ID = "operationId";
+
     private static final Pattern pattern = Pattern.compile("(?<=Variables\\.)(\\w*)(?=\\.)*");
 
     @Autowired
-    private RestRuntimeService restRuntimeService;
+    private ServiceDefinitionService serviceDefinitionService;
 
-    @Autowired
-    private ServletContext servletContext;
-
-    private Configuration configuration = null;
-
-    AdaptiveCardRecursiveEvaluator() {
-        configuration = new Configuration(Configuration.VERSION_2_3_28);
-        configuration.setDefaultEncoding("UTF-8");
-        configuration.setLocale(Locale.US);
-        configuration.setAPIBuiltinEnabled(true);
-        configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-    }
-
-
-    public Map<String, Object> evaluate(Map<String, Object> variables, Map<String, String> pageParams) {
+    public Map<String, Object> evaluate(Map<String, Object> variables, Map<String, String> pageParams, String hostAddress) {
         for (Map.Entry<String, Object> entry : variables.entrySet()) {
             Map<String, Object> var = (Map<String, Object>) entry.getValue();
             var.put(DATA_SET, null);
         }
         for (Map.Entry<String, Object> entry : variables.entrySet()) {
             Set<String> invoked = new HashSet<>();
-            invoke(variables, pageParams, invoked, entry.getKey());
+            invoke(variables, pageParams, invoked, entry.getKey(), hostAddress);
         }
         return variables;
     }
 
-    private Map<String, Object> invoke(Map<String, Object> variables, Map<String, String> pageParams, Set<String> visiting, String currVar) {
+    private Map<String, Object> invoke(Map<String, Object> variables, Map<String, String> pageParams,
+                                       Set<String> visiting, String currVar, String hostAddress) {
         Map<String, Object> varMap = (Map<String, Object>) variables.get(currVar);
         List<String> dependents = checkForDependents(varMap.get(DATA_BINDINGS));
         for (String s : dependents) {
@@ -89,23 +59,71 @@ public class AdaptiveCardRecursiveEvaluator {
             } else {
                 throw new WMRuntimeException("circular dependency exists in variable invoke");
             }
-            invoke(variables, pageParams, visiting, s);
+            invoke(variables, pageParams, visiting, s, hostAddress);
             visiting.remove(s);
         }
+        Map<String, Object> modelInput = new HashMap<>();
+        modelInput.put(VARIABLES, variables);
+        modelInput.put(PAGE_PARAMS, pageParams);
 
-        if (varMap.get(SERVICE_TYPE).equals(REST_SERVICE) && varMap.get(DATA_SET) == null) {
-            Map<String, Object> modelInput = new HashMap<>();
-            modelInput.put(VARIABLES, variables);
-            modelInput.put(PAGE_PARAMS, pageParams);
-            HttpResponseDetails httpResponseDetails = restRuntimeService.executeRestCall((String) varMap.get(SERVICE_ID),
-                    OPERATION_ID, getQueryParams(varMap.get(DATA_BINDINGS), modelInput, (String) varMap.get(SERVICE_ID)));
-            if (httpResponseDetails.getStatusCode() == 200) {
+        variables.put(currVar, variableRequestHandler(varMap, modelInput, hostAddress));
+        return variables;
+    }
+
+    private Map<String, Object> variableRequestHandler(Map<String, Object> varMap, Map<String, Object> modelInput, String hostAddress) {
+
+        if (varMap.get(DATA_SET) == null) {
+            Map<String, ServiceDefinition> definitionMap = serviceDefinitionService.listServiceDefs();
+            ServiceDefinition serviceDefinition = definitionMap.get(varMap.get(OPERATION_ID));
+            HttpRequestDetails httpRequestDetails = HttpRequestDetailsBuilder.construct(varMap.get(DATA_BINDINGS), modelInput, serviceDefinition);
+
+            String endpointAddress = httpRequestDetails.getEndpointAddress();
+            httpRequestDetails.setEndpointAddress(hostAddress + endpointAddress);
+
+            return variableInvoker(httpRequestDetails, varMap, serviceDefinition);
+        }
+        return varMap;
+    }
+
+    private Map<String, Object> variableInvoker(HttpRequestDetails httpRequestDetails, Map<String, Object> varMap, ServiceDefinition serviceDefinition) {
+        RestConnector connector = new RestConnector();
+        HttpResponseDetails httpResponseDetails = connector.invokeRestCall(httpRequestDetails);
+        if (httpResponseDetails.getStatusCode() == 200) {
+            if (checkForOperationType(serviceDefinition.getOperationType())) {
+                Map<String, Object> serviceOutMap = new HashMap<>();
+                serviceOutMap.put("value", WMIOUtils.toString(httpResponseDetails.getBody()));
+                varMap.put(DATA_SET, serviceOutMap);
+            } else if (serviceDefinition.getOperationType().equals("array")) {
+                if (checkForOperationType((String) varMap.get("type"))) {
+                    Map<String, Object> serviceOutMap = new HashMap<>();
+                    serviceOutMap.put("value", streamToArray(httpResponseDetails.getBody()));
+                    varMap.put(DATA_SET, serviceOutMap);
+                } else {
+                    varMap.put(DATA_SET, streamToArray(httpResponseDetails.getBody()));
+                }
+            } else {
                 varMap.put(DATA_SET, streamToMap(httpResponseDetails.getBody()));
             }
-            variables.put(currVar, varMap);
-            return variables;
+        } else {
+            throw new WMRuntimeException("failed to invoke variable : " + varMap.get("name"));
         }
-        return variables;
+        return varMap;
+    }
+
+    private boolean checkForOperationType(String operationType) {
+        return operationType.equals("string") || operationType.equals("integer") || operationType.equals("number") ||
+                operationType.equals("boolean");
+    }
+
+    private List<Object> streamToArray(InputStream inputStream) {
+        try {
+            return WMObjectMapper.getInstance().readValue(inputStream, new TypeReference<List<Object>>() {
+            });
+        } catch (IOException e) {
+            throw new WMRuntimeException("failed to parse input stream to array", e);
+        } finally {
+            WMIOUtils.closeSilently(inputStream);
+        }
     }
 
     private Map<String, Object> streamToMap(InputStream inputStream) {
@@ -113,86 +131,16 @@ public class AdaptiveCardRecursiveEvaluator {
             return WMObjectMapper.getInstance().readValue(inputStream, new TypeReference<Map<String, Object>>() {
             });
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WMRuntimeException("failed to parse input stream to Map", e);
         } finally {
             WMIOUtils.closeSilently(inputStream);
         }
     }
 
-    private HttpRequestData getQueryParams(Object node, Map<String, Object> modelInput, String varName) {
-
-        HttpRequestData httpRequestData = new HttpRequestData();
-        org.springframework.util.MultiValueMap<String, String> queryMap = new LinkedMultiValueMap<>();
-        HttpHeaders headers = new HttpHeaders();
-
-        Map<String, String> parameterTypeMap = getDataBindingsValueType(varName);
-
-        ((ArrayList) node).forEach((var) -> {
-            Map<String, Object> variable = (Map<String, Object>) var;
-            if (parameterTypeMap.containsKey(variable.get(DATA_BINDING_TARGET))) {
-                String parameterType = parameterTypeMap.get(variable.get(DATA_BINDING_TARGET));
-                if (parameterType.equals("query")) {
-                    queryMap.put((String) variable.get(DATA_BINDING_TARGET), Collections.singletonList(evalExpression((String) variable.get(DATA_BINDING_VALUE),
-                            modelInput)));
-                } else if (parameterType.equals("header")) {
-                    headers.add((String) variable.get(DATA_BINDING_TARGET), evalExpression((String) variable.get(DATA_BINDING_VALUE), modelInput));
-                }
-
-            }
-        });
-        //todo :: pathParams cannot handle and RequestBody.
-        httpRequestData.setQueryParametersMap(queryMap);
-        httpRequestData.setHttpHeaders(headers);
-
-        return httpRequestData;
-    }
-
-    //todo :: change it to Enums
-    private Map<String, String> getDataBindingsValueType(String variableName) {
-        File serviceDef = new File(servletContext.getRealPath("/WEB-INF/classes/servicedefs/" + variableName + "-service-definitions.json"));
-        try (FileInputStream fileInputStream = new FileInputStream(serviceDef)) {
-            Map<String, Object> serviceDefinitions = JSONUtils.toObject(fileInputStream, new TypeReference<Map<String, Object>>() {
-            });
-            Map<String, String> outMap = new HashMap<>();
-            for (Map.Entry<String, Object> entry : serviceDefinitions.entrySet()) {
-//                Map.Entry<String, Object> entry = (Map.Entry<String, Object>) serviceDefinitions.entrySet();
-
-                Map<String, Object> internalMap = (Map<String, Object>) entry.getValue();
-
-                Map<String, Object> serviceOperationMap = (Map<String, Object>) internalMap.get("wmServiceOperationInfo");
-
-
-                ((ArrayList) serviceOperationMap.get("parameters")).forEach((var) -> {
-                    Map<String, String> variable = (Map<String, String>) var;
-                    outMap.put(variable.get("name"), variable.get("parameterType"));
-                });
-            }
-            return outMap;
-        } catch (IOException e) {
-            throw new RuntimeException("cannot get parameter types from service definitions file", e);
-        }
-    }
-
-    private String evalExpression(String expression, Map<String, Object> modelInput) {
-        if (expression.contains("bind:")) {
-            expression = expression.replaceAll("bind:", "");
-            expression = expression.replaceAll("\\$i", "0");
-            String templateStr = "${" + expression + "}";
-            try {
-                Template template = new Template("name", new StringReader(templateStr), new Configuration(Configuration.VERSION_2_3_28));
-                StringWriter writer = new StringWriter();
-                template.process(modelInput, writer);
-                return writer.toString();
-            } catch (IOException | TemplateException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return expression;
-    }
-
+    @SuppressWarnings(value = "unchecked")
     private List<String> checkForDependents(Object node) {
         List<String> totalDependents = new ArrayList<>();
-        ((ArrayList) node).forEach((var) -> {
+        ((ArrayList) node).forEach(var -> {
             Map<String, Object> variable = (Map<String, Object>) var;
             List<String> dependents = getDependents((String) variable.get(DATA_BINDING_VALUE));
             totalDependents.addAll(dependents);

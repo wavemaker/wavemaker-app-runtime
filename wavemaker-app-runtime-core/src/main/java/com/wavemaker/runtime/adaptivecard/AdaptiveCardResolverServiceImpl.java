@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,6 +27,9 @@ public class AdaptiveCardResolverServiceImpl implements AdaptiveCardResolverServ
     private static final String VARIABLES = "Variables";
     private static final String PAGE_PARAMS = "pageParams";
     private static final String FILE_SEPERATOR = "/";
+    private static final String PAGES_FOLDER = "/pages/";
+    private static final String VARIABLES_JSON = ".variables.json";
+    private static final String CARD_FTL = ".card.ftl";
 
     @Autowired
     private ServletContext servletContext;
@@ -44,25 +48,38 @@ public class AdaptiveCardResolverServiceImpl implements AdaptiveCardResolverServ
     }
 
     @Override
-    public String resolveCard(String cardName, Map<String, String> params) {
-        File variableJson = new File(servletContext.getRealPath("/pages/" + cardName + FILE_SEPERATOR + cardName + ".variables.json"));
+    public String resolveCard(HttpServletRequest httpServletRequest, String cardName, Map<String, String> params) {
+        File variableJson = new File(servletContext.getRealPath(PAGES_FOLDER + cardName + FILE_SEPERATOR + cardName + VARIABLES_JSON));
         try (FileInputStream fileInputStream = new FileInputStream(variableJson)) {
             Map<String, Object> variables = JSONUtils.toObject(fileInputStream, new TypeReference<Map<String, Object>>() {
             });
-            variables = adaptiveCardRecursiveEvaluator.evaluate(variables, params);
-            cfg.setDirectoryForTemplateLoading(new File(servletContext.getRealPath("/pages/")));
-            Template template = cfg.getTemplate(FILE_SEPERATOR + cardName + FILE_SEPERATOR + cardName + ".card.ftl");
-            Map<String, Object> modelInput = new HashMap<>();
+            String endpoint = getEndPointAddress(httpServletRequest);
+            variables = adaptiveCardRecursiveEvaluator.evaluate(variables, params, endpoint);
+            cfg.setDirectoryForTemplateLoading(new File(servletContext.getRealPath(PAGES_FOLDER)));
+            Template template = cfg.getTemplate(FILE_SEPERATOR + cardName + FILE_SEPERATOR + cardName + CARD_FTL);
+            Map<String, Object> modelInput = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
             modelInput.put(VARIABLES, variables);
             modelInput.put(PAGE_PARAMS, params);
-
             StringWriter writer = new StringWriter();
-
             template.process(modelInput, writer);
-
             return new RawStringWrapper(writer.toString()).getValue();
         } catch (IOException | TemplateException e) {
             throw new RuntimeException("failed to generate adaptiveCard", e);
         }
+    }
+
+    private String getEndPointAddress(HttpServletRequest httpServletRequest) {
+        String scheme = httpServletRequest.getScheme();
+        String host = httpServletRequest.getServerName();
+        String port = String.valueOf(httpServletRequest.getServerPort());
+        String basePath = httpServletRequest.getContextPath();
+        String servletPath = httpServletRequest.getServletPath();
+
+        return scheme + "://" +
+                host +
+                ":" +
+                port +
+                basePath +
+                servletPath;
     }
 }

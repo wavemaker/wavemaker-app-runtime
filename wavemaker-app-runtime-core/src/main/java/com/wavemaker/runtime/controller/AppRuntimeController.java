@@ -90,8 +90,9 @@ public class AppRuntimeController {
     }
 
     @RequestMapping(value = "/adaptivecards/{name}", method = RequestMethod.GET, produces = "application/vnd.microsoft.card.adaptive")
-    public String getAdaptiveJson(@PathVariable("name") String cardName, @RequestParam(required = false) Map<String, String> params) {
-        return adaptiveCardResolverService.resolveCard(cardName, params);
+    public String getAdaptiveJson(HttpServletRequest httpServletRequest, @PathVariable("name") String cardName, @RequestParam(required = false) Map<String,
+            String> params) {
+        return adaptiveCardResolverService.resolveCard(httpServletRequest, cardName, params);
     }
 }
 
