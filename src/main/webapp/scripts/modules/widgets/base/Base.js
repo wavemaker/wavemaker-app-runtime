@@ -3824,10 +3824,14 @@ WM.module('wm.widgets.base', [])
                     if (CONSTANTS.isRunMode) {
                         return;
                     }
-                    var property = 'bind' + (attrs.listenProperty || 'dataset');
-
-                    $is.$on('$destroy', $is.$watch(property, function () {
-                        WidgetUtilService.updatePropertyPanelOptions($is);
+                    var property = 'bind' + (attrs.listenProperty || 'dataset'),
+                        isActive;
+                    $is.$on('$destroy', $is.$watchGroup([property, 'active'], function (arr_Expr_Active) {
+                        isActive = arr_Expr_Active[1];
+                        // update property panel options only if the widget is selected in canvas.
+                        if (isActive) {
+                            WidgetUtilService.updatePropertyPanelOptions($is);
+                        }
                     }));
                 }
             };
