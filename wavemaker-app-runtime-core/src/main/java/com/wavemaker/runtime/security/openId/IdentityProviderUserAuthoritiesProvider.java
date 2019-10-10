@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.security.openId;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -8,6 +9,8 @@ import java.util.StringTokenizer;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import com.wavemaker.runtime.security.core.AuthenticationContext;
@@ -19,6 +22,8 @@ import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 public class IdentityProviderUserAuthoritiesProvider implements AuthoritiesProvider {
 
     private String roleAttributeName;
+
+    private static GrantedAuthoritiesMapper authoritiesMapper = new SimpleAuthorityMapper();
 
     @Override
     public List<GrantedAuthority> loadAuthorities(AuthenticationContext authenticationContext) {
@@ -35,8 +40,14 @@ public class IdentityProviderUserAuthoritiesProvider implements AuthoritiesProvi
                     rolesArray = new String[rolesList.size()];
                 } else if (roles instanceof String[]) {
                     rolesArray = (String[]) roles;
+                } else if (roles instanceof List) {
+                    List<String> rolesList = (List) roles;
+                    Object[] rolesObject = rolesList.toArray();
+                    rolesArray = Arrays.copyOf(rolesObject, rolesObject.length,String[].class);
                 }
-                return AuthorityUtils.createAuthorityList(rolesArray);
+                List<GrantedAuthority> authorities =  AuthorityUtils.createAuthorityList(rolesArray);
+                authorities = new ArrayList(authoritiesMapper.mapAuthorities(authorities));
+                return authorities;
             }
         }
         return null;
