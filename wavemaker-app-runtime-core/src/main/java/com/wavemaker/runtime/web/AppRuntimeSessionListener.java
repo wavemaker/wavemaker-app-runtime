@@ -37,8 +37,10 @@ public class AppRuntimeSessionListener implements ApplicationListener<HttpSessio
     @Override
     public void onApplicationEvent(final HttpSessionCreatedEvent event) {
         WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WM_APP_SECURITY_CONFIG);
-        int timeoutInSeconds = wmAppSecurityConfig.getLoginConfig().getSessionTimeout().getTimeoutValue() * 60;
-        event.getSession().setMaxInactiveInterval(timeoutInSeconds);
-        logger.debug("session inactive timeout set for {} seconds", timeoutInSeconds);
+        if (wmAppSecurityConfig.isEnforceSecurity()) {
+            int timeoutInSeconds = wmAppSecurityConfig.getLoginConfig().getSessionTimeout().getTimeoutValue() * 60;
+            event.getSession().setMaxInactiveInterval(timeoutInSeconds);
+            logger.debug("session inactive timeout set for {} seconds", timeoutInSeconds);
+        }
     }
 }
