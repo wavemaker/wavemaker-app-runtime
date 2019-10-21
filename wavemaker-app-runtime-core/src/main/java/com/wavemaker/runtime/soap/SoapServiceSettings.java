@@ -17,6 +17,9 @@ package com.wavemaker.runtime.soap;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+
 /**
  * This class contains properties used to configure the client binding through request context.
  *
@@ -24,13 +27,10 @@ import java.util.Map;
  */
 public class SoapServiceSettings {
 
-    private String httpBasicAuthUsername;
-    private String httpBasicAuthPassword;
+    @Autowired
+    private Environment environment;
 
-    private String endpointAddress;
-
-    private int connectionTimeout;
-    private int requestTimeout;
+    private String serviceId;
 
     private String soapActionURI;
     private String packageName;
@@ -43,21 +43,30 @@ public class SoapServiceSettings {
     private Map<String, Object> requestContextProperties;
 
     /**
+     * Returns the serviceId
+     *
+     * @return String
+     */
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    /**
+     * Sets serviceId
+     *
+     * @param serviceId
+     */
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    /**
      * Returns the target service endpoint address.
      *
      * @return The service endpoint address.
      */
     public String getEndpointAddress() {
-        return this.endpointAddress;
-    }
-
-    /**
-     * Sets the target service endpoint address.
-     *
-     * @param endpointAddress The service endpoint address.
-     */
-    public void setEndpointAddress(String endpointAddress) {
-        this.endpointAddress = endpointAddress;
+        return environment.getProperty(serviceId + ".endpoint");
     }
 
     /**
@@ -66,34 +75,15 @@ public class SoapServiceSettings {
      * @return The username for authentication.
      */
     public String getHttpBasicAuthUsername() {
-        return this.httpBasicAuthUsername;
+        return this.environment.getProperty(serviceId + ".username");
     }
-
-    /**
-     * Sets the username to be used for HTTP basic authentication.
-     *
-     * @param httpBasicAuthUsername The username for authentication.
-     */
-    public void setHttpBasicAuthUsername(String httpBasicAuthUsername) {
-        this.httpBasicAuthUsername = httpBasicAuthUsername;
-    }
-
     /**
      * Returns the password to be used for HTTP basic authentication.
      *
      * @return The password for authentication.
      */
     public String getHttpBasicAuthPassword() {
-        return this.httpBasicAuthPassword;
-    }
-
-    /**
-     * Sets the password to be used for HTTP basic authentication.
-     *
-     * @param httpBasicAuthPassword The password for authentication.
-     */
-    public void setHttpBasicAuthPassword(String httpBasicAuthPassword) {
-        this.httpBasicAuthPassword = httpBasicAuthPassword;
+        return this.environment.getProperty(serviceId + ".password");
     }
 
     /**
@@ -102,16 +92,7 @@ public class SoapServiceSettings {
      * @return The connection timeout value
      */
     public int getConnectionTimeout() {
-        return this.connectionTimeout;
-    }
-
-    /**
-     * Sets the connection timeout value.
-     *
-     * @param connectionTimeout The connection timeout value to set.
-     */
-    public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
+        return this.environment.getProperty(serviceId + ".connectionTimeout", Integer.class);
     }
 
     /**
@@ -120,17 +101,9 @@ public class SoapServiceSettings {
      * @return The request timeout value.
      */
     public int getRequestTimeout() {
-        return this.requestTimeout;
+        return this.environment.getProperty(serviceId + ".requestTimeout", Integer.class);
     }
 
-    /**
-     * Sets the request timeout value.
-     *
-     * @param requestTimeout The request timeout value to set.
-     */
-    public void setRequestTimeout(int requestTimeout) {
-        this.requestTimeout = requestTimeout;
-    }
 
     /**
      * Returns the SOAPAction URI.

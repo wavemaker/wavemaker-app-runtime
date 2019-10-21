@@ -17,7 +17,6 @@ package com.wavemaker.runtime.rest.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,25 +31,22 @@ import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
 import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
 import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
 import com.wavemaker.runtime.rest.processor.data.XWMPrefixDataProcessor;
-import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
-import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
+import com.wavemaker.runtime.rest.util.ProfolizedSwagger;
 
 /**
  * @author Uday Shankar
  */
 public class RestRuntimeServiceCacheHelper {
 
-    private Map<String, Swagger> serviceIdVsSwaggerCache = new WeakHashMap<>();
-    private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
+    private Map<String, ProfolizedSwagger> serviceIdVsSwaggerCache = new WeakHashMap<>();
 
 
-    public Swagger getSwaggerDoc(String serviceId) {
+    public ProfolizedSwagger getSwaggerDoc(String serviceId) {
         if (!serviceIdVsSwaggerCache.containsKey(serviceId)) {
             InputStream stream = null;
             try {
                 stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiTarget.json");
-                Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(stream);
-                Swagger swaggerDoc = JSONUtils.toObject(reader, Swagger.class);
+                ProfolizedSwagger swaggerDoc = JSONUtils.toObject(stream, ProfolizedSwagger.class);
                 serviceIdVsSwaggerCache.put(serviceId, swaggerDoc);
             } catch (IOException e) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.read.swagger"), e, serviceId);
@@ -72,7 +68,4 @@ public class RestRuntimeServiceCacheHelper {
         return restServiceInfoBean.getRestRuntimeConfig();
     }
 
-    public void setPropertyPlaceHolderReplacementHelper(PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper) {
-        this.propertyPlaceHolderReplacementHelper = propertyPlaceHolderReplacementHelper;
-    }
 }

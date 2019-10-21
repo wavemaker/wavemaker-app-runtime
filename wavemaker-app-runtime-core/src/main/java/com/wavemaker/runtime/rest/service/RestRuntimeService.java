@@ -20,9 +20,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,6 +51,8 @@ import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessor;
 import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessorContext;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
+import com.wavemaker.runtime.rest.util.ProfolizedSwagger;
+import com.wavemaker.runtime.rest.util.ProfolizedSwaggerProcessor;
 import com.wavemaker.runtime.rest.util.RestRequestUtils;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
@@ -70,13 +72,14 @@ public class RestRuntimeService {
 
     private static final String AUTHORIZATION = "authorization";
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
-private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
+    private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
+    private ProfolizedSwaggerProcessor profolizedSwaggerProcessor = new ProfolizedSwaggerProcessor();
 
     @Autowired
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
     @PostConstruct
     public void init() {
-        restRuntimeServiceCacheHelper.setPropertyPlaceHolderReplacementHelper(propertyPlaceHolderReplacementHelper);
+        profolizedSwaggerProcessor.setPropertyPlaceHolderReplacementHelper(propertyPlaceHolderReplacementHelper);
     }
 
 
@@ -149,7 +152,8 @@ private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper = new RestRu
     }
 
     private HttpRequestDetails constructHttpRequest(String serviceId, String operationId, HttpRequestData httpRequestData) {
-        Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
+        ProfolizedSwagger profolizedSwagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
+        Swagger swagger = profolizedSwaggerProcessor.processPlaceHolders(profolizedSwagger);
         Map.Entry<String, Path> pathEntry = swagger.getPaths().entrySet().iterator().next();
         String pathValue = pathEntry.getKey();
         Path path = pathEntry.getValue();
