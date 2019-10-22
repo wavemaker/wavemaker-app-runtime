@@ -31,22 +31,21 @@ import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
 import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
 import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
 import com.wavemaker.runtime.rest.processor.data.XWMPrefixDataProcessor;
-import com.wavemaker.runtime.rest.util.ProfolizedSwagger;
 
 /**
  * @author Uday Shankar
  */
 public class RestRuntimeServiceCacheHelper {
 
-    private Map<String, ProfolizedSwagger> serviceIdVsSwaggerCache = new WeakHashMap<>();
+    private Map<String, Map<String, Object>> serviceIdVsSwaggerCache = new WeakHashMap<>();
 
 
-    public ProfolizedSwagger getSwaggerDoc(String serviceId) {
+    public Map<String, Object> getSwaggerDoc(String serviceId) {
         if (!serviceIdVsSwaggerCache.containsKey(serviceId)) {
             InputStream stream = null;
             try {
                 stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiTarget.json");
-                ProfolizedSwagger swaggerDoc = JSONUtils.toObject(stream, ProfolizedSwagger.class);
+                Map<String, Object> swaggerDoc = JSONUtils.toObject(stream, Map.class);
                 serviceIdVsSwaggerCache.put(serviceId, swaggerDoc);
             } catch (IOException e) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.read.swagger"), e, serviceId);
