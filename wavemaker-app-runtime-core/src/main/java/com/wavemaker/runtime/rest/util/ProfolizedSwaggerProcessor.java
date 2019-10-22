@@ -2,6 +2,7 @@ package com.wavemaker.runtime.rest.util;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
@@ -15,7 +16,7 @@ public class ProfolizedSwaggerProcessor {
 
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
 
-    public Swagger processPlaceHolders(ProfolizedSwagger profolizedSwagger) {
+    public Swagger processPlaceHolders(Map<String, Object> profolizedSwagger) {
         try {
             Reader reader =
                     propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(IOUtils.toInputStream(JSONUtils.toJSON(profolizedSwagger)));

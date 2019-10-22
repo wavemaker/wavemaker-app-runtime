@@ -51,7 +51,6 @@ import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessor;
 import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessorContext;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
-import com.wavemaker.runtime.rest.util.ProfolizedSwagger;
 import com.wavemaker.runtime.rest.util.ProfolizedSwaggerProcessor;
 import com.wavemaker.runtime.rest.util.RestRequestUtils;
 import com.wavemaker.runtime.util.HttpRequestUtils;
@@ -152,7 +151,7 @@ public class RestRuntimeService {
     }
 
     private HttpRequestDetails constructHttpRequest(String serviceId, String operationId, HttpRequestData httpRequestData) {
-        ProfolizedSwagger profolizedSwagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
+        Map<String, Object> profolizedSwagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
         Swagger swagger = profolizedSwaggerProcessor.processPlaceHolders(profolizedSwagger);
         Map.Entry<String, Path> pathEntry = swagger.getPaths().entrySet().iterator().next();
         String pathValue = pathEntry.getKey();
