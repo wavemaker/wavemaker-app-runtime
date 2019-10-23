@@ -11,11 +11,13 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -33,6 +35,7 @@ import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.app.AppFileSystem;
+import com.wavemaker.runtime.auth.oauth2.EnvOAuth2ProviderConfig;
 import com.wavemaker.runtime.rest.builder.HttpRequestDetailsBuilder;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
@@ -47,8 +50,10 @@ public class OAuth2RuntimeServiceManager {
     private static final String REDIRECT_URL = "/services/oauth2/${providerId}/callback";
     private String customUrlScheme;
 
+    @Autowired
+    Environment environment;
 
-    private List<OAuth2ProviderConfig> oAuth2ProviderConfigList = new ArrayList<>();
+    private List<EnvOAuth2ProviderConfig> oAuth2ProviderConfigList = new ArrayList<>();
 
     private static final Logger logger = LoggerFactory.getLogger(OAuth2RuntimeServiceManager.class);
 
@@ -57,8 +62,9 @@ public class OAuth2RuntimeServiceManager {
         InputStream oauthProvidersJsonFile = Thread.currentThread().getContextClassLoader().getResourceAsStream("oauth-providers.json");
         if (oauthProvidersJsonFile != null) {
             try {
-                this.oAuth2ProviderConfigList = WMObjectMapper.getInstance().readValue(oauthProvidersJsonFile, new TypeReference<List<OAuth2ProviderConfig>>() {
+                List<OAuth2ProviderConfig> tmpOAuth2ProviderConfig = WMObjectMapper.getInstance().readValue(oauthProvidersJsonFile, new TypeReference<List<OAuth2ProviderConfig>>() {
                 });
+                tmpOAuth2ProviderConfig.forEach(oAuth2ProviderConfig -> this.oAuth2ProviderConfigList.add(new EnvOAuth2ProviderConfig(environment, oAuth2ProviderConfig)));
             } catch (IOException e) {
                 throw new WMRuntimeException(e);
             }
@@ -141,9 +147,9 @@ public class OAuth2RuntimeServiceManager {
     }
 
     private OAuth2ProviderConfig getOAuthProviderConfig(String providerId) {
-        for (OAuth2ProviderConfig oAuth2ProviderConfig : oAuth2ProviderConfigList) {
-            if (Objects.equals(oAuth2ProviderConfig.getProviderId(), providerId)) {
-                return oAuth2ProviderConfig;
+        for (EnvOAuth2ProviderConfig envOAuth2ProviderConfig : oAuth2ProviderConfigList) {
+            if (Objects.equals(envOAuth2ProviderConfig.getProviderId(), providerId)) {
+                return envOAuth2ProviderConfig.getOAuth2ProviderConfig();
             }
         }
         throw new ResourceNotFoundException(MessageResource.create("com.wavemaker.runtime.OAuth2ProviderConfig.not.found"), providerId);
