@@ -45,7 +45,7 @@
 
         <guava.version>27.0.1-jre</guava.version>
 
-        <fasterxml.json.version>2.9.8</fasterxml.json.version>
+        <fasterxml.json.version>2.10.3</fasterxml.json.version>
         <mimemagic.version>0.1.5</mimemagic.version>
 
         <hikaricp.version>2.7.7</hikaricp.version>
