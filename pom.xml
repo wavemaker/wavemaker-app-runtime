@@ -53,7 +53,7 @@
         <jsoup.version>1.11.3</jsoup.version>
         <poi.version>4.0.1</poi.version>
         <poi.ooxml.version>4.0.1</poi.ooxml.version>
-        <quartz.version>2.3.0</quartz.version>
+        <quartz.version>2.3.2</quartz.version>
         <antisamy.version>1.5.8</antisamy.version>
         <jasperreports.version>6.7.0</jasperreports.version>
         <freemarker.version>2.3.28</freemarker.version>
